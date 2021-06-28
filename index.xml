@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>A Square Dozen</title>
+    <link>http://blog.asquaredozen.com/</link>
+    <description>Recent content on A Square Dozen</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 27 Jun 2021 20:20:29 -0500</lastBuildDate><atom:link href="http://blog.asquaredozen.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Testpage</title>
+      <link>http://blog.asquaredozen.com/post/testpage/</link>
+      <pubDate>Sun, 27 Jun 2021 20:20:29 -0500</pubDate>
+      
+      <guid>http://blog.asquaredozen.com/post/testpage/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>My First Post</title>
+      <link>http://blog.asquaredozen.com/posts/my-first-post/</link>
+      <pubDate>Sun, 27 Jun 2021 20:10:35 -0500</pubDate>
+      
+      <guid>http://blog.asquaredozen.com/posts/my-first-post/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
