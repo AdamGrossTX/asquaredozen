@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>Posts-A Square Dozen | A. Gross Blog</title>
 
@@ -33,9 +34,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/posts/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -208,6 +215,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -238,10 +256,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is the next installment in my Windows 10 Feature Updates series.
 Custom Actions Beginning in Windows 10 1803, custom actions were introduced and represent what Suma SaganeGowda referred to as a &lsquo;poor man&rsquo;s implementation of Task Sequences&rsquo; at Ignite 2018 in session BRK3027. Windows setup will check for the existence of these special folders and scripts and use them as part of the Feature Update process. They allow you to run scripts at various stages in the Feature Update process as well as specify reflected driver paths just as you can in Setupconfig.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -266,10 +286,12 @@ Custom Actions Beginning in Windows 10 1803, custom actions were introduced and 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is the next installment in my Windows 10 Feature Updates series.
 Setupconfig.ini Setupconfig.ini is a file that can be used to pass command line arguments to the Windows Setup engine during a Windows installation. When Setupconfig.ini is specified in the command line (/ConfigFile &lt;path to Setupconfig.ini&gt;) or exists in the default location (%systemdrive%\Users\Default\AppData\Local\Microsoft\Windows\WSUS\Setupconfig.ini), any arguments in it will take precedence over arguments specified in the commandline. If you use this file, ensure that you aren&rsquo;t counteracting commandline args that you may be using with other deployment methods such as Task Sequences (Task Sequences simply generate a command line based on which options you select).
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -294,10 +316,12 @@ Setupconfig.ini Setupconfig.ini is a file that can be used to pass command line 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.
 What is SetupDiag If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -322,9 +346,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     As you may know, Steven Hosking and I recently started a YouTube channel called Intune.Training where we are walking through how to get started with Microsoft Intune each week. As we were recording our latest episode (coming soon) on Win32 applications, the demo failed when we attempted to install the application we had just built in Intune. We didn&rsquo;t have time in the video to go through troubleshooting the issue, but I later determined the issue.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -349,9 +375,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I&rsquo;ve never been a fan of alternate web browsers (Chrome, Firefox, etc), not because I don&rsquo;t believe they may have better features than Internet Explorer or Edge, but because I live in the End User Computing space and find it easier to support users if I use the same browsers that they do. Even at home, I keep it simple and just use Edge or IE to help reduce my frustration of having different features depending on where I may be logged in each day.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -376,9 +404,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -403,9 +433,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     In my post Removing the Application Catalog Role after Upgrading to ConfigMgr 1806 I mentioned the error Failed to compile rule &quot;{Rule_WRC10000}&quot;: 0x8000ffff and that we were unsure of it&rsquo;s impact on the client. The product group assured us that the error was nothing to worry about and they were right - I have seen no ill effects on my clients, even though I continually see this error whenever the clients process machine policies.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -430,9 +462,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     ConfigMgr 1906 Technical Preview was released last week and I immediately upgraded one of my tech preview labs I have running in Hyper-V on my laptop. As you may know, I&rsquo;m a huge fan of the new AdminService functionality which will allow you to interact with the SMS Provider over HTTPS. With each release, it has had more features added. With Tech preview 1906, I noticed that you can run CMPivot using the AdminService.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -457,9 +491,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     In a previous post I described how to deploy applications to users using Active Directory (AD) security groups as direct members of ConfigMgr collections. In this post, I&rsquo;ll go over how to integrate the Microsoft Store for Business into your ConfigMgr console and review the various ways to deploy these apps from ConfigMgr. While Microsoft has done great job documenting individual parts of this process, I had to jump all over to find everything.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -484,9 +520,11 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I&rsquo;m procrastinating prepping my sessions for MMS 2019 and decided I should write a blog post instead to help get me motivated. A few weeks ago I tweeted that my task sequence is built to be re-run if it fails and it will &lsquo;pick up where it left off&rsquo;. Several folks expressed interest in the idea so I wanted to share the general framework for having a task sequence that can be re-run after failure to complete the job.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -563,7 +601,8 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

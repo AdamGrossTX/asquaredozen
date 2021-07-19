@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>Posts-A Square Dozen | A. Gross Blog</title>
 
@@ -33,9 +34,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/posts/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -208,6 +215,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -232,10 +250,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     We have built an SCCM In-Place upgrade task sequence to migrate our enterprise from Windows 7 Enterprise to Windows 10 Enterprise. We have been using the same basic TS for over a year without issues. With the release of Windows 10 Fall Creators Update (1709), we began having issues upgrading certain devices and were seeing error code 0xC1900204, indicating Invalid SKU.
 Windows setup looks at the existing OS, install media and the command line image number to validate that the existing and desired versions are a match and can be upgraded.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -254,11 +274,13 @@ Windows setup looks at the existing OS, install media and the command line image
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I guess that&rsquo;s how I&rsquo;m supposed to start out.
 If you want to know more about me or my site name, please visit the About page before proceeding. I&rsquo;ll wait.
 Welcome back! As you can see, I&rsquo;m not an expert, but I have been doing this for a while and just wanted to have a place to call my own where I can post with more than characters on Twitter. I hope that I will be able to add value to the community.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -333,7 +355,8 @@ Welcome back! As you can see, I&rsquo;m not an expert, but I have been doing thi
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

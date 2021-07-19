@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>Posts-A Square Dozen | A. Gross Blog</title>
 
@@ -33,9 +34,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/posts/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -208,6 +215,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -232,10 +250,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     While trying to set the KeyboardLocale in my ConfigMgr/SCCM Task Sequence, I found that my settings weren&rsquo;t getting updated during the Task Sequence. I used to think that custom Unattend.XML that you include in your Task Sequence would be used as-is. I was wrong. I did a bit of digging and here&rsquo;s what I discovered.
 FYI: I&rsquo;m using ConfigMgr/SCCM with MDT integrated and I&rsquo;m using an MDT Task Sequence built in ConfigMgr as the basis for this discussion.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -260,9 +280,11 @@ FYI: I&rsquo;m using ConfigMgr/SCCM with MDT integrated and I&rsquo;m using an M
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Today I was writing a report to help audit collection settings to ensure we aren&rsquo;t unnecessarily updating collections due to the wrong checkboxes being set (a topic for another day). As I was searching for offending collections, I would copy the collection name from my report then paste into the search box and hit Enter. I also had the All Subfolders search option selected. Generally, I wait about a minute for searches to come back when searching from a top level folder.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -287,9 +309,11 @@ FYI: I&rsquo;m using ConfigMgr/SCCM with MDT integrated and I&rsquo;m using an M
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This week, we were working on testing Windows 7 to Windows 10 In-Place Upgrades and ran into an issue where our clients weren&rsquo;t updating their Operating System version in the ConfigMgr console. After some helpful responses on Twitter, I was able to add a client action trigger step to the end of my Task Sequence. In my production environment, we have a child task sequence that we call that has several client action steps in it including Request Machine Assignments (Machine Policies) {00000000-0000-0000-0000-000000000021}, Hardware Inventory {00000000-0000-0000-0000-000000000001} and now a Discovery Inventory {00000000-0000-0000-0000-000000000003}.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -314,11 +338,13 @@ FYI: I&rsquo;m using ConfigMgr/SCCM with MDT integrated and I&rsquo;m using an M
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     UPDATE #3 - 6/28/2018 Feel free to read below, however, if you want the quick solution, check out Marc&rsquo;s updated blog post. He&rsquo;s put together a simple solution to this issue.
 http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/
 UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.com/jarwidmark/status/998591545392685057 and http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/ which indicated that the fix was to update the devinv.dll file in Sources directory of your Windows 10 Upgrade media. This led me to finding out that KB2952664 updates devinv.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -337,9 +363,11 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     In case you missed it, Check out my guest blog post over on http://www.DeploymentResearch.com. Thanks Johan Ardwidmark for the opportunity. While you&rsquo;re there, be sure to check out all of the other awesome resources available like the Hydration Kit For Windows Server 2016 and ConfigMgr Current Technical Preview Branch.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -358,10 +386,12 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Sorry for all the words. Skip to the end if you just want the punchline
 Have you ever had one of those weeks where you just bang your head against the same wall and eventually get some relief? Sometimes, your head breaks open, but other times, the wall breaks. Well I just had one of those weeks but I&rsquo;m not sure how I feel about where this all ended up.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -380,9 +410,11 @@ Have you ever had one of those weeks where you just bang your head against the s
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Today was supposed to be easy. Things were just supposed to work. We had been testing our ConfigMgr Task Sequence for a few weeks and today was cutover day. We had made some backend changes to our Windows 7 Task Sequence to help get ready for our upcoming Windows 10 migration (I know, haven&rsquo;t upgraded yet! Get off my case!). Earlier in the week, we found one last item that needed to be added.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -407,9 +439,11 @@ Have you ever had one of those weeks where you just bang your head against the s
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Do you ever need to email or post ConfigMgr log files or snippets online for blogs or support? I know I do. I wanted to have a way to consistently clean log files quickly, so I wrote a small PowerShell script to help. It&rsquo;s nothing special - the hardest part is figuring out which regular expressions work best for each data type you want to replace. I ended up with 4 regular expressions that work well for the smsts.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -434,9 +468,11 @@ Have you ever had one of those weeks where you just bang your head against the s
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     We have several generations of HP ProLiant servers in our environment. We recently upgraded SCCM to 1710 then applied ADK 1709. We have been imaging these servers using the ADK 1703 Boot Image without issue. After upgrading to ADK 1709 and creating new boot images, we are unable to boot to into WinPE on any of our Gen9 servers. After doing the standard diagnostics (testing old, testing new, updating drivers, updating firmware, etc) we found that these servers would still freeze after downloading the boot WIM and get stuck on this screen:
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -455,9 +491,11 @@ Have you ever had one of those weeks where you just bang your head against the s
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Several months ago, my boss came back from Microsoft Ignite where he &lsquo;drank the Kool-Aid&rsquo; big time. We had been telling him about all of the amazing things that were being released to help with the move to Modern Windows Management with Windows 10 for months but he got to hear it directly from some of the experts and got really excited. One of the things he suggested looking into came from a session with Mike Nystrom and Johan Arwidmark called Expert-level Windows 10 deployment (Skip to 50:12 for driver management).
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -534,7 +572,8 @@ Have you ever had one of those weeks where you just bang your head against the s
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

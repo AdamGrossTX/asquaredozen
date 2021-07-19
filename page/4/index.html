@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>A Square Dozen-A Square Dozen | A. Gross Blog</title>
 
@@ -34,9 +35,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -209,6 +216,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -233,9 +251,11 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I was talking with my friend recently about how his and another friend&rsquo;s jobs were going. The discussion centered around career paths - staying technical, changing fields or moving into supervision/management. We shared thoughts about our motivations for choosing a path and how we felt about &lsquo;climbing the corporate ladder&rsquo; and the personal costs to do so. This really got me thinking about my career and how I&rsquo;ve changed my career goals but more importantly, how marriage and children have changed my focus and values.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -260,9 +280,11 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     A few years ago, I needed to find a query that I had written in a SQL Stored Procedure but after clicking through several of them and striking out, I decided that there had to be a better way. I ended up writing a simple Stored Procedure with a single search parameter that would return a stored procedure definition and excerpt from it. I like it so much that I&rsquo;ve added it to every database I&rsquo;ve managed since then.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -287,9 +309,11 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     About a month ago, I wrote a post for System Center Dudes related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -314,10 +338,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This post is dedicated to the System Center Configuration Manger (SCCM/ConfigMgr) Administration Service (AdminService for short). Please check back here for helpful links and to blog posts, documentation and examples for using the AdminService. Please note, I wasn&rsquo;t sure what the name was officially when I first started, and I didn&rsquo;t expect to keep posting new info about it, so sorry if it&rsquo;s disjointed.
  Update: 11/3/2109 - I am updating this post to show information for the the latest ConfigMgr Current Branch release.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -342,9 +368,11 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -363,10 +391,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     As you may know, I started working for System Center Dudes as a ConfigMgr consultant a few months ago. I finally found time to write my first post for their site. If you haven&rsquo;t already seen it, head over and check out it out.
 https://www.systemcenterdudes.com/sccm-remove-recurring-schedules-collections-script/
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -391,10 +421,12 @@ https://www.systemcenterdudes.com/sccm-remove-recurring-schedules-collections-sc
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I’m not a big New Year’s resolution guy but I do believe that looking back at the previous year as well as setting goals for the coming year helps set up a framework for success. For this post, I’d like to share some personal and professional highlights from 2018.
 Personal Family To start, I’m writing this sitting next to my wife Megan as we fly back to Houston after spending 10 amazing days in Thailand celebrating 15 years of marriage.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -419,11 +451,13 @@ Personal Family To start, I’m writing this sitting next to my wife Megan as we
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Note
 03/12/2019 - This post has been updated to support changes in 1901 TP and (I assume) 1902 CB to the TSProgressUI.exe ConfigMgr client component used for the custom described dialog below.
  Note: You must be running ConfigMgr/SCCM 1810 or higher to use the _SMSTSLastActionName variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go upvote the UserVoice item to have the product do this natively.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -448,9 +482,11 @@ Personal Family To start, I’m writing this sitting next to my wife Megan as we
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     At MMS Desert Edition (MMSDE) this week, I got into a (friendly) heated debate over what qualified as BBQ where the other party offered up some very silly arguments related to pulled pork and vinegar sauce. I&rsquo;m a firm believer in meat. Period. Cook it however you want, call it whatever you want. I just want to eat it. This discussion led to some additional &lsquo;South Bashing&rsquo; by this &lsquo;Yankee&rsquo; from North Carolina.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -475,9 +511,11 @@ Personal Family To start, I’m writing this sitting next to my wife Megan as we
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I began testing the ConfigMgr SMS Provider API (or AdminService as it will be called) in the 1810 Technical Preview and wrote 2 posts about it (1) &amp; (2). With the release of the AdminService in Current Branch 1810, a few things have changed and I wanted to provide an update. Additonally, I&rsquo;ve had the opportunity to chat with the ConfigMgr Product Group at #MMSDE this week and they&rsquo;ve provided some roadmap information about the API and what to expect in the future.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -554,7 +592,8 @@ Personal Family To start, I’m writing this sitting next to my wife Megan as we
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

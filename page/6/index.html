@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>A Square Dozen-A Square Dozen | A. Gross Blog</title>
 
@@ -34,9 +35,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -209,6 +216,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -239,11 +257,13 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I found this issue today and hope to get some help from the ConfigMgr team on it but figured it was worth writing up the workaround for now.
 The Issue While attempting to perform a user state backup on a machine using an SCCM task sequence, we received the error in SMSTS.LOG:
 Failed to decrypt state encryption key (0x80070057)Failed to run the action: Request User State Storage. The parameter is incorrect.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -262,10 +282,12 @@ Failed to decrypt state encryption key (0x80070057)Failed to run the action: Re
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Update 10/1/2018 - Check out my latest post Part 5 below. You may be able to skip all of the other stuff!!
 The Links first so you don&rsquo;t have to scroll so far. These are also on the menu at top for easy access. Since I ended up with so much content for this topic, I felt that it warranted a landing page. Hopefully you will be able to easily navigate through these topics and find some useful nuggets to save yourself some headaches down the road.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -284,6 +306,7 @@ The Links first so you don&rsquo;t have to scroll so far. These are also on the 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is the Tips and Tricks section of my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 These are just some random things I found while going through this.
@@ -294,6 +317,7 @@ C:\Windows\dot3svc\Policies*.TMP (rename TMP to XML to see the Policy and Profil
 Migration Data C:\ProgramData\Microsoft\dot3svc\MigrationData HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\dot3svc\MigrationData
 Quickly Remove 802.1x Group Policy for Testing  Rename the .
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -312,10 +336,12 @@ Quickly Remove 802.1x Group Policy for Testing  Rename the .
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is Part 4 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word of caution. Make sure that your switch firmware is matched to the version required by ISE. I spent several weeks working with our Security and Networking guys to troubleshoot and discovered that our switches weren&rsquo;t at the required version for ISE 2.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -334,11 +360,13 @@ Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is Part 3 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 You will need all of the files you created in Part 1 for this part.
 During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -357,10 +385,12 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is Part 2 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.1x service on the server side. However, I do know that you will need to configure your 802.1x service to allow PXE traffic. I believe that Cisco ISE has a setting already that you can just turn on to allow it.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -379,11 +409,13 @@ Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is Part 1 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 The Anatomy of an 802.1x Configuration Script These are the basic steps need to be performed by your auth script. The code below is commented to help understand what each step is for.
  Set Wired Autoconfig (dot3svc) service startup to Auto Start Wired Autoconfig Import Configuration Profile Import Certificates Force adapter authentication event  You may be looking at this and wonder why I&rsquo;m creating a Batch file instead of using PowerShell.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -402,9 +434,11 @@ The Anatomy of an 802.1x Configuration Script These are the basic steps need to 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     WARNING!! 8/21/2018 - The following steps will enable Dynamic Updates for Windows 10 In-Place Upgrade. If you have not serviced your WIM with THE LATEST Cumulative updates - like today is patch Tuesday and you haven&rsquo;t updated your WIM with today&rsquo;s CU, proceed with caution! Your Enabling Dynamic Updates will allow your clients to go to the internet and download the latest Cumulative Update and install it during the upgrade. This is an extra ~800 MB per client from the internet.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -429,10 +463,12 @@ The Anatomy of an 802.1x Configuration Script These are the basic steps need to 
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     UPDATE - See Part 2 Here
 WARNING!! 8/21/2018 - The following steps will enable Dynamic Updates for Windows 10 In-Place Upgrade. If you have not serviced your WIM with THE LATEST Cumulative updates - like today is patch Tuesday and you haven&rsquo;t updated your WIM with today&rsquo;s CU, proceed with caution! Your Enabling Dynamic Updates will allow your clients to go to the internet and download the latest Cumulative Update and install it during the upgrade.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -451,9 +487,11 @@ WARNING!! 8/21/2018 - The following steps will enable Dynamic Updates for Window
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Our Windows 7 Reference Image was originally built in 2011. At the time, we had some consultants in helping us migrate from Windows XP to Windows 7. At the time, the consultant who was building the image edited the Local Group Polices on the Windows 7 machine prior to capturing it. Since then, we&rsquo;ve continued to service the WIM and use it as our production image. Some years later, we were trying to change our Windows Update settings and found these nice Local Group Policies just sitting there screwing everything up!
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -530,7 +568,8 @@ WARNING!! 8/21/2018 - The following steps will enable Dynamic Updates for Window
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

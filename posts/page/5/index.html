@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/img/favicon.ico">
         <title>Posts-A Square Dozen | A. Gross Blog</title>
 
@@ -33,9 +34,15 @@ if (!doNotTrack) {
         <link rel="canonical" href="/posts/">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/code.css">
+        
 
         
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+        
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+        <script src="js/asd.js"></script>
 
         
         
@@ -208,6 +215,17 @@ if (!doNotTrack) {
                 
                 </ul>
         </div>
+        <div class="menu" id="menu-mobile"></div>
+    </div>
+    <div id="top-search">
+        <a href="#" class="search"><i class="fa fa-search"></i></a>
+        <div class="show-search">
+            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
+                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
+                <input type="hidden" name="sitesearch" value="asquaredozen.com">
+                <button type="submit" value="Search"/>
+            </form>
+        </div>
     </div>
 </div>
 				<header id="header" class="noslider">
@@ -238,10 +256,12 @@ if (!doNotTrack) {
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I recently had a request to make the Continue on PC feature work on our standard Windows 10 devices. Continue on PC is a Windows 10 feature that allows users to use the Edge browser on their phone then continue the browsing session on their PC. As I started testing the feature in Windows 10, I found that the setting was disabled with the message
 Some settings are hidden or managed by your organization.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -266,10 +286,12 @@ Some settings are hidden or managed by your organization.
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Be sure to check out the sequel to this post Building an Even Better Task Sequence.
 I&rsquo;ve had this post in the queue for a while now and have been working on a script to help with some of this, but with the release of System Center Configuration Manager 1810 I don&rsquo;t have to hack something together anymore! One of the best new features which allows us to capture the name of the last action using the new variable _SMSTSLastActionName.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -294,9 +316,11 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     If you have been keeping up with SCCM/ConfigMgr release notes, you will have seen that in 1806, you no longer need to have the Application Catalog Role installed in order to enable User Available applications in Software Center (if you didn&rsquo;t already know, yeah, that was a requirement previously). If you were like me, this was one of your first actions after upgrading to 1806. Unfortunately, there appears to be a bug with removing the role that causes clients to stop seeing User Available software in Software Center.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -321,9 +345,11 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     There are numerous types of application and deployment options in ConfigMgr/SCCM today. Everything from traditional MSI to the new MSIX and Windows Store apps. Throw in Co-Management and Intune and you get even more options. Deployments can be targeted to specific devices and users. Most companies use some mix of these to get software onto devices. Some people even still refuse to use the Application model in ConfigMgr in favor of the Package model because of that one time they had trouble with it back in 2012.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -348,10 +374,12 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     Update 12/04/2018: Check out the latest info on the SMS Provider API.
  I posted last week about the OData connector that is included in ConfigMgr Technical Preview 1810. I did some more digging this past weekend and made a few more discoveries. Additionally, I ran into some issues during testing and was able to get in touch with some of the team working on the new AdminService and they gave me some great insight on my findings.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -376,9 +404,11 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     I went to Microsoft Ignite 2018 for the first time this year. During the week, I got to chat with lots of folks, including some of the SCCM/ConfigMgr product group. Mark Silvey was kind enough to chat with me about plans for the OData connector that was first introduced in ConfigMgr 1612 Technical Preview. When it was first released it was called CMRestProvider and it had to be enabled in the console (you can read more about this initial implementation here).
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -403,11 +433,13 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     If you have worked with SCCM/ConfigMgr Task Sequences for any length of time, you&rsquo;ve likely needed to debug them. Many times, you need to check the value of a Task Sequence variable. The generally accepted approach is to add a Run Command Line step to your Task Sequence and run ServiceUI.exe like this:
 ServiceUI.exe -process:TSProgressUI.exe cmd.exe
 This approach is great if you planned ahead and you are in a test Task Sequence.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -432,10 +464,12 @@ This approach is great if you planned ahead and you are in a test Task Sequence.
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     This is Part 5 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts.
 A few months ago, when I published the first 4 parts on this series, I was unaware that there was a web service available for managing Cisco ISE, which is the NAC that I have to work with in my environment. I was fortunate to meet with a peer who works nearby and he shared a script demonstrating how to interact with the Cisco ISE External RESTful Service (ERS) to dynamically whitelist devices when WinPE starts for Bare Metal OSD and inside an SCCM/ConfigMgr Task Sequence for In-Place upgrades.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -454,9 +488,11 @@ A few months ago, when I published the first 4 parts on this series, I was unawa
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read Gary Blok&rsquo;s Waas posts and picked up a few tricks, I know I have.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -481,9 +517,11 @@ A few months ago, when I published the first 4 parts on this series, I was unawa
                     </h2>
             </div>
             <div class="post-entry">
+                <p>
                 
                     For the past few months, there has been a community-wide push to determine the optimal approach for Offline Servicing Windows 10 media and to get Microsoft to take on more of this burden so we can get on with other tasks instead of dealing with servicing every month. Ultimately, Microsoft needs a better process for updating media each month, but until they do, all we can do is what we do best, Socially Engineer solutions.
                 
+                </p>
             </div>
             <div class="list-meta">
                 <span class="post-date">
@@ -560,7 +598,8 @@ A few months ago, when I published the first 4 parts on this series, I was unawa
 		</div>
 	</div>
 </footer>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>
