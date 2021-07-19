@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Analyze SetupDiag errors for Feature Updates in ConfigMgr 2008 Technical Preview-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Analyze SetupDiag errors for Feature Updates in ConfigMgr 2008 Technical Preview"/>
+<meta name="twitter:description" content="As soon as I read the release notes for ConfigMgr 2008 Technical Preview I knew I would be doing some digging. This release introduced the first iteration of a feature that will hopefully help make Windows 10 Feature Update servicing a little easier to manage. Listed as Analyze SetupDiag errors for feature updates this feature has been added to the Windows 10 Servicing dashboard. When I initially read the release notes and looked at the included graph, I was disappointed."/>
+
+
+        <link rel="canonical" href="/2020/08/11/analyze-setupdiag-errors-for-feature-updates-in-configmgr-2008-technical-preview/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Analyze SetupDiag errors for Feature Updates in ConfigMgr 2008 Technical Preview</h1>
+				<span class="post-date">August 12, 2020</span>
+			</div>
+			<div class="post-entry">
+				<p>As soon as I read the release notes for <a href="https://docs.microsoft.com/mem/configmgr/core/get-started/2020/technical-preview-2008">ConfigMgr 2008 Technical Preview</a> I knew I would be doing some digging. This release introduced the first iteration of a feature that will hopefully help make Windows 10 Feature Update servicing a little easier to manage. Listed as <strong><a href="https://docs.microsoft.com/mem/configmgr/core/get-started/2020/technical-preview-2008#bkmk_setupdiag">Analyze SetupDiag errors for feature updates</a></strong> this feature has been added to the Windows 10 Servicing dashboard. When I initially read the release notes and looked at the included graph, I was disappointed. I&rsquo;ve seen these number before. They appear in the Monitoring node for any Feature Update deployment using servicing. But I did some digging and have now renewed faith that future Updates of this Feature (see what I did there? Feature Update&hellip; ah forget it). Read on for all the juicy details.</p>
+<p><img src="https://i0.wp.com/docs.microsoft.com/mem/configmgr/core/get-started/2020/media/4385028-collection-errors-tile.jpg?w=1080%EF%BF%BDssl=1" alt="Screenshot of Collection Errors tile in Windows 10 Servicing dashboard"></p>
+<p>It&rsquo;s VERY important to note that this is the first iteration of this feature and it should be treated as &lsquo;In Progress&rsquo;. As is the case with Technical Previews, features can change and possibly not even get released. So this blog only serves as a place to keep some notes on this feature as it stands today.</p>
+<h2 id="whats-the-big-deal">What&rsquo;s the Big Deal?</h2>
+<p>If you have done any work with <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates</a>, you&rsquo;ll know that gathering logs and information about failures can be difficult and often, the error code alone isn&rsquo;t enough to help diagnose the failure. With the introduction of Windows 10 2004, the Windows Setup team enabled <a href="https://docs.microsoft.com/windows/deployment/upgrade/setupdiag">SetupDiag</a> to run automatically when a Feature Update fails. SetupDiag writes a registry key to <strong><code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\setupdiag\results</code></strong> that looks like this:</p>
+<p><img src="/img/2020/08/image-27.png" alt="A Square Dozen Image"></p>
+<hr>
+<p><strong>Side note:</strong>
+The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\MoSetup\Volatile\SetupDiag</code>. However when it is triggered as part of a failure in Windows 10 2004 and later, the registry path is <code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\setupdiag\results</code>. More details <a href="https://docs.microsoft.com/windows/deployment/upgrade/setupdiag#setupdiag-in-windows-10-version-2004-and-later">here</a>.</p>
+<hr>
+<h2 id="limitations">Limitations</h2>
+<p>Currently, this feature can only be triggered by a FAILED Windows 10 2004 Feature Update, delivered as an update using servicing (not a Task Sequence). There&rsquo;s no way to manually run SetupDiag and trigger the data collection used by the Windows 10 Dashboard.</p>
+<h2 id="testing-it-out">Testing it Out</h2>
+<p>To test this, I built a new domain-joined Hyper-V VM with Windows 10 1909 and installed the ConfigMgr client. Then I added a registry key that I found in the Appraiser Database that would cause setup to fail (<a href="/2020/07/26/demystifying-windows-10-feature-update-blocks/">more on my research into blocks here</a>).</p>
+<p><img src="/img/2020/08/image-28.png" alt="A Square Dozen Image"></p>
+<p>Then I created a deployment to my workstation collection (In my lab that&rsquo;s All Systems 😃) for <strong><code>Feature update to Windows 10 (business editions), version 2004, en-us x64</code></strong> from <strong><code>\Software Library\Overview\Windows 10 Servicing\All Windows 10 Updates</code></strong></p>
+<p><img src="/img/2020/08/image-29.png" alt="A Square Dozen Image"></p>
+<p>On the client, I triggered a Software Update deployment cycle and the update showed up in Software Center. I started the install then went to have dinner. When I returned I was greeted by this amazing screen!</p>
+<p><img src="/img/2020/08/image-30.png" alt="A Square Dozen Image"></p>
+<p>This was exactly what I was hoping for. Next I refreshed the Windows 10 Servicing dashboard in the ConfigMgr console and there it was, my beautiful graph!!</p>
+<p><img src="/img/2020/08/image-32.png" alt="A Square Dozen Image"></p>
+<p>As far as I can tell, there&rsquo;s no drill-through option just yet, but I think it will be added in time.</p>
+<p>On the client, I was able to use <a href="https://github.com/vinaypamnani/wmie2">WMIExplorer</a> (bless you <a href="https://twitter.com/vinay_pamnani">Vinay</a>) to find the message in the <code>ROOT\CCM\StateMsg CCM_StateMsg</code> under <code>TopicType &lt;strong&gt;402</code>**. I didn&rsquo;t know which <code>TopicType</code> to look for, so I just clicked through the entries to find SetupDiag in the <code>StateDetails</code> property.</p>
+<p><img src="/img/2020/08/image-33.png" alt="A Square Dozen Image"></p>
+<p>The contents of StateDetails is a snippet of the SetupDiag registry entry shown above.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;SetupDiag&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&lt;ProfileName&gt;</span>FindAbruptDownlevelFailure<span style="color:#000080">&lt;/ProfileName&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>    <span style="color:#000080">&lt;DateTime&gt;</span>8/11/2020 6:38:20 PM<span style="color:#000080">&lt;/DateTime&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>    <span style="color:#000080">&lt;FailureData&gt;</span>Error: SetupDiag reports abrupt down-level failure.Last Operation: FinalizeError: 0xC1900208 - 0x4000D LogEntry: 2020-08-11 18:37:56, Error                 MOUPG  CSetupManager::ExecuteInstallMode(868): Result = 0xC1900208 Refer to &#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34; for error information.<span style="color:#000080">&lt;/FailureData&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>    <span style="color:#000080">&lt;SetupDiagVersion&gt;</span>1.6.0.0<span style="color:#000080">&lt;/SetupDiagVersion&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>    <span style="color:#000080">&lt;ProfileGuid&gt;</span>55882B1A-DA3E-408A-9076-23B22A0472BD<span style="color:#000080">&lt;/ProfileGuid&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>    <span style="color:#000080">&lt;Remediation&gt;</span>null<span style="color:#000080">&lt;/Remediation&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>    <span style="color:#000080">&lt;FailureDetails&gt;</span>ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper = Finalize<span style="color:#000080">&lt;/FailureDetails&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#000080">&lt;/SetupDiag&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>
+</code></pre></div><p>You can get fancy and use PowerShell to query the values as well now that we know to look for TopicType 402.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#0086b3">PS </span>C:&gt; <span style="color:#0086b3">Get-CIMInstance</span> -NameSpace <span style="color:#d14">&#39;ROOT\ccm\StateMsg&#39;</span> -ClassName CCM_StateMsg -Filter <span style="color:#d14">&#34;TopicType = &#39;402&#39;&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>Criticality      <span style="color:#a61717;background-color:#e3d2d2">:</span> 1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>MessageSent      <span style="color:#a61717;background-color:#e3d2d2">:</span> True
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>MessageTime      <span style="color:#a61717;background-color:#e3d2d2">:</span> 8/11/2020 6<span style="color:#a61717;background-color:#e3d2d2">:</span>38<span style="color:#a61717;background-color:#e3d2d2">:</span>21 PM
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>ParamCount       <span style="color:#a61717;background-color:#e3d2d2">:</span> 5
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>Priority         <span style="color:#a61717;background-color:#e3d2d2">:</span> 5
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>Reserved1        <span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>Reserved2        <span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>Reserved3        <span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>StateDetails     <span style="color:#a61717;background-color:#e3d2d2">:</span> &lt;SetupDiag&gt;&lt;ProfileName&gt;FindAbruptDownlevelFailure&lt;/ProfileName&gt;&lt;DateTime&gt;8/11/2020 6<span style="color:#a61717;background-color:#e3d2d2">:</span>38<span style="color:#a61717;background-color:#e3d2d2">:</span>20
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>                   PM&lt;/DateTime&gt;&lt;FailureData&gt;Error<span style="color:#a61717;background-color:#e3d2d2">:</span> SetupDiag reports abrupt <span style="color:#0086b3">down-level</span> failure.Last Operation<span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>                   FinalizeError<span style="color:#a61717;background-color:#e3d2d2">:</span> 0xC1900208 - 0x4000D LogEntry<span style="color:#a61717;background-color:#e3d2d2">:</span> 2020-08-11 18<span style="color:#a61717;background-color:#e3d2d2">:</span>37<span style="color:#a61717;background-color:#e3d2d2">:</span>56, Error                 MOUPG
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>                   CSetupManager::ExecuteInstallMode(868)<span style="color:#a61717;background-color:#e3d2d2">:</span> Result = 0xC1900208 Refer to
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>                   <span style="color:#d14">&#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34;</span> <span style="color:#000;font-weight:bold">for</span> error information.&lt;/Failur
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>                   eData&gt;&lt;SetupDiagVersion&gt;1.6.0.0&lt;/SetupDiagVersion&gt;&lt;ProfileGuid&gt;55882B1A-DA3E-408A-9076-23B22A0472BD&lt;/Profi
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>                   leGuid&gt;&lt;Remediation&gt;null&lt;/Remediation&gt;&lt;FailureDetails&gt;ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper =
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>                   Finalize&lt;/FailureDetails&gt;&lt;/SetupDiag&gt;
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>StateDetailsType <span style="color:#a61717;background-color:#e3d2d2">:</span> 1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>StateID          <span style="color:#a61717;background-color:#e3d2d2">:</span> 11
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>TopicID          <span style="color:#a61717;background-color:#e3d2d2">:</span> Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>TopicIDType      <span style="color:#a61717;background-color:#e3d2d2">:</span> 5
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>TopicType        <span style="color:#a61717;background-color:#e3d2d2">:</span> 402
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>User             <span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>UserFlags        <span style="color:#a61717;background-color:#e3d2d2">:</span> 2
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>UserParameters   <span style="color:#a61717;background-color:#e3d2d2">:</span> {200, , 1, -1073730116...}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>UserSID          <span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>PSComputerName   <span style="color:#a61717;background-color:#e3d2d2">:</span>
+</code></pre></div><p>You can also see the 402 messages get generated in <strong><code>StateMessage.log</code></strong> on the client.<br>
+<code>Adding message with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 to WMI</code><br>
+<code>State message(State ID : 3) with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 has been recorded for SYSTEM</code></p>
+<p><img src="/img/2020/08/image-34.png" alt="A Square Dozen Image"></p>
+<p>If we check SQL, we will find that the XML data is stored in the <code>Update_ComplianceStatus</code> table. Notice that the <code>LastErrorCode</code> is the same as the error in our chart in the dashboard <code>-1047526904</code>.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb">	</span>CI_ID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb">	</span>MachineID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span><span style="color:#bbb">	</span>LastErrorCode,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span><span style="color:#bbb">	</span>LastErrorDetail<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span><span style="color:#bbb">	</span>Update_ComplianceStatus<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a></span><span style="color:#bbb">	</span>LastErrorDetail<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">IS</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NULL</span><span style="color:#bbb">
+</span></code></pre></div><p><img src="/img/2020/08/image-35.png" alt="A Square Dozen Image"></p>
+<p>I know what the code is going to translate to but was going to use an online converter to convert it when I stumbled upon the <strong><a href="https://docs.microsoft.com/windows/win32/debug/system-error-code-lookup-tool">Microsoft Error Lookup Tool</a></strong>. It couldn&rsquo;t translate the NTSTATUS code for me, but it at least converted from decimal to NTSTAUS<br>
+<code>No results found for hex 0xc1900208 / decimal -1047526904</code></p>
+<p>As you can see the error <code>0xc1900208</code> is the same listed in the XML above that SetupDiag harvested. Plus now we have the error text to go with it instead of having to go dig it out of the <a href="https://docs.microsoft.com/windows/deployment/upgrade/upgrade-error-codes">Upgrade Error Codes</a> page (raise your hand if you&rsquo;ve been there before and questioned your where you went wrong in life that led you there!).</p>
+<p>That&rsquo;s about everything I&rsquo;ve found in this one.</p>
+<h2 id="things-to-come">Things to Come</h2>
+<p>So, as you can see, while the Windows 10 Servicing dashboard isn&rsquo;t fully fleshed out yet, there is a fair amount of work that&rsquo;s already been done to begin pulling this data in. In this iteration, I don&rsquo;t see much value in the feature, but I can see where it&rsquo;s headed and I&rsquo;m hopeful! I don&rsquo;t know what the next release will have in it but I HOPE that most of what I&rsquo;ve written here gets updated expanded upon. Also, if you find yourself reading this post a month or more from today (August 6, 2020), chances are, this is obsolete. Check <a href="https://docs.microsoft.com/mem/configmgr/core/get-started/technical-preview">the next releases for updates</a>.</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

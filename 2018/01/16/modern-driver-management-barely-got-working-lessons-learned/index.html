@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Modern Driver Management and How I Barely Got It Working – Some Lessons Learned-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Modern Driver Management and How I Barely Got It Working – Some Lessons Learned"/>
+<meta name="twitter:description" content="Several months ago, my boss came back from Microsoft Ignite where he &lsquo;drank the Kool-Aid&rsquo; big time. We had been telling him about all of the amazing things that were being released to help with the move to Modern Windows Management with Windows 10 for months but he got to hear it directly from some of the experts and got really excited. One of the things he suggested looking into came from a session with Mike Nystrom and Johan Arwidmark called Expert-level Windows 10 deployment (Skip to 50:12 for driver management)."/>
+
+
+        <link rel="canonical" href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Modern Driver Management and How I Barely Got It Working – Some Lessons Learned</h1>
+				<span class="post-date">January 17, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>Several months ago, my boss came back from <a href="https://www.microsoft.com/ignite/">Microsoft Ignite</a> where he &lsquo;drank the Kool-Aid&rsquo; big time. We had been telling him about all of the amazing things that were being released to help with the move to Modern Windows Management with Windows 10 for months but he got to hear it directly from some of the experts and got really excited. One of the things he suggested looking into came from a session with <a href="http://www.deploymentbunny.com">Mike Nystrom</a> and <a href="http://www.deploymentresearch.com">Johan Arwidmark</a> called <a href="https://myignite.microsoft.com/sessions/53412">Expert-level Windows 10 deployment</a> (Skip to 50:12 for driver management). I had come across several posts discussing this technique but hadn&rsquo;t attempted it previously but got to work testing it.</p>
+<p>Here&rsquo;s some background that will come into play a little later on.</p>
+<ul>
+<li>I am no longer using reference images, just the original media from Microsoft - in this case, I&rsquo;m using 1709.</li>
+<li>The 2 areas that I had issues with were the new &lsquo;Download Driver Packages&rsquo; step and the <em>DISM /Add-Driver</em> command referred to in the blogs below.</li>
+<li>I use the &lsquo;Access content directly from the distribution point when needed by the running task sequence&rsquo; setting on my OSD deployments</li>
+</ul>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/accesscontentdirectly/"><img src="/img/2018/01/AccessContentDirectly.jpg" alt="A Square Dozen Image"></a></p>
+<h2 id="the-setup"><strong>The Setup</strong></h2>
+<p>To start, you should follow one of these blogs to get set up - others have written great blogs about this technique so why not just refer to them? Fair warning, some are more automated than others and some go into more detail than others. I would suggest reading all of them to get familiar with the concepts then build and test the basic setup before trying to use the automated versions.</p>
+<ul>
+<li><a href="http://www.oscc.be/sccm/osd/The-holy-grail-of-ConfigMgr-diver-management,-or-whatever-you-want-to-call-it/">Kim Oppalfens</a> (the basics and easy to test)</li>
+<li><a href="https://deploymentresearch.com/Research/Post/611/ConfigMgr-Driver-Management-in-just-four-steps-By-Matthew-Teegarden">Mathew Teegarden on Deployment Research</a> (Semi-Automated)</li>
+<li><a href="http://www.scconfigmgr.com/2017/03/29/modern-driver-management-using-web-services-during-osd-with-configmgr/">Nickolaj Andersen</a> (Original Semi-Automated)</li>
+<li><a href="http://www.scconfigmgr.com/modern-driver-management/">Nikolaj Andersen</a>(Super automated)</li>
+<li>Etc&hellip;</li>
+</ul>
+<p>There are lots of variations of these posts and the techniques have evolved since they were first posted. The general idea is that you download your hardware driver bundles from your hardware manufacturers, then import them into SCCM as <strong>Packages</strong>, not Driver Packages. Then you use DISM to apply the drivers to your OS image before it is installed during your OSD task sequence.</p>
+<h2 id="my-challenges"><strong>My Challenges</strong></h2>
+<h3 id="download-package-contenthttpsdocsmicrosoftcomsccmosdunderstandtask-sequence-stepsbkmk_downloadpackagecontent"><a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#BKMK_DownloadPackageContent">Download Package Content</a></h3>
+<p>This step lets you download content from one or more packages (separate steps for each) and save the path into a shared variable. You can then reference the variable in later steps like <strong>Apply Driver Package</strong> or the <strong>custom DISM command</strong> from the above blogs. What isn&rsquo;t mentioned in the Microsoft documentation is that <strong><em>this step cannot be used when the Deployment option of &lsquo;Access content directly from the distribution point when needed by the running task sequence&rsquo;</em></strong>. In a case with Premier Support, the resolution was to have the documentation updated to include better verbiage. I haven&rsquo;t seen any updates yet, but have found that the Microsoft Documents folks have an open source option that allows for community edits. I may have to look into that soon. Here&rsquo;s a link to the <a href="https://docs.microsoft.com/contribute/">Docs Contributor Guide</a>.</p>
+<h4 id="the-workaround"><strong>The Workaround</strong></h4>
+<ul>
+<li>This assumes that you are using Packages, not Driver Packages.</li>
+<li>Create a Run Command Line TS step</li>
+<li>Enter this command line: <code>xcopy.exe &quot;.\*.*&quot; %_SMSTSMDataPath%\Drivers\ /E /C /I /Q /H /R /Y /S</code></li>
+<li>Change <code>%_SMSTSMDataPath%</code> to any pre-defined path you choose. This is the default location that SCCM uses. Whatever you specify here will be used in the DISM step later.</li>
+</ul>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/runcommandline/"><img src="/img/2018/01/RunCommandLine.jpg" alt="A Square Dozen Image"></a></p>
+<h3 id="apply-driver-packagehttpsdocsmicrosoftcomsccmosdunderstandtask-sequence-stepsbkmk_applydriverpackage"><a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#BKMK_ApplyDriverPackage">Apply Driver Package</a></h3>
+<p>As I mentioned, I had issues with the custom DISM commands that everyone was using, so I was using Apply Driver Package along with my xcopy command line to &lsquo;install&rsquo; a dummy package to create the entry in the unattend.xml file that setup uses to find drivers.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000080">&lt;settings</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;windowsPE&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span> <span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-PnpCustomizationsWinPE&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>  <span style="color:#000080">&lt;DriverPaths&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>    <span style="color:#000080">&lt;PathAndCredentials</span> <span style="color:#008080">wcm:keyValue=</span><span style="color:#d14">&#34;1&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>      <span style="color:#000080">&lt;Path&gt;</span>C:\_SMSTaskSequence\drivers<span style="color:#000080">&lt;/Path&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span>    <span style="color:#000080">&lt;/PathAndCredentials&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span>  <span style="color:#000080">&lt;/DriverPaths&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span> <span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a></span><span style="color:#000080">&lt;/settings&gt;</span>
+</code></pre></div><p>This step takes the driver package and makes it available to Windows setup. If you check <em><strong>Apply driver package via running DISM with recurse option</strong></em> Windows setup will attempt to use DISM to import the drivers into the OS image that was staged in the Apply Operating System Image step. It will also add this entry to the unattend.xml file with the path to the drivers to allow setup to grab them during install, so if you didn&rsquo;t check the DISM option, it would still be able to grab the cached drivers. Keep this in mind because it helped lead me to my issue.</p>
+<h3 id="apply-operating-system-imagehttpsdocsmicrosoftcomsccmosdunderstandtask-sequence-stepsbkmk_applyoperatingsystemimage"><a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#BKMK_ApplyOperatingSystemImage">Apply Operating System Image</a></h3>
+<p>Here&rsquo;s where it all fell apart for me. We have always used reference images. Most blogs about OSD assume reference images are used. Since we are hoping to keep up with the Windows release cadence, I decided to see how well things went just using the default OS from Microsoft to save us some back-end support efforts moving forward. I swapped the reference image for the default image in the TS but there are 2 options available for this step. Generally you set them in the MDT TS wizard and don&rsquo;t mess with them unless you&rsquo;ve updated your image so I used Microsoft&rsquo;s guidance on this:</p>
+<blockquote>
+<p><strong>Apply operating system from a captured image</strong><br>
+Installs an operating system image that has previously been captured. Click Browse to open the Select a package dialog box, and then select the existing image package you want to install. If multiple images are associated with the specified Image package, use the drop-down list to specify the associated image that will be used for this deployment. You can view basic information about each existing image by clicking on the image.</p>
+<p><strong>Apply operating system image from an original installation source</strong><br>
+Installs an operating system using an original installation source. Click Browse to open the Select and Operating System Install Package dialog box, and then select the existing operating system installation package you want to use. You can view basic information about each existing image source by clicking on the image source. The associated image source properties are displayed in the results pane at the bottom of the dialog box. If there are multiple editions associated with the specified package, use the drop-down list to specify the associated Edition that is used.</p>
+</blockquote>
+<p>Here&rsquo;s the dialog box:</p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/applyoperatingsystem/"><img src="/img/2018/01/ApplyOperatingSystem.jpg" alt="A Square Dozen Image"></a></p>
+<p>Logically, I selected door #2 <strong>Apply operating system image from an original installation source</strong> since it perfectly describes what I was doing. What I failed to notice was that when you click <strong>Browse</strong> to select your image, you are presented with all of your <strong>Upgrade Operating System Packages</strong>, not your <strong>Operating System Images</strong>. (Note: I initially didn&rsquo;t include &lsquo;Upgrade&rsquo; in the name of the Image, which only compounded this issue).</p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/upgradepackage/"><img src="/img/2018/01/UpgradePackage.jpg" alt="A Square Dozen Image"></a></p>
+<p>As you may know, the media is different for these two OS types. <strong>Operating System Images</strong> uses the Install.wim from the source media while <strong>Upgrade Packages</strong> uses the full source folder for the OS.</p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/oslistmenu/"><img src="/img/2018/01/OSLIstMenu.jpg" alt="A Square Dozen Image"></a></p>
+<p>When <strong>Apply Operating System Image</strong> would run, with my Original Installation Source (Upgrade Package), it would apply in a different way than the Captured Image option causing the <strong>Apply Driver Package</strong> step (which uses DISM) as well as the <strong>Run Command Line</strong> step from the Modern Driver Management blogs to fail. I switched to using the captured media option, and selected my original Windows 10 1709 media and the Apply Driver Package and the DISM command line began working as expected. I am now well on the road to completing the automation of Modern Driver Management for our environment.</p>
+<p><em>Note: At the time of this posting, I have a case open with Microsoft Premier Support to determine if this is a bug or by design (with really poor documentation/verbiage). I will update once I hear back.</em></p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

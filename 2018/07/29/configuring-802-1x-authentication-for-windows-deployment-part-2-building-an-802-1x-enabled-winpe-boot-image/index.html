@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Configuring 802.1x Authentication for Windows Deployment – Part 2 – Building an 802.1x Enabled WinPE Boot Image-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Configuring 802.1x Authentication for Windows Deployment – Part 2 – Building an 802.1x Enabled WinPE Boot Image"/>
+<meta name="twitter:description" content="This is Part 2 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
+Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.1x service on the server side. However, I do know that you will need to configure your 802.1x service to allow PXE traffic. I believe that Cisco ISE has a setting already that you can just turn on to allow it."/>
+
+
+        <link rel="canonical" href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Configuring 802.1x Authentication for Windows Deployment – Part 2 – Building an 802.1x Enabled WinPE Boot Image</h1>
+				<span class="post-date">July 30, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>This is Part 2 in my <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">Configuring 802.1x Authentication for Windows Deployment</a> series. Be sure to check out all of the other parts <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">here</a>.</p>
+<p>Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.1x service on the server side. However, I do know that you will need to configure your 802.1x service to allow PXE traffic. I believe that Cisco ISE has a setting already that you can just turn on to allow it. So, if you can&rsquo;t even PXE in on an 802.1x enabled port, you will need to start there. According to my ISE admin, the switch is configured to spy on DHCP requests. ISE applied the appropriate authorization policy based on the type of request. You will need to work with your 802.1x manager/vendor to determine the proper configuration for your environment if you want to PXE over 802.1x. Also, carefully consider the security risks associated with allowing PXE over 802.1x outside of dedicated imaging location.</p>
+<p>In order to get the Task Sequence wizard to load in WinPE on an 802.1x protected network, you will need to get authenticated to your network. This post will show you how to auto inject your 802.1x authentication script and files into your WinPE image each time you add or update boot image in ConfigMgr. While you can use this to add ANY files to you boot image, I&rsquo;m just showing how to do it for 802.1x (I&rsquo;ll add some links to the Resources post at the end of the series). Also, these steps are for an x64 boot image. You would do the same for x86, just use the x86 versions of everything listed.</p>
+<h1 id="heres-what-you-need">Here&rsquo;s what you need</h1>
+<p>All of the files you created in <strong><a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1</a></strong><br>
+<strong>OSDInjection.XML</strong> - The master file manifest used by SCCM to inject files into all of your boot images that you import into SCCM.<br>
+<strong>winpeshl.ini</strong> - A configuration file that tells WinPE what to launch on startup (Think Autoexec.bat)</p>
+<h1 id="osdinjectionxml">OSDInjection.XML</h1>
+<p>You can find your <strong>OSDInjection.XML</strong> on your ConfigMgr primary server under <strong>[SCCM Install directory]\bin\x64\OSDInjection.XML</strong>. This file is a manifest that SCCM uses to inject specific files into your boot image. There are several sections in the XML, so be sure to make your entries in the correct location.</p>
+<p>Create a new folder named <strong>Custom</strong> under <strong>[SCCM Install directory]\OSD</strong>. Add your 802.1x script, profile XML, and certificates to this new folder. Add new lines to your <strong>OSDInjection.XML</strong> file that correspond to each of your new files. Each entry should include the source folder <strong>Custom</strong> and a destination folder on the OS. The destination paths are based on the root drive that PE is working from (generally X:).</p>
+<p><img src="/img/2018/07/2018-07-28_21-27-20.jpg" alt="A Square Dozen Image"></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;File</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;ImportComputerAuthProfile.bat&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>  <span style="color:#000080">&lt;LocaleNeeded&gt;</span>false<span style="color:#000080">&lt;/LocaleNeeded&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>  <span style="color:#000080">&lt;Source&gt;</span>Custom<span style="color:#000080">&lt;/Source&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>  <span style="color:#000080">&lt;Destination&gt;</span>Custom<span style="color:#000080">&lt;/Destination&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#000080">&lt;/File&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#000080">&lt;File</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;ComputerAuthProfile.xml&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>  <span style="color:#000080">&lt;LocaleNeeded&gt;</span>false<span style="color:#000080">&lt;/LocaleNeeded&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>  <span style="color:#000080">&lt;Source&gt;</span>Custom<span style="color:#000080">&lt;/Source&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>  <span style="color:#000080">&lt;Destination&gt;</span>Custom<span style="color:#000080">&lt;/Destination&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#000080">&lt;/File&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#000080">&lt;File</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Root.cer&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>  <span style="color:#000080">&lt;LocaleNeeded&gt;</span>false<span style="color:#000080">&lt;/LocaleNeeded&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>  <span style="color:#000080">&lt;Source&gt;</span>Custom\Certs<span style="color:#000080">&lt;/Source&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>  <span style="color:#000080">&lt;Destination&gt;</span>Custom\Certs<span style="color:#000080">&lt;/Destination&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#000080">&lt;/File&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#000080">&lt;File</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;ComputerAuthCert.pfx&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>  <span style="color:#000080">&lt;LocaleNeeded&gt;</span>false<span style="color:#000080">&lt;/LocaleNeeded&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>  <span style="color:#000080">&lt;Source&gt;</span>Custom\Certs<span style="color:#000080">&lt;/Source&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>  <span style="color:#000080">&lt;Destination&gt;</span>Custom\Certs<span style="color:#000080">&lt;/Destination&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#000080">&lt;/File&gt;</span>
+</code></pre></div><h1 id="winpeshlini">Winpeshl.ini</h1>
+<p>You won&rsquo;t find a <strong>winpeshl.ini</strong> file on your server (unless you&rsquo;ve done this before) and will need to create one. This file is referenced by WinPE as it is starting up and tells PE what to launch. If we add our 802.1x authentication script to this file, we can force authentication to happen before any other process, even your boot image Pre-Start commands (we never could get them to work for 802.1x pre-auth, but they may be an option here - not sure honestly). Here&rsquo;s the contents of mine.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">[LaunchApps]</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">wpeinit.exe</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">X:\Custom\ImportComputerAuthProfile.bat</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span><span style="color:#008080">%SYSTEMDRIVE%\sms\bin\x64\TsBootShell.exe</span>
+</code></pre></div><p>The bat file listed should be the name of your 802.1x authentication script. The last step tells PE to launch the Task Sequence wizard. If you didn&rsquo;t create this file, you could watch the <strong>SMSProv.log</strong> on your primary and see when this file is created dynamically during your boot image import process.</p>
+<p>Save the <strong>winpeshl.ini</strong> file to <strong>[SCCM Install directory]\OSD\bin\x64\winpeshl.ini</strong>. You will notice that the file isn&rsquo;t included in the <strong>OSDInjection.xml</strong> file. That&rsquo;s because <strong>SCCM</strong> uses the injection file first, then creates or imports (if it exists in the correct folder) the <strong>winpeshl.ini</strong> file afterwards, so whatever you copied with the injection process gets overwritten. (Ask me how I know that one!)</p>
+<h1 id="the-big-finish">The big finish!</h1>
+<p>At this point, you should have the following files in the following locations</p>
+<p>[SCCM Install directory]\Bin\x64\OSDInjection.XML<br>
+[SCCM Install directory]\OSD\Custom\ImportComputerAuthProfile.bat<br>
+[SCCM Install directory]\OSD\Custom\ComputerAuthProfile.xml<br>
+[SCCM Install directory]\OSD\Custom\Certs\Root.cer<br>
+[SCCM Install directory]\OSD\Custom\Certs\ComputerAuthCert.pfx<br>
+[SCCM Install directory]\OSD\bin\x64\Winpeshl.ini</p>
+<p>Next, import a new boot image in your ConfigMgr console and wait a bit. You can watch <strong>SMSProv.log</strong> (if you have a busy site, good luck, it scrolls and rolls fast!) and see the injection happening. It will log if any files weren&rsquo;t found. You can also just mount your boot image to check to see if your files ended up where you specified in the <strong>Destination</strong> field in <strong>OSDInjection.XML</strong>. In our case, you should have a new root folder named <strong>Custom</strong> with everything in it (except winplshl.ini which will be in c:\Windows\System32).</p>
+<p>Now boot a machine into WinPE and check it out. If you did it right, you should see your script run and get authenticated through 802.1x. You can check the winpeshl.log in WinPE to see what it ran if you are having issues.</p>
+<p>An alternative approach to this would be to customize the WinPE WIM on your primary, but you would still have to have the custom winplshl.ini file to launch your custom script. Also, every time you update your ADK, you will have to service the WinPE WIM. This method will ensure that it gets updated every time. You can even update the script after you&rsquo;ve imported the boot image, then just <strong>Update Distribution Points</strong> for your boot image and it SCCM will re-inject the files without you having to open the WIM up with DISM.</p>
+<p><a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3</a> will cover Bare Metal Task Sequence configuration</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

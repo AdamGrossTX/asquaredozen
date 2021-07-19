@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>WinPE Image fails to load on HP Proliant Gen9 servers using ADK 1709-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="WinPE Image fails to load on HP Proliant Gen9 servers using ADK 1709"/>
+<meta name="twitter:description" content="We have several generations of HP ProLiant servers in our environment. We recently upgraded SCCM to 1710 then applied ADK 1709. We have been imaging these servers using the ADK 1703 Boot Image without issue. After upgrading to ADK 1709 and creating new boot images, we are unable to boot to into WinPE on any of our Gen9 servers. After doing the standard diagnostics (testing old, testing new, updating drivers, updating firmware, etc) we found that these servers would still freeze after downloading the boot WIM and get stuck on this screen:"/>
+
+
+        <link rel="canonical" href="/2018/01/27/winpe-image-fails-load-hp-proliant-gen9-servers-using-adk-1709/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>WinPE Image fails to load on HP Proliant Gen9 servers using ADK 1709</h1>
+				<span class="post-date">January 28, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>We have several generations of HP ProLiant servers in our environment. We recently upgraded SCCM to 1710 then applied ADK 1709. We have been imaging these servers using the ADK 1703 Boot Image without issue. After upgrading to ADK 1709 and creating new boot images, we are unable to boot to into WinPE on any of our Gen9 servers. After doing the standard diagnostics (testing old, testing new, updating drivers, updating firmware, etc) we found that these servers would still freeze after downloading the boot WIM and get stuck on this screen:</p>
+<p><a href="/2018/01/27/winpe-image-fails-load-hp-proliant-gen9-servers-using-adk-1709/hpbootscreen/"><img src="/img/2018/01/HPBootScreen.jpg" alt="A Square Dozen Image"></a></p>
+<p>We found a <a href="https://support.hpe.com/hpsc/doc/public/display?docId=emr_na-a00037880en_us">support article from HP</a> that referred to Microsoft KB4055537, which didn&rsquo;t exist at the time we were troubleshooting and our Microsoft contacts didn&rsquo;t have any information either.</p>
+<p>In the meantime, I <a href="https://social.technet.microsoft.com/Forums/windowsserver/36858bf9-b9ad-4eb9-9b46-7b457be85f42/hp-proliant-gen9-servers-unable-to-pxe-boot-with-adk-1709-boot-image-older-adk-version-work-other?forum=winserversetup&amp;prof=required">posted the issue on the TechNet forums</a> and didn&rsquo;t get much help until earlier this week when <a href="https://social.technet.microsoft.com/profile/michael_jakob/?ws=usercard-mini">Michael Jakob</a>, who has been a TechNet member since 2014, made his first ever post with the solution. I had given up on the issue and turned it over to our server team who where waiting to hear back from Microsoft. As soon as I got the email alert from Technet, I forwarded the info over to the server guys who tested and verified it was indeed the solution.</p>
+<p>HP&rsquo;s initial support article had the correct KB <a href="https://support.microsoft.com/help/4055537/config-initialization-failed-error-when-installing-windows-server">KB055537</a>, but they were about a week early on the release date. Even now, when I use Google or Bing to search for &lsquo;KB4055537&rsquo;, I only get the HP article referencing it and a handful of TechNet posts including my original and <a href="https://social.technet.microsoft.com/Forums/4e6e7937-7efa-45d7-aede-d64119cb75e4/winpe-boot-issue-proliant-gen9-server-with-winpe-1709-where-is-the-fix-kb4055537?forum=ConfigMgrCBOSD">this one</a> which led me to the right info. If you search for &lsquo;Microsoft 4055537&rsquo;, you can find it (KB4055537 isn&rsquo;t listed anywhere in the keywords or link, so it&rsquo;s not getting matched) - Lesson Learned.</p>
+<p>The fix for this issue is included in KB 4056892. Search for <a href="http://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4056892">2018-01 Cumulative Update for Windows Server 2016 (1709) for x64-based Systems (KB4056892)</a> from Microsoft Update Catalog website to download the rollup.</p>
+<p><strong>The Fix</strong></p>
+<ol>
+<li>
+<p>From the &lsquo;Deployment and Imaging Tools Environment&rsquo;, you will need too mount your boot WIM and apply the update using DISM.    dism /mount-image /imagefile:\sources\boot.wim /index:1 /mountdir:\offline<br>
+dism /image:\offline /add-package /packagepath:'\Windows10.0-KB4056892-x64.cab'<br>
+dism /unmount-image /mountdir:\offline /commit</p>
+</li>
+<li>
+<p>Go to your WIM source directory and check the date stamp to ensure that it was updated.</p>
+</li>
+<li>
+<p>Redistribute your boot WIM and test with a Gen9 server.</p>
+</li>
+</ol>
+<p>So, there you have it, a very long winded way to tell you to just use DISM to apply a hotfix. Enjoy.</p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

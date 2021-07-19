@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Updated Information about the AdminService/SMS Provider API in SCCM/ConfigMgr 1810-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Updated Information about the AdminService/SMS Provider API in SCCM/ConfigMgr 1810"/>
+<meta name="twitter:description" content="I began testing the ConfigMgr SMS Provider API (or AdminService as it will be called) in the 1810 Technical Preview and wrote 2 posts about it (1) &amp; (2). With the release of the AdminService in Current Branch 1810, a few things have changed and I wanted to provide an update. Additonally, I&rsquo;ve had the opportunity to chat with the ConfigMgr Product Group at #MMSDE this week and they&rsquo;ve provided some roadmap information about the API and what to expect in the future."/>
+
+
+        <link rel="canonical" href="/2018/12/04/updated-information-about-the-sms-provider-api-in-sccm-configmgr-1810/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Updated Information about the AdminService/SMS Provider API in SCCM/ConfigMgr 1810</h1>
+				<span class="post-date">December 4, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>I began testing the ConfigMgr <strong>SMS Provider API</strong> (or AdminService as it will be called) in the 1810 Technical Preview and wrote 2 posts about it <a href="/2018/10/14/the-configmgr-odata-web-service-v2/">(1)</a> &amp; <a href="/2018/10/23/the-configmgr-adminservice/">(2)</a>. With the release of the AdminService  in Current Branch 1810, a few things have changed and I wanted to provide an update. Additonally, I&rsquo;ve had the opportunity to chat with the ConfigMgr Product Group at <a href="https://mmsmoa.com/desertedition">#MMSDE</a> this week and they&rsquo;ve provided some roadmap information about the API and what to expect in the future.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>To enable the <strong>SMS Provider AI</strong>, you need to enable Pre-Release Features in the console, then enable the feature.</p>
+<p><img src="/img/2018/12/2018-12-04_9-40-52.png" alt="A Square Dozen Image"></p>
+<p><img src="/img/2018/12/2018-12-04_9-40-13.png" alt="A Square Dozen Image"></p>
+<h2 id="adminservice-controllers">AdminService Controllers</h2>
+<h4 id="wmi">WMI</h4>
+<p>The WMI controller will query ~900 ConfigMgr WMI classes in read-only mode but isn&rsquo;t configured to perform any WMI methods at his time (it&rsquo;s coming).</p>
+<h4 id="versioned-controllers">Versioned Controllers</h4>
+<p>There will also be a set of controllers that will be used to perform various functions and they will include a version as part of the URL for the controller (Currently, all use v1.0). In the technical preview, we saw a list of some of the initial versioned controllers including:</p>
+<p><strong>DistributionPointGroups<br>
+Collections<br>
+UserApplicationRequest<br>
+Reports<br>
+HubItems</strong></p>
+<p>1810 shipped with only <strong>UserApplicationRequest</strong> enabled. According to <a href="https://twitter.com/configmgrdev">Mark Silvey</a> &lsquo;We disabled them (the other controllers) because they weren&rsquo;t being used yet and we don&rsquo;t like to leave surface areas open that don&rsquo;t need to be.&rsquo; Expect to see more of these controllers appear in future releases.</p>
+<h4 id="urls">URLs</h4>
+<p>The base URL to the AdminService is https://<!-- raw HTML omitted -->/AdminService. Using something like Postman, you can query the AdminService to find what is available. Start with these:</p>
+<p><strong>Versioned Controllers</strong><br>
+https://&lt;ServerName/AdminService/v1.0<br>
+https://&lt;ServerName/AdminService/v1.0/$metadata<br>
+**<br>
+WMI Controller**<br>
+https://&lt;ServerName/AdminService/wmi<br>
+https://&lt;ServerName/AdminService/wmi/$metadata</p>
+<p><img src="/img/2018/12/2018-12-04_10-02-21.jpg" alt="A Square Dozen Image"></p>
+<p><img src="/img/2018/12/2018-12-04_10-02-46.jpg" alt="A Square Dozen Image"></p>
+<p><img src="/img/2018/12/2018-12-04_10-01-55.jpg" alt="A Square Dozen Image"></p>
+<p><img src="/img/2018/12/2018-12-04_10-01-26.jpg" alt="A Square Dozen Image"></p>
+<p>If you use the /$metadata parameter, you will see the OData markup for the controllers and it will list the properties of each controller object as well as functions available.</p>
+<p>Refer to my <a href="/2018/10/23/the-configmgr-adminservice/">previous post</a> for more details on how to use the URLs to access data.</p>
+<h2 id="odata--power-bi">OData / Power BI</h2>
+<p>In the Technical Preview,. there was an issue with the $metadata tag for the WMI controller that prevented Power BI from processing AdminService OData information. This issue has been resolved and works great in 1810, though many of the classes/relationships are still being built out, so there are still more work required before this is ready, but it&rsquo;s a great start!</p>
+<p><img src="/img/2018/12/2018-12-04_10-45-45.jpg" alt="A Square Dozen Image"></p>
+<h2 id="future-plans">Future Plans</h2>
+<p>One of the most common questions about the new AdminService has been &lsquo;Is this going to replace WMI?&rsquo; The answer is&hellip;complicated. The<br>
+AdminService is just a web service layer sitting on top of the existing ConfigMgr WMI infrastructure. The product group has started working to change backend Admin Console components to use the</p>
+<p>AdminService as a first step. The next step will be to bypass WMI (for as much stuff as possible) and communicate directly with the SQL database. To put the amount of work required for this effort into perspective, according to <a href="https://twitter.com/djammmer">David James</a>, there are approximately 300 YEARS of development hours in the current ConfigMgr product. It&rsquo;s just going to take time to get there. They told me they will get to it once they finish adding <a href="https://configurationmanager.uservoice.com/forums/300492-ideas/suggestions/36076063-animated-gifs-as-icons-in-software-center">Animated GIFs to Software Center</a> (j/k).</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

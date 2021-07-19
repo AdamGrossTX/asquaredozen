@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>How NOT to Set Up a Hyper-V Server Lab-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="How NOT to Set Up a Hyper-V Server Lab"/>
+<meta name="twitter:description" content="Sorry for all the words. Skip to the end if you just want the punchline
+Have you ever had one of those weeks where you just bang your head against the same wall and eventually get some relief? Sometimes, your head breaks open, but other times, the wall breaks. Well I just had one of those weeks but I&rsquo;m not sure how I feel about where this all ended up."/>
+
+
+        <link rel="canonical" href="/2018/04/27/how-not-to-set-up-a-hyper-v-server-lab/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>How NOT to Set Up a Hyper-V Server Lab</h1>
+				<span class="post-date">April 28, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p><em>Sorry for all the words. Skip to the end if you just want the punchline</em></p>
+<p>Have you ever had one of those weeks where you just bang your head against the same wall and eventually get some relief? Sometimes, your head breaks open, but other times, the wall breaks. Well I just had one of those weeks but I&rsquo;m not sure how I feel about where this all ended up.</p>
+<p>A couple months ago, I used <a href="https://twitter.com/jarwidmark">Johan Ardwidmark&rsquo;s</a> <a href="https://deploymentresearch.com/Research/Post/580/Hydration-Kit-For-Windows-Server-2016-and-ConfigMgr-Current-Technical-Preview-Branch">Hydration Kit for ConfigMgr</a> and built out the lab in my spare time. My company is trying to move toward Azure and AutoPilot for our Windows client management so I&rsquo;m trying to learn about it in my lab. I had just gotten AutoPilot and ConfigMgr Co-Management working when I realized that I had forgotten about setting up AD FS for client authentication (Azure and the <a href="https://docs.microsoft.com/azure/active-directory/connect/active-directory-aadconnect">Azure AD Connect</a> tool supports several authentication options) so I started down that path. After a few nights of poking around and figuring things out, I realized that I didn&rsquo;t have a DMZ for my federation server to serve the external facing AD FS authentication web service. That&rsquo;s when the trouble started.</p>
+<p>I&rsquo;m using Hyper-V for this lab. It&rsquo;s a simple setup with 1 Domain Controller and 1 ConfigMgr server plus Windows client VM&rsquo;s for testing builds. They are all connected to a the same Hyper-V <strong>Internal</strong> Virtual Switch that I configured NAT on using <a href="https://twitter.com/AdaptivaAmi">Amy Casto&rsquo;s</a> <a href="https://deploymentresearch.com/Research/Post/558/Setting-Up-New-Networking-Features-in-Server-2016">cool PowerShell tip</a>. Unfortunately, I don&rsquo;t manage domain controllers, DHCP, DNS, etc in my day job. I&rsquo;m a Desktop guy. I let the Server guys handle all that stuff. That&rsquo;s why I used the Hydration Kit instead of manually building my servers - I don&rsquo;t want to deal with setting up Active directory and all that stuff (I should do it, but I don&rsquo;t want to and you can&rsquo;t make me!!).</p>
+<p>So there I am with a perfectly working setup and I decided that I had to break it, because I learn best by starting with a working product then tearing it apart to see how it works. Instead of having a private lab network, I thought it would be easier to change the lab to use the same subnet that my Host server/Router were on. During this process, things went south and I ended up deleting all of the records out of DHCP and DNS. I fought with it for a while and ended up reading that I could set up a Routing and Remote Access (RRAS) server that would bridge my internal and external networks without making my Host machine part of my Domain. Johan even had a <a href="https://deploymentresearch.com/Research/Post/285/Using-a-virtual-router-for-your-lab-and-test-environment">link to a write-up</a> for that too, I had just gone with Ami&rsquo;s simple Virtual Switch NAT instead and never realized he had the process documented.</p>
+<p><img src="/img/2018/04/2018-04-27_22-44-04.png" alt="A Square Dozen Image"></p>
+<p>Then I rebuilt the original subnet but could never get things to talk after that. They would either talk between the DC and RRAS or DC and CM and sometimes not a all, but never all 3 and DHCP never would work. I even disabled all Windows firewalls and uninstalled Defender and still nothing. I used Wireshark to watch traffic and it just kept searching for the DHCP and RRAS servers. I spent several long nights deleting and rebuilding DHCP, DNS and RRAS, deleting NICS and Switches and all sorts of things in between. I watched EVERY tutorial on and read every obscure blog and forum post about Hyper-V, DHCP, DNS, RRAS and AD communication issues. No matter, how simple everyone made it seem, I was still missing something.</p>
+<p>Tonight, I had decided that this was it. If it didn&rsquo;t work soon, I was going to delete it all and start over. Then I remembered something that I had skimmed over. Someone said, &lsquo;Don&rsquo;t check the ‘<strong><em>Enable virtual LAN identification</em></strong>‘ box!&rsquo; in Hyper-V. They didn&rsquo;t provide a reason, but the fact that they mentioned it made me wonder. On a whim, I went through and unchecked it from my NICs and <strong>THEY ALL STARTED TALKING</strong>!!!! Several times in the troubleshooting process, I had checked and unchecked that box, along with all of the other settings I kept toggling, thinking it would help when I was using Wireshark to monitor the traffic. It didn&rsquo;t. Just 1 simple check box.</p>
+<p><img src="/img/2018/04/2018-04-27_22-20-29.png" alt="Don&rsquo;t check this box!"></p>
+<p>Once it was all working, I started Googling and found <a href="https://support.microsoft.com/help/2739081/hyper-v-virtual-machines-cannot-reach-the-network-when-the-vlan-taggin">this</a> KB for server 2008 that seems to indicate this is/was a known issue (clearly I&rsquo;m not &lsquo;in the know&rsquo;). The weird thing about this is that my virtual switches aren&rsquo;t connected to an internal network adapter - the article specifically calls out Intel. I&rsquo;m using the a Hyper-V Virtual Private Switch on my new setup since the Internal switch adds the Hyper-V Host server to become a Router and I figured that wasn&rsquo;t helping things. So, it may not be the exact issue and I&rsquo;m honestly tired of dealing with it and want to get back to whatever it was I was doing before I broke everything. I&rsquo;m just not going to check the box from now on. If you know the answer, please feel free to share and I&rsquo;ll update this post.</p>
+<p><img src="/img/2018/04/2018-04-27_23-17-59.png" alt="A Square Dozen Image"></p>
+<h1 id="tldr">TL;DR;</h1>
+<p>Don&rsquo;t check the ‘<strong><em>Enable virtual LAN identification</em></strong>‘ box in Hyper-V if you want your VM&rsquo;s to talk to each other.</p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

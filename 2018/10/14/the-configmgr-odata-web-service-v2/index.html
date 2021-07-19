@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>The ConfigMgr OData Web Service – V2-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="The ConfigMgr OData Web Service – V2"/>
+<meta name="twitter:description" content="I went to Microsoft Ignite 2018 for the first time this year. During the week, I got to chat with lots of folks, including some of the SCCM/ConfigMgr product group. Mark Silvey was kind enough to chat with me about plans for the OData connector that was first introduced in ConfigMgr 1612 Technical Preview. When it was first released it was called CMRestProvider and it had to be enabled in the console (you can read more about this initial implementation here)."/>
+
+
+        <link rel="canonical" href="/2018/10/14/the-configmgr-odata-web-service-v2/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>The ConfigMgr OData Web Service – V2</h1>
+				<span class="post-date">October 15, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>I went to Microsoft Ignite 2018 for the first time this year. During the week, I got to chat with lots of folks, including some of the SCCM/ConfigMgr product group. <a href="http://www.twitter.com/ConfigMgrDev">Mark Silvey</a> was kind enough to chat with me about plans for the OData connector that was first introduced in  ConfigMgr 1612 Technical Preview. When it was first released it was called CMRestProvider and it had to be enabled in the console (you can read more about this initial implementation <a href="https://docs.microsoft.com/sccm/core/get-started/capabilities-in-technical-preview-1612#odata-endpoint-data-access">here</a>). I never tested the 1612 TP or the service so I was anxious to see how it worked. Mark mentioned that the new service was enabled by default as in the 1810 TP and included an option to enable it to work through a Cloud Management Gateway, meaning, you can access ConfigMgr from internet based clients! Additionally, he mentioned that they are making strides towards to replace ConfigMgr&rsquo;s WMI implementation with this new connector called AdminService. I just started playing with it, so this is not a complete write up, but it should get you started if you want to poke around with the 1810 Technical Preview.</p>
+<p><img src="/img/2018/10/2018-10-14_21-53-54.png" alt="A Square Dozen Image"></p>
+<p>The service is installed under <code>&lt;InstallDir&gt;\bin\X64\CMRestProvider</code> where you will find <code>sccmprovidergraph.exe</code> and <code>sccmprovidergraph.exe.config</code> as well as all of the related components. If you check TaskMgr, you will see that <code>sccmprovidergraph.exe</code> is running and the command line that it launches is <code>&lt;InstallDir&gt;\bin\X64\CMRestProvider\sccmprovidergraph.exe -Namespace root\sms\site_&lt;SITECODE&gt;</code>. Additionally you will find new log files – 1 for the installation and 2 for services</p>
+<ul>
+<li><code>&lt;InstallDir&gt;\Logs\RESTPROVIDERSetup.log</code> – Install Log</li>
+<li><code>&lt;InstallDir&gt;\CMProviderLog\SMS_REST_PROVIDER.log</code> – Monitors the Graph service.</li>
+<li><code>&lt;InstallDir&gt;\CMProviderLog\AdminService.log</code> – Logs execution of web service calls.</li>
+</ul>
+<p>AdminService is configured to use HTTPS on port 443 by default. I don’t know if it’s supported, but for testing, I changed the setting to use HTTP and port 80 in the <code>sccmprovidergraph.exe.config</code> file since I was having issues authenticating with SSL in PowerShell. I’m sure when they fully document the service, the HTTPS stuff will get easier.</p>
+<p>To test, I used a simple PowerShell script, but you can use your web browser or something like <a href="https://www.getpostman.com/">PostMan</a> - an API testing tool. The script is pretty self-explanatory. You can download it from <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">GitHub</a>.</p>
+<p><img src="/img/2018/10/2018-10-14_21-49-16.jpg" alt="A Square Dozen Image"></p>
+<p>Edit 10/15/2018 - I missed this initially. If you call the base URL, you can list all of the available AdminService functions. In the <a href="https://renekierstein.wordpress.com/2017/03/26/with-cm-1612-technical-preview-comes-the-restful-odata-api/">blog post</a> by <a href="https://twitter.com/ReneKierstein">René Kierstein</a>, he showed how to do it but the end quote got changed to HTML code ” and I thought it was some secret code. Anyway, here&rsquo;s the script to list all of the functions. I added it to the <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">GitHub Repo</a> as well. Looks like there&rsquo;s about 715 from that list.</p>
+<p>Based on the original documentation, you can get more advanced an pass in ResourceIDs, CollectionIDs, etc. Basically, anything you can do in WMI today, you should be able to do in the AdminService.</p>
+<p>I mentioned the <strong>Cloud Management Gateway</strong> (<strong>CMG</strong>) option. I haven&rsquo;t tested it yet in my TP lab because it requires a <strong>CMG</strong> and other stuff that I don&rsquo;t have set up yet. However, I did check the box to see what happens. It breaks stuff! If you check the AdminService.log you will see that it changes to use <strong>Azure Active Directory</strong> (<strong>AAD</strong>) credentials and if you aren&rsquo;t using AAD, it can&rsquo;t authenticate you to use the service.</p>
+<p><img src="/img/2018/10/2018-10-14_21-57-08.png" alt="A Square Dozen Image"></p>
+<p>Additionally, I found a <a href="https://renekierstein.wordpress.com/2017/03/26/with-cm-1612-technical-preview-comes-the-restful-odata-api/">blog post</a> by <a href="https://twitter.com/ReneKierstein">René Kierstein</a> that talked about the 1612 <strong>CMRestProvider</strong> and he has a Word document with all of the available functions at the time (<strong>590</strong>). I set up my PowerShell to loop through each function and attempt the call and check for failures. <del>I ended up with a list of <strong>565</strong> that worked with no extra parameters. I&rsquo;ve uploaded my list to <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">GitHub</a>.</del> EDIT: 10/15/2018 - See script above for listing functions. Current count is <strong>715</strong>. Updated list added to <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">GitHub Repo</a>.</p>
+<p>One last thing. This only worked once and now I can’t seem to reproduce it. I used TaskMgr and stop <code>sccmprovidergraph.exe</code> and relaunch it using psexec.exe -i -s cmd to open a new cmd prompt window as System then launch <code>sccmprovidergraph.exe -Namespace root\sms\site_&lt;SITECODE&gt;</code> and it left a command window open and I was able to watch the Graph service in action. It will log all of the AdminService actions live.</p>
+<p>That&rsquo;s it for now. I have only spent a few hours testing it today but it looks encouraging. It will go a long way to helping reduce our dependency on as many amazing community/third party tools that are currently bridging the gap. I can&rsquo;t wait to plug it into <strong>Power BI</strong> and see how it works!</p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Drafts-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Drafts"/>
+<meta name="twitter:description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"/>
+
+
+        <link rel="canonical" href="/drafts/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        <link rel="alternate" type="application/rss+xml" href="/drafts/index.xml" title="A Square Dozen">
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+	
+	
+    <article class="list-item">
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/03/24/off-topic-communication-careers-working-for-free/">Off Topic: Communication, Careers &amp; Working for Free</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    I was talking with my friend recently about how his and another friend&rsquo;s jobs were going. The discussion centered around career paths - staying technical, changing fields or moving into supervision/management. We shared thoughts about our motivations for choosing a path and how we felt about &lsquo;climbing the corporate ladder&rsquo; and the personal costs to do so. This really got me thinking about my career and how I&rsquo;ve changed my career goals but more importantly, how marriage and children have changed my focus and values.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2019/03/11/find-columns-and-object-definitions-in-sql-server/">
+                <img width="520" height="400" src="/img/2019/03/image-3.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/03/11/find-columns-and-object-definitions-in-sql-server/">Find Columns and Object Definitions in SQL Server</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    A few years ago, I needed to find a query that I had written in a SQL Stored Procedure but after clicking through several of them and striking out, I decided that there had to be a better way. I ended up writing a simple Stored Procedure with a single search parameter that would return a stored procedure definition and excerpt from it. I like it so much that I&rsquo;ve added it to every database I&rsquo;ve managed since then.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2019/02/21/sccm-collection-evaluation-troubleshooting-incremental-update-issues/">
+                <img width="520" height="400" src="/img/2019/02/image-23.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/02/21/sccm-collection-evaluation-troubleshooting-incremental-update-issues/">SCCM Collection Evaluation – Troubleshooting Incremental Update Issues</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    About a month ago, I wrote a post for System Center Dudes related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                <img width="520" height="400" src="/img/2019/02/image-11.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">The Microsoft Endpoint Configuration Manager Administration Service Guide</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    This post is dedicated to the System Center Configuration Manger (SCCM/ConfigMgr) Administration Service (AdminService for short). Please check back here for helpful links and to blog posts, documentation and examples for using the AdminService. Please note, I wasn&rsquo;t sure what the name was officially when I first started, and I didn&rsquo;t expect to keep posting new info about it, so sorry if it&rsquo;s disjointed.
+ Update: 11/3/2109 - I am updating this post to show information for the the latest ConfigMgr Current Branch release.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/">
+                <img width="520" height="400" src="/img/2019/02/image-1.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/">Finding ConfigMgr Task Sequences with Invalid References</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/01/22/my-first-post-for-system-center-dudes-remove-recurring-schedules-from-device-collections-in-sccm-before-upgrading-to-1810/">My First Post for System Center Dudes – “Remove Recurring Schedules from Device Collections in SCCM Before Upgrading to 1810”</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    As you may know, I started working for System Center Dudes as a ConfigMgr consultant a few months ago. I finally found time to write my first post for their site. If you haven&rsquo;t already seen it, head over and check out it out.
+https://www.systemcenterdudes.com/sccm-remove-recurring-schedules-collections-script/
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2019/01/04/2018-wow-what-a-ride/">
+                <img width="520" height="400" src="/img/2019/01/1-38.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2019/01/04/2018-wow-what-a-ride/">2018 – Wow, what a ride!</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    I’m not a big New Year’s resolution guy but I do believe that looking back at the previous year as well as setting goals for the coming year helps set up a framework for success. For this post, I’d like to share some personal and professional highlights from 2018.
+Personal Family To start, I’m writing this sitting next to my wife Megan as we fly back to Houston after spending 10 amazing days in Thailand celebrating 15 years of marriage.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2018/12/14/building-an-even-better-task-sequence/">
+                <img width="520" height="400" src="/img/2018/12/image-4.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    Note
+03/12/2019 - This post has been updated to support changes in 1901 TP and (I assume) 1902 CB to the TSProgressUI.exe ConfigMgr client component used for the custom described dialog below.
+ Note: You must be running ConfigMgr/SCCM 1810 or higher to use the _SMSTSLastActionName variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go upvote the UserVoice item to have the product do this natively.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2018/12/07/dessert-in-the-desert-highlights-of-my-first-mms-conference-mmsde/">
+                <img width="520" height="400" src="/img/2018/12/DtTdcnlU4AAVqVr.jpg">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2018/12/07/dessert-in-the-desert-highlights-of-my-first-mms-conference-mmsde/">Dessert in the Desert – Highlights of My First MMS Conference (MMSDE)</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    At MMS Desert Edition (MMSDE) this week, I got into a (friendly) heated debate over what qualified as BBQ where the other party offered up some very silly arguments related to pulled pork and vinegar sauce. I&rsquo;m a firm believer in meat. Period. Cook it however you want, call it whatever you want. I just want to eat it. This discussion led to some additional &lsquo;South Bashing&rsquo; by this &lsquo;Yankee&rsquo; from North Carolina.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <article class="list-item">
+        
+        <div class="post-img">
+            <a href="https://blog.asquaredozen.com/2018/12/04/updated-information-about-the-sms-provider-api-in-sccm-configmgr-1810/">
+                <img width="520" height="400" src="/img/2018/12/2018-12-04_9-40-13.png">
+            </a>
+        </div>
+        
+        <div class="list-content">
+            <div class="post-header">
+                    <h2 class="post-title">
+                        <a href="https://blog.asquaredozen.com/2018/12/04/updated-information-about-the-sms-provider-api-in-sccm-configmgr-1810/">Updated Information about the AdminService/SMS Provider API in SCCM/ConfigMgr 1810</a>
+                    </h2>
+            </div>
+            <div class="post-entry">
+                
+                    I began testing the ConfigMgr SMS Provider API (or AdminService as it will be called) in the 1810 Technical Preview and wrote 2 posts about it (1) &amp; (2). With the release of the AdminService in Current Branch 1810, a few things have changed and I wanted to provide an update. Additonally, I&rsquo;ve had the opportunity to chat with the ConfigMgr Product Group at #MMSDE this week and they&rsquo;ve provided some roadmap information about the API and what to expect in the future.
+                
+            </div>
+            <div class="list-meta">
+                <span class="post-date">
+                    
+                </span>
+            </div>
+        </div>
+    </article>
+    
+    <div class="pagination">
+	<div class="newer">
+	
+		<a href="/drafts/page/3/">← Newer Posts</a>
+	
+	</div>
+	<div class="older">
+	
+		<a href="/drafts/page/5/">Older Posts →</a>
+	
+	</div>
+</div>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Task Sequence Failure &#34;The software could not be found on any servers at this time&#34; Caused by Retired Superseded Applications-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Task Sequence Failure &#34;The software could not be found on any servers at this time&#34; Caused by Retired Superseded Applications"/>
+<meta name="twitter:description" content="Today was supposed to be easy. Things were just supposed to work. We had been testing our ConfigMgr Task Sequence for a few weeks and today was cutover day. We had made some backend changes to our Windows 7 Task Sequence to help get ready for our upcoming Windows 10 migration (I know, haven&rsquo;t upgraded yet! Get off my case!). Earlier in the week, we found one last item that needed to be added."/>
+
+
+        <link rel="canonical" href="/2018/04/18/task-sequence-failure-the-software-could-not-be-found-on-any-servers-at-this-time-caused-by-retired-superseded-applications/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Task Sequence Failure &#34;The software could not be found on any servers at this time&#34; Caused by Retired Superseded Applications</h1>
+				<span class="post-date">April 18, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>Today was supposed to be easy. Things were just supposed to work. We had been testing our ConfigMgr Task Sequence for a few weeks and today was cutover day. We had made some backend changes to our Windows 7 Task Sequence to help get ready for our upcoming Windows 10 migration (I know, haven&rsquo;t upgraded yet! Get off my case!). Earlier in the week, we found one last item that needed to be added. We created a child task sequence to install a certain set of applications based on which site the device was being built for. The TS uses the Install Applications step and we just added 1-6 apps to the step. No biggie. We added the TS as a child TS into our main Windows 7 TS and tested Bare Metal builds PE on several machines without issue. However, we failed to test from Windows 7 as a Refresh from the ConfigMgr client.</p>
+<h2 id="go-time">Go Time</h2>
+<p>It was &lsquo;Go Time&rsquo;. I had cutover our boot image and built all new deployments and such. I kicked off a few Bare Metal builds that went fine. I kicked off a Refresh and it failed right away. I tried again. Failed. Several more computers, Failed. All were failing with the rarely helpful &lsquo;The software could not be found on any servers at this time&rsquo; message in Software Center. If you Google it, you will mostly see responses telling you to check your Boundary Groups. It&rsquo;s never Boundary Groups for us. I dug into the CAS.log and found the entry at the end of the log.</p>
+<p><code>&lt;RelatedContentIDs&gt;&lt;RelatedContentID ID=&quot;Content_dd6f23c3-efeb-4d80-b50f-432aa15135e9.1&quot;/&gt;&lt;/RelatedContentIDs&gt;. Length = 110. ContentAccess   4/18/2018 10:00:06 AM 9836 (0x266C) The number of discovered DPs(including Branch DP and Multicast) is 0    ContentAccess   4/18/2018 10:00:06 AM 9836 (0x266C)</code></p>
+<p>Above there was an entry with a Referenced ContentID. Based on what I was reading on various posts, the last ContentID listed was likely the culprit. I found a SQL query to look up the ContentID</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb">    </span>CI_LocalizedProperties.DisplayName,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb">    </span>CIContentPackage.CI_ID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb">    </span>CI_ContentPackages.PkgID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb">    </span>CI_ContentPackages.ContentSubFolder<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb">    </span>CI_ContentPackages<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb">    </span>CIContentPackage<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>CI_ContentPackages.PkgID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>CIContentPackage.PkgID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LEFT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OUTER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">    </span>CI_LocalizedProperties<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>CIContentPackage.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>CI_LocalizedProperties.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">    </span>contentsubfolder<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%YOURCONTENTID%&#39;</span><span style="color:#bbb">
+</span></code></pre></div><p>I put in my ContentID and the query didn&rsquo;t return anything. I tried a similar WMI query with no result. I thought maybe the Task Sequence was corrupt so I made a copy of it and the child Task Sequences and it still failed. I made new empty Task Sequences and copied the tasks in instead of copying the whole Task Sequence. Still failed. Eventually, we narrowed the source down to the new site application Task Sequence. From there, we began looking through the ~20 apps for missing content on the app its dependencies. Then our Application lead figured it out. She remembered an issue similar to this where applications that superseded another application that has been retired will cause the Task Sequence to fail. Sure enough, we found about 4 applications that superseded retired applications.</p>
+<h2 id="the-fix">The Fix</h2>
+<p>I found a few sample queries related to supersedence and put them together. Just add in the Task Sequence ID and it should give you a list of any applications that supersede Retired applications.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">Declare</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>TaskSequenceID<span style="color:#bbb"> </span><span style="color:#0086b3">char</span>(<span style="color:#099">8</span>);<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">set</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>TaskSequenceID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;YOURTSID&#39;</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb">    </span>CI.CI_ID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb">    </span>CI.CI_UniqueID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb">    </span>CI.Manufacturer,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb">    </span>CI.DisplayName,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">    </span>CI.SoftwareVersion,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb">    </span>ARF.ToApplication<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>RetiredSupersededApp<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb">    </span>v_TaskSequenceAppReferencesInfo<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb">    </span>fn_ListLatestApplicationCIs(<span style="color:#099">1033</span>)<span style="color:#bbb"> </span>CI<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>CI.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>v_TaskSequenceAppReferencesInfo.RefAppCI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb">    </span>(<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">select</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#bbb">            </span>locpropFromapp.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>FromAppCI,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#bbb">            </span>locpropFromapp.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>FromApp,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#bbb">            </span>locpropFromDT.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>FromDeploymentType,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#bbb">            </span>locpropToapp.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ToApplication,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#bbb">            </span>locpropToDT.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ToDeploymentType<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">from</span><span style="color:#bbb">  
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#bbb">            </span>vSMS_AppRelation_Flat<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>appflat<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_LocalizedCIProperties<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>locpropFromapp<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropFromapp.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appflat.FromApplicationCIID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_LocalizedCIProperties<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>locpropFromDT<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropFromDT.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appflat.FromDeploymentTypeCIID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_LocalizedCIProperties<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>locpropToapp<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropToapp.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appflat.ToApplicationCIID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_LocalizedCIProperties<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>locpropToDT<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropToDT.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appflat.ToDeploymentTypeCIID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_ConfigurationItems<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ciFrom<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropFromapp.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>ciFrom.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span><span style="color:#bbb">            </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb"> </span>v_ConfigurationItems<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ciTo<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>locpropToapp.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>ciTo.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">where</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#bbb">        </span>appflat.RelationType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">15</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span><span style="color:#bbb">        </span><span style="color:#998;font-style:italic">--AND ciFrom.IsTombstoned = 0
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#998;font-style:italic"></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb"> </span>ciFrom.IsLatest<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb"> </span>ciFrom.IsExpired<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span><span style="color:#bbb">        </span><span style="color:#998;font-style:italic">--AND 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span><span style="color:#998;font-style:italic"></span><span style="color:#bbb">        </span><span style="color:#998;font-style:italic">--ciTo.IsTombstoned = 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span><span style="color:#998;font-style:italic"></span><span style="color:#bbb">        </span><span style="color:#998;font-style:italic">--AND ciTo.IsLatest = 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span><span style="color:#998;font-style:italic"></span><span style="color:#bbb">        </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span><span style="color:#bbb">        </span>ciTo.IsExpired<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span><span style="color:#bbb">        </span>)<span style="color:#bbb"> </span>ARF<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>ARF.FromAppCI<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>CI.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span><span style="color:#bbb">    </span>v_TaskSequenceAppReferencesInfo.PackageID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>TaskSequenceID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span><span style="color:#bbb">    </span>CI.ISSuperseding<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">1</span><span style="color:#bbb">
+</span></code></pre></div><p>Once we removed supersedence from the retired applications and the The Task Sequence started working again.</p>
+<p>References:<br>
+<a href="https://www.reddit.com/r/SCCM/comments/5ronkm/content_issue_with_previously_working_task/">https://www.reddit.com/r/SCCM/comments/5ronkm/content_issue_with_previously_working_task/</a>
+<a href="http://www.configmgrdistrict.com/2016/04/18/configuration-manager-application-supersedence/">http://www.configmgrdistrict.com/2016/04/18/configuration-manager-application-supersedence/</a></p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

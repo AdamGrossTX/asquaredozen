@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>LockDown Diary – How I used DJOIN to Build Test Machines over VPN-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="LockDown Diary – How I used DJOIN to Build Test Machines over VPN"/>
+<meta name="twitter:description" content="It&rsquo;s been a few months since I&rsquo;ve sat down to put write something. I&rsquo;ve been taking a break trying to pick up some woodworking skills and spend a bit more time with the family during this COVID-19 lockdown. On March 5, I left work to take a week off for Spring Break and never returned to the office. Today is May 5. I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work from home, I don&rsquo;t have any hardware here other than a normal desk setup."/>
+
+
+        <link rel="canonical" href="/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>LockDown Diary – How I used DJOIN to Build Test Machines over VPN</h1>
+				<span class="post-date">May 6, 2020</span>
+			</div>
+			<div class="post-entry">
+				<p>It&rsquo;s been a few months since I&rsquo;ve sat down to put write something. I&rsquo;ve been taking a break trying to pick up some woodworking skills and spend a bit more time with the family during this COVID-19 lockdown. On March 5, I left work to take a week off for Spring Break and never returned to the office. Today is May 5.
+I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work from home, I don&rsquo;t have any hardware here other than a normal desk setup. At the office, we have a build lab and I have access to numerous hardware models that I can test with. At home, I just have my company-issued laptop and a VPN connection, which is generally fine for the few days per month that I&rsquo;m actually working from home. We have a VMWare build farm as well where I generally do most of my image builds and testing unless I need to test drivers or other device specific things. One thing that our VMWare farm doesn&rsquo;t have is direct internet access - we only have a business network VLAN, which makes it impossible to test VPN-related things (split-tunneling, Cloud Management Gateway, internet-only clients, etc.).</p>
+<p>More on Split-Tunneling and Microsoft Updates from ConfigMgr here from <a href="https://twitter.com/robdotyork">@RobDotYork</a> and <a href="https://twitter.com/miketerrill">@MikeTerrill</a></p>
+<ul>
+<li><a href="https://techcommunity.microsoft.com/t5/configuration-manager-blog/managing-remote-machines-with-cloud-management-gateway-in/ba-p/1233895">https://techcommunity.microsoft.com/t5/configuration-manager-blog/managing-remote-machines-with-cloud-management-gateway-in/ba-p/1233895</a></li>
+<li><a href="https://techcommunity.microsoft.com/t5/configuration-manager-blog/managing-patch-tuesday-with-configuration-manager-in-a-remote/ba-p/1269444">https://techcommunity.microsoft.com/t5/configuration-manager-blog/managing-patch-tuesday-with-configuration-manager-in-a-remote/ba-p/1269444</a></li>
+<li><a href="https://miketerrill.net/2020/03/18/forcing-configuration-manager-vpn-clients-to-get-patches-from-microsoft-update/">https://miketerrill.net/2020/03/18/forcing-configuration-manager-vpn-clients-to-get-patches-from-microsoft-update/</a></li>
+</ul>
+<h2 id="the-problem">The Problem</h2>
+<p>So here I am, stuck at home, with a mandate from management to get split-tunneling working to reduce VPN bandwidth for Microsoft Updates, with no way to test other than my primary device - which is never fun to do. So I started thinking. I had just spun up Hyper-V to build a new ConfigMgr lab for some Intune testing so I decided to see if I could somehow use build a new VM to our standards that I could test VPN on. The semi-obvious answer would be to use AutoPilot, except I would need line-of-sight to the domain controller for hybrid-join to work and we are just beginning to get Intune configured in production (see note about lab build above&hellip;).</p>
+<p>Our VPN client requires user domain credentials and a valid computer certificate issued from our CA in order to connect. The domain credentials are easy, the client certificate, not so much. So I started playing around with DJOIN and had a breakthrough. I&rsquo;ve never needed to use DJOIN so this was a cool learning experience for me. So if you want to see what I was able to do, keep reading.</p>
+<h2 id="the-plan">The Plan</h2>
+<p>Here are the steps I&rsquo;ll be going through:</p>
+<ul>
+<li>Use DJOIN on Domain Joined device to create offline join blob</li>
+<li>Use DJOIN to &lsquo;install&rsquo; the offline blob on a new clean VM</li>
+<li>Install the company VPN client</li>
+<li>Install the ConfigMgr client</li>
+<li>Run our standard OSD Task Sequence in Apps-Only mode to standardize the VM</li>
+</ul>
+<h2 id="djoin">DJOIN</h2>
+<h4 id="provision">Provision</h4>
+<p>If you&rsquo;ve ever looked at logs during OSD, you&rsquo;ve likely seen references to DJOIN - that&rsquo;s pretty much where my experience with DJOIN ends.</p>
+<p>SetupAct.Log from the Panther folder
+<img src="/img/2020/05/image-3.png" alt="A Square Dozen Image"></p>
+<p>As I started playing with it I discovered that it is a very powerful tool capable of not only creating an offline domain joined object, but you can specify the OU, certificate template and more. It was like finding a Swiss Army Knife while on a desert island. You can read more about DJOIN here <a href="https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)">https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)</a></p>
+<hr>
+<p><strong>NOTE:</strong> DJOIN /PROVISION must be run from a domain joined device connected to the domain (over VPN works) since it has to talk to AD to create the new device.</p>
+<hr>
+<p>You can look up the parameter info on the link above, but essentially this command line will do the following:</p>
+<ul>
+<li>/PROVISION /DOMAIN - Join the domain</li>
+<li>/MACHINE - Specify the device name</li>
+<li>/MACHINEOU - Put the device in a specific OU,</li>
+<li>/SAVEFILE - Save to a file</li>
+<li>/CERTTEMPLATE - Generate a computer auth cert using our domain computer template</li>
+<li>/REUSE - Reuse the device name if it exists</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">DJOIN /PROVISION /DOMAIN &#34;asd.net&#34; /MACHINE &#34;ASD-MyVM1&#34; /MACHINEOU &#34;CN</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">Computers,DC=asd,DC=net&#34; /SAVEFILE &#34;C:\Temp\ASD-MyVM1_ODJ.txt&#34; /CERTTEMPLATE &#34;ASD-DomainComputerTemplate&#34; /REUSE</span>
+</code></pre></div><p><img src="/img/2020/05/image-1.png" alt="A Square Dozen Image"></p>
+<p>Once you run this command, you can check Active Directory and you should see your new computer in the OU that you specified and you&rsquo;ll have a text file in the /SAVEFILE location.</p>
+<hr>
+<p><strong>NOTE:</strong> During this process I discovered that you can rename a computer AND get a new domain computer cert using DJOIN. In the past, if we renamed a computer, Cisco ISE would block the device since it didn&rsquo;t have a valid computer auth cert. This would be an easy way to deal with that.</p>
+<hr>
+<h4 id="requestodj">RequestODJ</h4>
+<hr>
+<p><strong>STOP!</strong> Ensure that you have a local Admin account on the target device at this stage. If you don&rsquo;t, you won&rsquo;t be able to use admin rights after this step. Also, you could choose to install your VPN client before this step, but I&rsquo;m doing it afterwards. Doesn&rsquo;t make a huge difference.</p>
+<hr>
+<p>As mentioned, you&rsquo;ll need a new, clean device. I used Hyper-V but this will work with a VM or physical device. You can do this by using DISM to mount a WIM and running the commands (exclude /LOCALOS) or spin up the device the run the command from the new device (Include /LOCALOS). Simply copy your Offline Domain Join (ODJ) text file to the new device and run the following:</p>
+<ul>
+<li>/REQUESTODJ - Tells the device to request an offline domain join on the next restart</li>
+<li>/LOADFILE - specifies the ODJ blob file that you generated with /PROVISION</li>
+<li>/WINDOWSPATH - the path to Windows for an offline image or if used with /LOCALOS the windows directory of the device you are running the command on.</li>
+<li>/LOCALOS - targets the local OS</li>
+</ul>
+<p><code>DJOIN /REQUESTODJ /LOADFILE c:\Temp\ASD-MyVM1_OSJ.txt /WINDOWSPATH %SystemRoot% /LOCALOS</code></p>
+<p><img src="/img/2020/05/image-2.png" alt="A Square Dozen Image"></p>
+<p>Once you run the command, reboot the device and you&rsquo;ll be prompted to log in with your domain credentials. Since you won&rsquo;t be on the domain yet, log back in with your local admin credentials.</p>
+<p>To verify that this all worked, you can check Computer Management to see that you&rsquo;re on the domain and check your Local Computer personal certificate store and see that you have a domain CA cert issued to the device name that you specified and the root and intermediate certs should be there as well.</p>
+<p><img src="/img/2020/05/image-6.png" alt="A Square Dozen Image">
+<img src="/img/2020/05/image-7.png" alt="A Square Dozen Image"></p>
+<h2 id="vpn">VPN</h2>
+<p>This is the part that may be a show stopper for you, depending on the type of VPN you use and the auth requirements for it. I got lucky with the device cert and user domain creds. At this point, you simply want to install your company VPN client and configure it properly. Since everyone will have something different, I&rsquo;m not going to go into details.</p>
+<p>In my case, once the client was installed from an MSI, I was able to connect to the VPN portal and sign in with my domain credentials, using the device certificate in the background as well. Once I establish the tunnel successfully the first time, the VPN client is ready to go. I can reboot the machine, then log in with my domain credentials and I&rsquo;m on!</p>
+<h2 id="thats-pretty-much-it">That&rsquo;s pretty much it</h2>
+<p>From here, what you do is up to you. You should have a computer that&rsquo;s domain joined and on VPN. For me, I wanted to test using a device that matched our standard build. If you don&rsquo;t need to do this, then you can pretty much stop here.</p>
+<h2 id="standardizing-the-image">Standardizing the Image</h2>
+<p>If you want to complete your build, you will need to manually install the ConfigMgr client using the command lines appropriate to your site. From a domain connected device, copy the client installation media to the new device. Once installed, drop the machine into a collection that has your &lsquo;Apps-Only&rsquo; Task Sequence (keep reading) advertised to it and run it once it shows up.
+If you&rsquo;ve read any of my Task Sequence blogs, you may have come across my &lsquo;<a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>&rsquo; post. In it, I detail how to build a OS Deployment Task Sequence that is able to be re-run on failed devices without reinstalling the whole OS. You may also be able to just break out everything after the Setup Windows and ConfigMgr step in your Task Sequence and create a new &lsquo;Apps-Only&rsquo; sequence that will finish installing all of the bits that make up your company&rsquo;s standard build. This would be equivalent the Task Sequence you&rsquo;d want to build if you use the new <a href="https://docs.microsoft.com/mem/configmgr/core/clients/deploy/about-client-installation-properties#provisionts">PROVISIONTS commandline option in ConfigMgr 2002</a> to auto launch a Task Sequence right after the ConfigMgr client is installed via AutoPilot. Ultimately, if you have Windows on the box, everything else SHOULD just be apps and policies.
+Now, if you are offline servicing and doing a bunch of tweaking to your image or even using a reference image, you may not end up quite standard. We don&rsquo;t do any of that, so this process is perfect. I just need to install a few standard apps and add a registry key to tag this as a standard build and my device should match anything we&rsquo;ve built from bare metal.</p>
+<hr>
+<p><strong>NOTE:</strong> My Task Sequence reboots several times. Each time, I had to log back in to reconnect VPN or else it would fail. Something may not be configured properly with the machine channel of our VPN client because this was unexpected behavior.</p>
+<hr>
+<h2 id="give-it-a-spin">Give It A Spin</h2>
+<p>Once you&rsquo;ve built your new machine, you should have a device that looks like any other standard device. I was able to spin up several Hyper-V VMs using this process and successfully tested several VPN scenarios to validate our split-tunnel configuration, which made all of the effort worth it. I&rsquo;m sure there is more to learn about DJOIN but this is what I&rsquo;ve learned so far. Hope you find some inspiration in this.</p>
+<h2 id="soapbox">Soapbox</h2>
+<p>I&rsquo;ve been saying this to anyone who will listen for the past few years and I have been fighting to make this a reality in my production environment as well - the less you bake into your image and the less you customize your builds, the easier it will be to move to AutoPilot or an Apps-Only TS model that allows you to take advantage of the OS already being on the box. There are MANY reasons why this is an unattainable goal for many orgs, but you I challenge you to keep chipping away at your customizations to deliver a vanilla image that could easily be replicated by installing some apps and applying some policies. It&rsquo;s a worthwhile endeavor and I&rsquo;m very glad that we are on a journey to zero (or as close as we can get to zero) customizations.</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

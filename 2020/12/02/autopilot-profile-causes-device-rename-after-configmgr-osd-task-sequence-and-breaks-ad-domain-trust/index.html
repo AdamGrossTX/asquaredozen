@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust"/>
+<meta name="twitter:description" content="We got some new hardware models in this week and added drivers to our ConfigMgr OSD Task Sequence (with Windows 10 1909 serviced with November 2020 updates) to test. One of the devices kept ending up with a broken domain trust relationship when you attempt to log in immediately following build completion.
+The security database on the server does not have a computer account for this workstation trust relationship One clue that we had was that something was renaming the device."/>
+
+
+        <link rel="canonical" href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</h1>
+				<span class="post-date">December 2, 2020</span>
+			</div>
+			<div class="post-entry">
+				<p>We got some new hardware models in this week and added drivers to our ConfigMgr OSD Task Sequence (with Windows 10 1909 serviced with November 2020 updates) to test. One of the devices kept ending up with a broken domain trust relationship when you attempt to log in immediately following build completion.</p>
+<p>The security database on the server does not have a computer account for this workstation trust relationship
+<img src="/img/2020/12/image-6.png" alt="A Square Dozen Image"></p>
+<p>One clue that we had was that something was renaming the device. We have a very basic naming convention SITE-SERIAL where SITE is 2-5 character code for the AD site/OU a device will be assigned to. The device was be in Active Directory in the right OU and properly domain joined, but at the logon screen in the username field if we typed .\ to show the device name instead of the domain name, the device name was only the SERIAL, no SITE- prefix. The smsts.log, setupact.log, unattend.xml all showed the correct device name through the entire process. Here&rsquo;s the rest of the story&hellip;</p>
+<p>Note - the serial in the screenshots doesn&rsquo;t match the logs due to obfuscation of prod data
+<img src="/img/2020/12/image.png" alt="A Square Dozen Image">]</p>
+<h2 id="trudging-through-logs">Trudging Through Logs</h2>
+<p>Like most people, I love (or is is loathe) digging through logs looking for a needle in a haystack. In this case, I needed to find evidence that showed that the device was properly named, but then was changed sometime later. I knew that it was named correctly at least until the domain join step and after digging through smsts.log, it was clear that it wasn&rsquo;t being changed during or by the Task Sequence at all. It was coming afterwards. I moved to the Event Viewer and started looking for <code>Event ID 6011</code> which would show that the device name had been changed and the device had been rebooted.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>Information	12/1/2020 2:22:35 PM	EventLog	6011	None
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>Log Name:      System
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>Source:        EventLog
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>Date:          12/1/2020 2:22:35 PM
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>Event ID:      6011
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>Task Category: None
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>Level:         Information
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>Keywords:      Classic
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>User:          N/A
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>Computer:      12345678.asd.net
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>Description:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>The NetBIOS name and DNS host name of this machine have been changed from ASD-12345678 to 12345678.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>Event Xml:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#000080">&lt;Event</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/win/2004/08/events/event&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>  <span style="color:#000080">&lt;System&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>    <span style="color:#000080">&lt;Provider</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;EventLog&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>    <span style="color:#000080">&lt;EventID</span> <span style="color:#008080">Qualifiers=</span><span style="color:#d14">&#34;32768&#34;</span><span style="color:#000080">&gt;</span>6011<span style="color:#000080">&lt;/EventID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>    <span style="color:#000080">&lt;Level&gt;</span>4<span style="color:#000080">&lt;/Level&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>    <span style="color:#000080">&lt;Task&gt;</span>0<span style="color:#000080">&lt;/Task&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>    <span style="color:#000080">&lt;Keywords&gt;</span>0x80000000000000<span style="color:#000080">&lt;/Keywords&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>    <span style="color:#000080">&lt;TimeCreated</span> <span style="color:#008080">SystemTime=</span><span style="color:#d14">&#34;2020-12-01T20:22:35.941883400Z&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>    <span style="color:#000080">&lt;EventRecordID&gt;</span>927<span style="color:#000080">&lt;/EventRecordID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>    <span style="color:#000080">&lt;Channel&gt;</span>System<span style="color:#000080">&lt;/Channel&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>    <span style="color:#000080">&lt;Computer&gt;</span>12345678.asd.net<span style="color:#000080">&lt;/Computer&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#000080">&lt;Security</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>  <span style="color:#000080">&lt;/System&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>  <span style="color:#000080">&lt;EventData&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>    <span style="color:#000080">&lt;Data&gt;</span>ASD-12345678<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>    <span style="color:#000080">&lt;Data&gt;</span>12345678<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>  <span style="color:#000080">&lt;/EventData&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span><span style="color:#000080">&lt;/Event&gt;</span>
+</code></pre></div><p>Once I had the base timestamp to work from, I was able to narrow my search to a specific time that this could have happened. I scrolled back in time and and found <code>Event ID 1074</code> which showed that the reboot was triggered by CloudExperienceHost.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>Information	12/1/2020 2:22:04 PM	User32	1074	None
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>Log Name:      System
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>Source:        User32
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>Date:          12/1/2020 2:22:04 PM
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>Event ID:      1074
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>Task Category: None
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>Level:         Information
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>Keywords:      Classic
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>User:          SYSTEM
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>Computer:      ASD-12345678.asd.net
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>Description:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>The process C:\Windows\System32\CloudExperienceHostBroker.exe (ASD-12345678) has initiated the restart of computer ASD-12345678 on behalf of user NT AUTHORITY\SYSTEM for the following reason: Operating System: Reconfiguration (Unplanned)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span> Reason Code: 0x20004
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span> Shutdown Type: restart
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span> Comment: 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>Event Xml:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#000080">&lt;Event</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/win/2004/08/events/event&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>  <span style="color:#000080">&lt;System&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>    <span style="color:#000080">&lt;Provider</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;User32&#34;</span> <span style="color:#008080">Guid=</span><span style="color:#d14">&#34;{b0aa8734-56f7-41cc-b2f4-de228e98b946}&#34;</span> <span style="color:#008080">EventSourceName=</span><span style="color:#d14">&#34;User32&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>    <span style="color:#000080">&lt;EventID</span> <span style="color:#008080">Qualifiers=</span><span style="color:#d14">&#34;32768&#34;</span><span style="color:#000080">&gt;</span>1074<span style="color:#000080">&lt;/EventID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>    <span style="color:#000080">&lt;Version&gt;</span>0<span style="color:#000080">&lt;/Version&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>    <span style="color:#000080">&lt;Level&gt;</span>4<span style="color:#000080">&lt;/Level&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>    <span style="color:#000080">&lt;Task&gt;</span>0<span style="color:#000080">&lt;/Task&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>    <span style="color:#000080">&lt;Opcode&gt;</span>0<span style="color:#000080">&lt;/Opcode&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#000080">&lt;Keywords&gt;</span>0x8080000000000000<span style="color:#000080">&lt;/Keywords&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>    <span style="color:#000080">&lt;TimeCreated</span> <span style="color:#008080">SystemTime=</span><span style="color:#d14">&#34;2020-12-01T20:22:04.988802400Z&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>    <span style="color:#000080">&lt;EventRecordID&gt;</span>918<span style="color:#000080">&lt;/EventRecordID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>    <span style="color:#000080">&lt;Correlation</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>    <span style="color:#000080">&lt;Execution</span> <span style="color:#008080">ProcessID=</span><span style="color:#d14">&#34;836&#34;</span> <span style="color:#008080">ThreadID=</span><span style="color:#d14">&#34;3048&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>    <span style="color:#000080">&lt;Channel&gt;</span>System<span style="color:#000080">&lt;/Channel&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>    <span style="color:#000080">&lt;Computer&gt;</span>ASD-12345678.asd.net<span style="color:#000080">&lt;/Computer&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>    <span style="color:#000080">&lt;Security</span> <span style="color:#008080">UserID=</span><span style="color:#d14">&#34;S-1-5-18&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>  <span style="color:#000080">&lt;/System&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>  <span style="color:#000080">&lt;EventData&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param1&#34;</span><span style="color:#000080">&gt;</span>C:\Windows\System32\CloudExperienceHostBroker.exe (ASD-12345678)<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param2&#34;</span><span style="color:#000080">&gt;</span>ASD-12345678<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param3&#34;</span><span style="color:#000080">&gt;</span>Operating System: Reconfiguration (Unplanned)<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param4&#34;</span><span style="color:#000080">&gt;</span>0x20004<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param5&#34;</span><span style="color:#000080">&gt;</span>restart<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param6&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>    <span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>    <span style="color:#000080">&lt;Data</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;param7&#34;</span><span style="color:#000080">&gt;</span>NT AUTHORITY\SYSTEM<span style="color:#000080">&lt;/Data&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>  <span style="color:#000080">&lt;/EventData&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span><span style="color:#000080">&lt;/Event&gt;</span>
+</code></pre></div><p>When I looked at <code>C:\Windows\Panther\UnattendGC\setupact.log</code> I noticed that CloudExperienceHost had failed and created a memory dump around the same time the device rename and matched up with the timestamp on the restart event.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>2020-12-01 14:21:45, Info                         [taskhostw.exe] OOBE Monitor event received: 103
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Failed to load oobe.xml file at C:\WINDOWS\system32\oobe\info\oobe.xml with hr=0x80070003
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Failed to load oobe.xml file at C:\WINDOWS\system32\oobe\info\default\oobe.xml with hr=0x80070003
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Failed to load oobe.xml file at C:\WINDOWS\system32\oobe\info\244\oobe.xml with hr=0x80070003
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Failed to load oobe.xml file at C:\WINDOWS\system32\oobe\info\default\1033\oobe.xml with hr=0x80070003
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Failed to load oobe.xml file at C:\WINDOWS\system32\oobe\info\244\1033\oobe.xml with hr=0x80070003
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] Opting in to IncludeDriverSets
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>2020-12-01 14:21:50, Info                         [CloudExperienceHostBroker.exe] CZDPTask setting OOBE_GLOBAL_SETTING_ZDPSTATUS ZDP_Scanning.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>2020-12-01 14:21:51, Info                         [taskhostw.exe] OOBE Monitor event received: 104
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>2020-12-01 14:21:56, Info                         [CloudExperienceHostBroker.exe] ISearchCompletedCallback::Invoke called
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>2020-12-01 14:21:56, Info                         [CloudExperienceHostBroker.exe] Wait result from WU ZDP Search: 0X1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>2020-12-01 14:21:56, Info                         [CloudExperienceHostBroker.exe] Found 0 updates in collection.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>2020-12-01 14:21:56, Info                         [CloudExperienceHostBroker.exe] CZDPTask::CancelTask() Invoked.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>2020-12-01 14:21:56, Info                         [CloudExperienceHostBroker.exe] CZDPTask setting OOBE_GLOBAL_SETTING_ZDPSTATUS ZDP_Finished.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>2020-12-01 14:22:09, Info                         [taskhostw.exe] OOBE Monitor task stopped
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>2020-12-01 14:22:36, Info                         [svchost.exe] Enter WinReIsWimBootEnabled
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>2020-12-01 14:22:36, Info                         [svchost.exe] Parameters: pszWinDir: NULL
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>2020-12-01 14:22:36, Info                         [svchost.exe] Exit WinReIsWimBootEnabled returns 0 with last error: 0x0
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>2020-12-01 14:22:38, Info                         [taskhostw.exe] OOBE Monitor task background thread started
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>2020-12-01 14:22:39, Info                         [taskhostw.exe] OOBE Monitor event received: 101
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>2020-12-01 14:22:39, Info                         [taskhostw.exe] OOBE Monitor event received: 102
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>2020-12-01 14:22:40, Info                         [taskhostw.exe] OOBE Monitor event received: 103
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>2020-12-01 14:22:42, Info                         [CloudExperienceHostBroker.exe] UserOOBEController::Exit() started [1]
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>2020-12-01 14:22:42, Info                         [taskhostw.exe] OOBE Monitor event received: 999
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>2020-12-01 14:22:42, Info                         [CloudExperienceHostBroker.exe] Clearing Auto-logon values per request
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>2020-12-01 14:22:42, Error                        [CloudExperienceHostBroker.exe] Disabling default account failed [hr=0xD00000E5]
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>2020-12-01 14:25:40, FatalError [0x090001] PANTHR Exception (code 0xC0000005: ACCESS_VIOLATION) occurred at 0x00007FFDDADD2236 in C:\Windows\System32\oobe\UserOOBE.dll (+0000000000022236).  Minidump attached (47855 bytes) to diagerr.xml and C:\WINDOWS\Panther\UnattendGC\mndF37E.diagerr.mdmp.
+</code></pre></div><p>For no real reason, I decided to check if the machine was getting an Autopilot profile. The Event Viewer showed that the device had gotten an Autopilot json file, which seemed odd since this device shouldn&rsquo;t have had a profile assigned yet. I opened <code>C:\Windows\ServiceState\Autopilot</code> and found <code>AutopilotDDSZTDFile.json</code>. In here, I found the smoking gun!</p>
+<p><img src="/img/2020/12/image-1.png" alt="A Square Dozen Image"></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&#34;AutopilotServiceCorrelationId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>    <span style="color:#000080">&#34;ZtdRegistrationId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>    <span style="color:#000080">&#34;AadDeviceId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>    <span style="color:#000080">&#34;CloudAssignedOobeConfig&#34;</span>: <span style="color:#099">284</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>    <span style="color:#000080">&#34;CloudAssignedDomainJoinMethod&#34;</span>: <span style="color:#099">0</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>    <span style="color:#000080">&#34;CloudAssignedForcedEnrollment&#34;</span>: <span style="color:#099">1</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>    <span style="color:#000080">&#34;CloudAssignedTenantDomain&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>    <span style="color:#000080">&#34;CloudAssignedTenantId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>    <span style="color:#000080">&#34;CloudAssignedMdmId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>    <span style="color:#000080">&#34;CloudAssignedRegion&#34;</span>: <span style="color:#d14">&#34;os-default&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>    <span style="color:#000080">&#34;CloudAssignedLanguage&#34;</span>: <span style="color:#d14">&#34;os-default&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>    <span style="color:#000080">&#34;CloudAssignedDeviceName&#34;</span>: <span style="color:#d14">&#34;%SERIAL%&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>    <span style="color:#000080">&#34;DeploymentProfileName&#34;</span>: <span style="color:#d14">&#34;Autopilot&#34;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>    <span style="color:#000080">&#34;IsExplicitProfileAssignment&#34;</span>: <span style="color:#000;font-weight:bold">true</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>    <span style="color:#000080">&#34;CloudAssignedAutopilotUpdateDisabled&#34;</span>: <span style="color:#099">1</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>    <span style="color:#000080">&#34;CloudAssignedPrivacyDiagnostics&#34;</span>: <span style="color:#099">0</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>    <span style="color:#000080">&#34;HybridJoinSkipDCConnectivityCheck&#34;</span>: <span style="color:#099">0</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>    <span style="color:#000080">&#34;CloudAssignedAutopilotUpdateTimeout&#34;</span>: <span style="color:#099">1800000</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>    <span style="color:#000080">&#34;PolicyDownloadDate&#34;</span>: <span style="color:#d14">&#34;2020-12-01T20:21:49Z&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>}
+</code></pre></div><h2 id="making-sense-of-things">Making Sense of Things</h2>
+<p>As you may know, you can only assign custom naming to Azure AD Joined devices, not Hybrid, during Autopilot. How could this be happening during OSD?</p>
+<p>During OSD, the device is installing Windows then apps and settings and is locked out until it&rsquo;s done. Once it is finished, it will reboot and is supposed to skip OOBE and go to the logon screen.
+We recently removed our custom Unattend.XML file from our TS since we were specifically using it to suppress OOBE post OSD using some now deprecated settings (<strong>SkipUserOOBE</strong> &amp; <strong>SkipMachineOOBE</strong>) that still work.</p>
+<p><a href="https://docs.microsoft.com/windows/deployment/deploy-windows-mdt/create-a-windows-10-reference-image#edit-the-unattendxml-file-for-windows10-enterprise">https://docs.microsoft.com/windows/deployment/deploy-windows-mdt/create-a-windows-10-reference-image#edit-the-unattendxml-file-for-windows10-enterprise</a>
+<img src="/img/2020/12/image-2.png" alt="A Square Dozen Image"></p>
+<p>Network OOBE Screen
+<img src="/img/2020/12/image-4.png" alt="A Square Dozen Image"></p>
+<p>So it appears in the brief moment where OOBE is being shown, the device is contacting the Autopilot service and pulling down an assigned Autopilot profile.</p>
+<h2 id="finding-a-workaround">Finding a Workaround</h2>
+<p>This next section describes the troubleshooting process that I used to validate the source of the issue.</p>
+<h4 id="option-1-supported">Option 1 (supported)</h4>
+<p>The &lsquo;supported&rsquo; solution to this problem would be to NOT assign Autopilot profiles (specifically ones with naming templates configured) to devices that you are NOT Autopiloting. This is the cleanest option and doesn&rsquo;t require adding in deprecated configurations to your unattend.xml. This SHOULDN&rsquo;T be happening, but as Michael Niehaus pointed out to me after reading this post, he tried for 2 years to get this fixed and ultimately, just don&rsquo;t do it (assign an Autopilot profile to a non-Autopilot device) that way.</p>
+<h4 id="option-2-unsupported">Option 2 (unsupported)</h4>
+<p>To test my theory about OOBE, I added unattend.XML back to the Task Sequence and built the machine. The device didn&rsquo;t pull down the Autopilot profile and didn&rsquo;t get renamed. I then removed the deprecated lines from the unattend.xml file and built the machine again. This time it failed the same as before, confirming my suspicion.</p>
+<p>This is my default unattend.xml.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34;?&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#000080">&lt;unattend</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>    <span style="color:#000080">&lt;settings</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;oobeSystem&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>        <span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-Shell-Setup&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>            <span style="color:#000080">&lt;OOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>                <span style="color:#000080">&lt;SkipUserOOBE&gt;</span>true<span style="color:#000080">&lt;/SkipUserOOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>                <span style="color:#000080">&lt;SkipMachineOOBE&gt;</span>true<span style="color:#000080">&lt;/SkipMachineOOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>                <span style="color:#000080">&lt;NetworkLocation&gt;</span>Work<span style="color:#000080">&lt;/NetworkLocation&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>                <span style="color:#000080">&lt;ProtectYourPC&gt;</span>3<span style="color:#000080">&lt;/ProtectYourPC&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>            <span style="color:#000080">&lt;/OOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>            <span style="color:#000080">&lt;TimeZone&gt;</span>Central Standard Time<span style="color:#000080">&lt;/TimeZone&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-International-Core&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>            <span style="color:#000080">&lt;InputLocale&gt;</span>0409:00000409<span style="color:#000080">&lt;/InputLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>            <span style="color:#000080">&lt;SystemLocale&gt;</span>en-US<span style="color:#000080">&lt;/SystemLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>            <span style="color:#000080">&lt;UILanguage&gt;</span>en-US<span style="color:#000080">&lt;/UILanguage&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>            <span style="color:#000080">&lt;UILanguageFallback&gt;</span>en-US<span style="color:#000080">&lt;/UILanguageFallback&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>            <span style="color:#000080">&lt;UserLocale&gt;</span>en-US<span style="color:#000080">&lt;/UserLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>        <span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>    <span style="color:#000080">&lt;/settings&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>    <span style="color:#000080">&lt;settings</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;specialize&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>        <span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-Shell-Setup&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>            <span style="color:#000080">&lt;ComputerName&gt;</span>ComputerName<span style="color:#000080">&lt;/ComputerName&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>        <span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#000080">&lt;/settings&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>    <span style="color:#000080">&lt;cpi:offlineImage</span> <span style="color:#008080">cpi:source=</span><span style="color:#d14">&#34;wim:c:/temp/install.wim#Windows 10 Enterprise&#34;</span> <span style="color:#008080">xmlns:cpi=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:cpi&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span><span style="color:#000080">&lt;/unattend&gt;</span>
+</code></pre></div><p>Apply Operating System with unattend.xml
+<img src="/img/2020/12/image-3-1024x726.png" alt="A Square Dozen Image"></p>
+<p>Here&rsquo;s the unattend.xml after the Task Sequence Apply steps have completed just before the Setup Windows and ConfigMgr step.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34;?&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#000080">&lt;unattend</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>	<span style="color:#000080">&lt;cpi:offlineImage</span> <span style="color:#008080">cpi:source=</span><span style="color:#d14">&#34;wim:c:/temp/install.wim#Windows 10 Enterprise&#34;</span> <span style="color:#008080">xmlns:cpi=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:cpi&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>	<span style="color:#000080">&lt;settings</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;oobeSystem&#34;</span><span style="color:#000080">&gt;&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-Shell-Setup&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>			<span style="color:#000080">&lt;OOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>			    <span style="color:#000080">&lt;SkipUserOOBE&gt;</span>true<span style="color:#000080">&lt;/SkipUserOOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>                <span style="color:#000080">&lt;SkipMachineOOBE&gt;</span>true<span style="color:#000080">&lt;/SkipMachineOOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>				<span style="color:#000080">&lt;ProtectYourPC&gt;</span>3<span style="color:#000080">&lt;/ProtectYourPC&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>				<span style="color:#000080">&lt;NetworkLocation&gt;</span>Work<span style="color:#000080">&lt;/NetworkLocation&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>				<span style="color:#000080">&lt;HideEULAPage&gt;</span>true<span style="color:#000080">&lt;/HideEULAPage&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>			<span style="color:#000080">&lt;/OOBE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>			<span style="color:#000080">&lt;TimeZone&gt;</span>Central Standard Time<span style="color:#000080">&lt;/TimeZone&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>			<span style="color:#000080">&lt;RegisteredOrganization&gt;</span>A Square Dozen Lab<span style="color:#000080">&lt;/RegisteredOrganization&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>			<span style="color:#000080">&lt;UserAccounts&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>				<span style="color:#000080">&lt;AdministratorPassword&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>					<span style="color:#000080">&lt;Value&gt;</span>XXXXXXXXXXXXXXXXX<span style="color:#000080">&lt;/Value&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>					<span style="color:#000080">&lt;PlainText&gt;</span>false<span style="color:#000080">&lt;/PlainText&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>				<span style="color:#000080">&lt;/AdministratorPassword&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>			<span style="color:#000080">&lt;/UserAccounts&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>			<span style="color:#000080">&lt;RegisteredOwner&gt;</span>A Square Dozen Lab<span style="color:#000080">&lt;/RegisteredOwner&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>		<span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>		<span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-International-Core&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>			<span style="color:#000080">&lt;SystemLocale&gt;</span>en-US<span style="color:#000080">&lt;/SystemLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>			<span style="color:#000080">&lt;UserLocale&gt;</span>en-US<span style="color:#000080">&lt;/UserLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>			<span style="color:#000080">&lt;UILanguage&gt;</span>en-US<span style="color:#000080">&lt;/UILanguage&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>			<span style="color:#000080">&lt;InputLocale&gt;</span>0409:00000409<span style="color:#000080">&lt;/InputLocale&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>			<span style="color:#000080">&lt;UILanguageFallback&gt;</span>en-US<span style="color:#000080">&lt;/UILanguageFallback&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>		<span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>	<span style="color:#000080">&lt;/settings&gt;&lt;settings</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;specialize&#34;</span><span style="color:#000080">&gt;&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-Shell-Setup&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>			<span style="color:#000080">&lt;ComputerName&gt;</span>ASD-123245678<span style="color:#000080">&lt;/ComputerName&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>		<span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>		<span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-UnattendedJoin&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>			<span style="color:#000080">&lt;Identification&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>				<span style="color:#000080">&lt;Credentials&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>					<span style="color:#000080">&lt;Username&gt;</span>ASDAdmin<span style="color:#000080">&lt;/Username&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>					<span style="color:#000080">&lt;Domain&gt;</span>ASD<span style="color:#000080">&lt;/Domain&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>					<span style="color:#000080">&lt;Password&gt;</span>XXXXXXXXXX<span style="color:#000080">&lt;/Password&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>				<span style="color:#000080">&lt;/Credentials&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>				<span style="color:#000080">&lt;MachineObjectOU&gt;</span>OU=Workstations,OU=Lab,DC=asd,DC=net<span style="color:#000080">&lt;/MachineObjectOU&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>				<span style="color:#000080">&lt;JoinDomain&gt;</span>ASD.NET<span style="color:#000080">&lt;/JoinDomain&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>			<span style="color:#000080">&lt;/Identification&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>		<span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>		<span style="color:#000080">&lt;component</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;Microsoft-Windows-Deployment&#34;</span> <span style="color:#008080">language=</span><span style="color:#d14">&#34;neutral&#34;</span> <span style="color:#008080">processorArchitecture=</span><span style="color:#d14">&#34;amd64&#34;</span> <span style="color:#008080">publicKeyToken=</span><span style="color:#d14">&#34;31bf3856ad364e35&#34;</span> <span style="color:#008080">versionScope=</span><span style="color:#d14">&#34;nonSxS&#34;</span> <span style="color:#008080">xmlns:wcm=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span>			<span style="color:#000080">&lt;RunSynchronous&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span>				<span style="color:#000080">&lt;RunSynchronousCommand&gt;&lt;Order&gt;</span>1<span style="color:#000080">&lt;/Order&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span>					<span style="color:#000080">&lt;Description&gt;</span>disable user account page<span style="color:#000080">&lt;/Description&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span>					<span style="color:#000080">&lt;Path&gt;</span>reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Setup\OOBE /v UnattendCreatedUser /t REG_DWORD /d 1 /f<span style="color:#000080">&lt;/Path&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>				<span style="color:#000080">&lt;/RunSynchronousCommand&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>			<span style="color:#000080">&lt;/RunSynchronous&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a></span>		<span style="color:#000080">&lt;/component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a></span>	<span style="color:#000080">&lt;/settings&gt;&lt;/unattend&gt;</span>
+</code></pre></div><p>As you can see on lines 6 &amp; 7 above <strong>SkipUserOOBE</strong> and <strong>SkipMachineOOBE</strong> are included in the XML and make the issue go away.</p>
+<h2 id="wrapping-it-all-up">Wrapping it all up</h2>
+<p>This was a weird one for sure and this feels like a bug. The workarounds are simple enough that this isn&rsquo;t a show stopped, but trying to find the source of the bug was definitely a head scratcher. I haven&rsquo;t had time to test with any other OS versions or even non-serviced versions yet but would be interested to see if they suffer the same issues. I seem to recall that the OOBE issues that required the custom unattend.xml only showed up on offline serviced or captured images, but not on OEM media.</p>
+<h2 id="ps">P.S.</h2>
+<p>You may be asking yourself why I was doing OSD when I had AutoPilot assigned for AAD Join. Well, the device we were testing was a demo unit that had been registered to another company&rsquo;s tenant and had THEIR Autopilot profile assigned. I had no way of deleting the device or unassigning the profile. The vendor has since resolved the issue, but it helped highlight a deficiency in their process as well, so win-win I guess.</p>
+<p>Also, I was unable to find any Autopilot logs that actually show the device rename being triggered which also bugs me&hellip;</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

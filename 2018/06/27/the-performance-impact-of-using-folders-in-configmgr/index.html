@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>The Performance Impact of Using Folders in ConfigMgr-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="The Performance Impact of Using Folders in ConfigMgr"/>
+<meta name="twitter:description" content="Today I was writing a report to help audit collection settings to ensure we aren&rsquo;t unnecessarily updating collections due to the wrong checkboxes being set (a topic for another day). As I was searching for offending collections, I would copy the collection name from my report then paste into the search box and hit Enter. I also had the All Subfolders search option selected. Generally, I wait about a minute for searches to come back when searching from a top level folder."/>
+
+
+        <link rel="canonical" href="/2018/06/27/the-performance-impact-of-using-folders-in-configmgr/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>The Performance Impact of Using Folders in ConfigMgr</h1>
+				<span class="post-date">June 27, 2018</span>
+			</div>
+			<div class="post-entry">
+				<p>Today I was writing a report to help audit collection settings to ensure we aren&rsquo;t unnecessarily updating collections due to the wrong checkboxes being set (a topic for another day). As I was searching for offending collections, I would copy the collection name from my report then paste into the search box and hit Enter. I also had the All Subfolders search option selected. Generally, I wait about a minute for searches to come back when searching from a top level folder. At some point, I had navigated away from the search pane and when I returned and searched again, my result returned in about 1 second. That NEVER happens, so of course I had to investigate. Here&rsquo;s what I found:</p>
+<p><em>*The information below uses Device Collections as examples, but it applies to any folders in the console.</em></p>
+<h1 id="quick-background">Quick Background</h1>
+<p>When we first implemented SCCM/ConfigMgr, we were coming from a homegrown system and attempted to mimic that system as we migrated to ConfigMgr 2007 then 2012.  During our Windows 7 deployment, we began moving our software installation workload into ConfigMgr and decided to use a folder structure to help organize things.  We are 6 years in and have around 1500 applications with a large number of our <strong>~2000</strong> collections, being computer collections with direct memberships (we are working on this as well&hellip;). The folder structure has been painful as it as grown into <strong>~1000</strong> nested folders nested something like this <strong>Device Collections\Desktop\Software[Manufacturer Name][Application Name][Collection with Application Name and Version]</strong>. Up until recently, searching for a collection wasn&rsquo;t terribly useful if you needed to find it&rsquo;s folder location, but fortunately the path has been added as a column in the console now.</p>
+<h1 id="searching">Searching</h1>
+<h4 id="from-the-root">From the Root</h4>
+<p>From the <strong>ConfigMgr</strong> console, select the <strong>Device Collections</strong> node. Then click in the <strong>Search</strong> box. The menu bar should change to show the <strong>All Subfolders</strong> icon.  In my experience, it doesn&rsquo;t show up sometimes. Simply click away from the search dialog then back in and it will generally appear.  Be sure the loading indicator (green light bar thing just under the menu when busy). It should look like this:</p>
+<p><img src="/img/2018/06/2018-06-26_22-18-27.jpg" alt="A Square Dozen Image"></p>
+<p>From here, you can simply type your search term(s) and click <strong>Search</strong>. That&rsquo;s the basics. From there, you can also select the <strong>Add Criteria</strong> button just to the right of the <strong>Search</strong> button. You can use this to more specifically define your search criteria (though I&rsquo;m not going to cover using this feature here, though it does positively impact search performance).</p>
+<p><img src="/img/2018/06/2018-06-26_23-13-05.jpg" alt="A Square Dozen Image"></p>
+<h4 id="from-a-folder">From a Folder</h4>
+<p>As you have probably guessed, since we have folders, we use them. My process is to drill into <strong>Device Collections\Desktop\Software</strong>, then begin my search. My thinking is, if I drill down to <strong>Software</strong>, I don&rsquo;t have to search as many other folders/collections and I should help speed up the query and while this is true, you will see why it&rsquo;s problematic if you have a lot folders.</p>
+<h4 id="the-difference">The Difference</h4>
+<p>Here&rsquo;s a little video demonstrating the time difference between the 2 methods.  Most people zone out well before the <strong>Folder Method</strong> returns. <strong>Spoiler</strong>: The <strong>Root Node</strong> search is basically instant, while the <strong>Folder</strong> search (with ~900 subfolders) takes about 45 seconds!!</p>
+<p><img src="/img/2018/06/5EB7AE52-FC33-4560-8B0C-FCAE696DF351.gif" alt="A Square Dozen Image"></p>
+<h1 id="whats-going-on-in-there">What&rsquo;s going on in there?</h1>
+<p>I&rsquo;ve learned that the <strong>SMSProv.log</strong> on your site server (I only have a single primary, not sure which server you&rsquo;d look at in a larger infrastructure) shows users and the actions they perform in the console in real time.  I opened the log and watched it in <strong>CMTrace</strong> as I performed the various queries was amazed at the things I found. (<em>Some items are formatted for readability and Names/IDs have been changed to protect the innocent</em>). When you open the log, each entry is created in a block similar to this one. You are looking for a block that contains the queries as highlighted below:</p>
+<p><img src="/img/2018/06/2018-06-27_9-11-17.jpg" alt="A Square Dozen Image"></p>
+<h4 id="space-vs-no-space">Space vs No Space</h4>
+<p>When you add a space to your search term, the terms are each broken apart into separate SQL clauses for comparison.</p>
+<p>No spaces, the term is compared to several columns in SMS_Collection</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">--Search Term &#34;Test&#34;
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb">  </span>SMS_Collection<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb">  </span>(CollectionType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">2</span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb">  </span>((<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb">    </span>CollectionID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">Comment</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb">    </span>ObjectPath<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">    </span>LimitToCollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb">    </span>MemberClassName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb">    </span>Name<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%Test%&#39;</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb">  </span>))<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">BY</span><span style="color:#bbb"> </span>Name<span style="color:#bbb">
+</span></code></pre></div><p>You can see here that the terms are separated into separate clauses.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">--Search Term &#34;ts testing&#34;
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb">  </span>SMS_Collection<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb">  </span>(CollectionType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">2</span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb">  </span>(<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb">    </span>(<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">      </span>CollectionID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb">      </span><span style="color:#000;font-weight:bold">Comment</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">      </span>ObjectPath<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb">      </span>LimitToCollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb">      </span>MemberClassName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb">      </span>Name<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%&#34;ts%&#39;</span><span style="color:#bbb">  
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb">    </span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#bbb">    </span>(<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#bbb">      </span>CollectionID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#bbb">      </span><span style="color:#000;font-weight:bold">Comment</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#bbb">      </span>ObjectPath<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#bbb">      </span>LimitToCollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#bbb">      </span>MemberClassName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#bbb">      </span>Name<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;%testing&#34;%&#39;</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#bbb">    </span>)<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span><span style="color:#bbb">  </span>)<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">BY</span><span style="color:#bbb"> </span>Name<span style="color:#bbb">
+</span></code></pre></div><h4 id="searching-from-a-folder-vs-the-root-node">Searching from a Folder vs the Root Node</h4>
+<p>When you search from within a folder, all of the folder IDs are added to the query. In my case, the log truncates the full statement when I search from the Desktop folder, so the below example is drilled down several folders deep so we can get the full query statement.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">select</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">all</span><span style="color:#bbb">  </span>SMS_Collection.SiteID,<span style="color:#bbb"> </span>SMS_Collection.CollectionType,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span>SMS_Collection.CollectionVariablesCount,<span style="color:#bbb"> </span>SMS_Collection.CollectionComment,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb"></span>SMS_Collection.CurrentStatus,<span style="color:#bbb"> </span>SMS_Collection.HasProvisionedMember,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb"></span>SMS_Collection.IncludeExcludeCollectionsCount,<span style="color:#bbb"> </span>SMS_Collection.IsBuiltIn,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb"></span>SMS_Collection.IsReferenceCollection,<span style="color:#bbb"> </span>SMS_Collection.ISVString,<span style="color:#bbb"> </span>SMS_Collection.LastChangeTime,<span style="color:#bbb"> </span>SMS_Collection.LastMemberChangeTime,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb"></span>SMS_Collection.LastRefreshTime,<span style="color:#bbb"> </span>SMS_Collection.LimitToCollectionID,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb"></span>SMS_Collection.LimitToCollectionName,<span style="color:#bbb"> </span>SMS_Collection.LocalMemberCount,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb"></span>SMS_Collection.ResultClassName,<span style="color:#bbb"> </span>SMS_Collection.MemberCount,<span style="color:#bbb"> </span>SMS_Collection.MonitoringFlags,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb"></span>SMS_Collection.CollectionName,<span style="color:#bbb"> </span>SMS_Collection.ObjectPath,<span style="color:#bbb"> </span>SMS_Collection.PowerConfigsCount,<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span>SMS_Collection.RefreshType,<span style="color:#bbb"> </span>SMS_Collection.ServiceWindowsCount,<span style="color:#bbb"> </span>SMS_Collection.UseCluster<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">from</span><span style="color:#bbb"> </span>vCollections<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>SMS_Collection<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">where</span><span style="color:#bbb"> </span>(<span style="color:#bbb"> </span>SMS_Collection.CollectionType<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">2</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb"></span>((((SMS_Collection.SiteID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> </span>SMS_Collection.CollectionComment<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb"></span>SMS_Collection.ObjectPath<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> </span>SMS_Collection.LimitToCollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb"></span>SMS_Collection.ResultClassName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb"> </span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> </span>SMS_Collection.CollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span>))<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">order</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">by</span><span style="color:#bbb">  </span>SMS_Collection.CollectionName<span style="color:#bbb">
+</span></code></pre></div><p>Here&rsquo;s the same query but searching from a folder that has subfolders:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">select</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">all</span><span style="color:#bbb">  </span>SMS_Collection.SiteID,<span style="color:#bbb"> </span>SMS_Collection.CollectionType,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span>SMS_Collection.CollectionVariablesCount,<span style="color:#bbb"> </span>SMS_Collection.CollectionComment,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb"></span>SMS_Collection.CurrentStatus,<span style="color:#bbb"> </span>SMS_Collection.HasProvisionedMember,<span style="color:#bbb"> </span>SMS_Collection.IncludeExcludeCollectionsCount,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb"></span>SMS_Collection.IsBuiltIn,<span style="color:#bbb"> </span>SMS_Collection.IsReferenceCollection,<span style="color:#bbb"> </span>SMS_Collection.ISVString,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb"></span>SMS_Collection.LastChangeTime,<span style="color:#bbb"> </span>SMS_Collection.LastMemberChangeTime,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb"></span>SMS_Collection.LastRefreshTime,<span style="color:#bbb"> </span>SMS_Collection.LimitToCollectionID,<span style="color:#bbb"> </span>SMS_Collection.LimitToCollectionName,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb"></span>SMS_Collection.LocalMemberCount,<span style="color:#bbb"> </span>SMS_Collection.ResultClassName,<span style="color:#bbb"> </span>SMS_Collection.MemberCount,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb"></span>SMS_Collection.MonitoringFlags,<span style="color:#bbb"> </span>SMS_Collection.CollectionName,<span style="color:#bbb"> </span>SMS_Collection.ObjectPath,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb"></span>SMS_Collection.PowerConfigsCount,<span style="color:#bbb"> </span>SMS_Collection.RefreshType,<span style="color:#bbb"> </span>SMS_Collection.ServiceWindowsCount,<span style="color:#bbb"> </span>SMS_Collection.UseCluster<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">from</span><span style="color:#bbb">  </span>vCollections<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>SMS_Collection<span style="color:#bbb">  
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">where</span><span style="color:#bbb">  </span>(<span style="color:#bbb"> </span>SMS_Collection.SiteID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">in</span><span style="color:#bbb">  
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb"></span>(<span style="color:#000;font-weight:bold">select</span><span style="color:#bbb">  </span>allFolder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.InstanceKey<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">from</span><span style="color:#bbb"> </span>vFolderMembers<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span><span style="color:#bbb">  
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">where</span>(<span style="color:#bbb">    </span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.ObjectTypeName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;SMS_Collection_Device&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb"></span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.ContainerNodeID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">in</span>(<span style="color:#bbb">   </span><span style="color:#099">12345678</span>,<span style="color:#099">23456789</span>,<span style="color:#099">34567890</span>,<span style="color:#099">45678901</span>,<span style="color:#099">56789012</span>,<span style="color:#099">67890123</span>,<span style="color:#099">78901234</span>,<span style="color:#099">89012345</span><span style="color:#bbb">    </span>))<span style="color:#bbb"> </span>)<span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#bbb"></span>(SMS_Collection.CollectionType<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">2</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#bbb"></span>(((((SMS_Collection.SiteID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb"> </span>SMS_Collection.CollectionComment<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb"> </span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#bbb"></span>SMS_Collection.ObjectPath<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb">  </span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#bbb"></span>SMS_Collection.LimitToCollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb">   </span>)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">OR</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#bbb"></span>SMS_Collection.ResultClassName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span><span style="color:#bbb">    </span>)<span style="color:#bbb"> </span>ORSMS_Collection.CollectionName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">like</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;%Testing%&#39;</span>)<span style="color:#bbb"> </span>)<span style="color:#bbb"> </span>)<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">order</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">by</span><span style="color:#bbb">  </span>SMS_Collection.CollectionName<span style="color:#bbb">
+</span></code></pre></div><p>The key difference here is that the sub folder query adds this block of code. Each number represents the ID of a folder in the tree. The more subfolders that are beneath the folder you are searching from, the longer the string.  In my case, when searching from a top folder, the log truncates the folder ID list because there are so many -  900 folders x (8 digits + 1 comma) = 8100 characters - this is in addition to the rest of the characters in the SQL statement.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>SMS_Collection.SiteID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">in</span><span style="color:#bbb">  </span>(<span style="color:#000;font-weight:bold">select</span><span style="color:#bbb">  </span>allFolder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.InstanceKey<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">from</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span>vFolderMembers<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">where</span>(<span style="color:#bbb">    </span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.ObjectTypeName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>N<span style="color:#d14">&#39;SMS_Collection_Device&#39;</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AND</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb"></span>Folder<span style="color:#000;font-weight:bold">##</span><span style="color:#000;font-weight:bold">Alias</span><span style="color:#000;font-weight:bold">##</span><span style="color:#099">810314</span>.ContainerNodeID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">in</span>(<span style="color:#bbb">   </span><span style="color:#099">12345678</span>,<span style="color:#099">23456789</span>,<span style="color:#099">34567890</span>,<span style="color:#099">45678901</span>,<span style="color:#099">56789012</span>,<span style="color:#099">67890123</span>,<span style="color:#099">78901234</span>,<span style="color:#099">89012345</span><span style="color:#bbb">    </span>))<span style="color:#bbb"> </span>)<span style="color:#bbb">
+</span></code></pre></div><p>If you were to do the same tests and run these queries manually within SQL, you&rsquo;d find that there&rsquo;s barely a difference in performance between searching from the root node and a sub folder.  However, the piece that&rsquo;s missing from the SMSProv.log (it may be elsewhere, I just haven&rsquo;t found it) is the part where the console has to create the string of subfolders that it passes to the query.  If you watch the log as you click Search, you will see that the log pauses at the point just before it outputs the above queries. This would indicate that there&rsquo;s a process possibly looping through each folder in in the tree to build the list. I can&rsquo;t prove it with the data I have at this point, but this certainly appears to be what&rsquo;s happening behind the scenes.</p>
+<h1 id="bottom-line">Bottom Line</h1>
+<p>If you need to have folders, search from the top, or drill down to a lower level before searching to decrease the time required to process the search.  While I&rsquo;m sure you can get clever with your collections names and forgo folders (or as many folders), I haven&rsquo;t gone down that path at this moment and I suspect that it will take some time convincing my teammates that it&rsquo;s a worthwhile endeavor. Also keep in mind that when navigating through the tree and expanding each node, the console is performing a set of queries for each node that you click through.</p>
+<p><strong>Choose Your Folders Wisely!</strong></p>
+
+			</div>
+			
+			<div class="post-share">
+				<div class="post-share-box share-comments">
+				</div>
+			</div>
+			<div class="post-author">
+			</div>
+			<div class="post-comments" id="comments">
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

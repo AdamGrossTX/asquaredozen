@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise"/>
+<meta name="twitter:description" content="I hope I never have to build another Task Sequence again. Seriously. Wouldn&rsquo;t that be nice? I know that&rsquo;s not truly feasible, but can&rsquo;t a guy dream? It&rsquo;s not that I dislike Task Sequences, it&rsquo;s just that I strongly believe that Modern Desktop Management (AutoPilot/Device Reset/Feature Update servicing/etc.) is going to continue to improve and we should continue to attempt to adopt these tools with as much effort as we spend on customizing Task Sequences."/>
+
+
+        <link rel="canonical" href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</h1>
+				<span class="post-date">October 5, 2019</span>
+			</div>
+			<div class="post-entry">
+				<p><img src="/img/2019/10/image-1.png" alt="A Square Dozen Image"></p>
+<p>I hope I never have to build another Task Sequence again. Seriously. Wouldn&rsquo;t that be nice? I know that&rsquo;s not truly feasible, but can&rsquo;t a guy dream? It&rsquo;s not that I dislike Task Sequences, it&rsquo;s just that I strongly believe that <a href="https://docs.microsoft.com/windows/windows-10/">Modern Desktop Management (AutoPilot/Device Reset/Feature Update servicing/etc.</a>) is going to continue to improve and we should continue to attempt to adopt these tools with as much effort as we spend on customizing Task Sequences.</p>
+<p>I continue to have conversations with people who tried Feature Update servicing and had a bad experience so they went back to Task Sequences because they are easier to manage. I totally understand the feeling, we even did the same thing in our organization. I also understand that there are plenty of organizations that simply cannot use Feature Update servicing due to many factors including bandwidth, infrastructure and 3rd party software (which are very valid reasons). I&rsquo;m hoping to challenge you to reconsider your opinion on Feature Update servicing without Task Sequences and give them another go. I&rsquo;m still learning and Microsoft is still improving, so I can only hope that this becomes easier to adopt as time goes by.</p>
+<h2 id="the-enterprise-challenge">The Enterprise Challenge</h2>
+<p>My organization, along with many others, are just coming to the Feature Update table after dealing with a slow and agonizing migration off of Windows 7, while others have been managing Windows 10 for several releases now and dealing with the challenges involved with ensuring their clients are on a supported Windows 10 version. I&rsquo;ve been watching many others deal with the many missteps and challenges that were prevalent in early Windows 10 releases and feel like this is one of those times where being late to the game may actually save have saved us some headaches.
+SCCM/MDT Task Sequences continue to be the recommended approach for Feature Updates for several reasons, including flexibility, user visibility, reporting and more. However, my hope is that there are organizations with simple requirements that can benefit from Windows 10 Servicing without Task Sequences. There are several obvious areas that make servicing of Feature Updates more difficult to adopt than Task Sequences but I if you stick with me, I&rsquo;ll share what we are doing and what&rsquo;s working.</p>
+<hr>
+<p>Before continuing, I&rsquo;ll mention that I&rsquo;ve recently made some contacts at Microsoft who are eager to hear feedback on the process and help improve things. I&rsquo;m hopeful that we will see this space continue to get better!</p>
+<hr>
+<p>Some of the obvious challenges I&rsquo;ve seen with Feature Update servicing include:</p>
+<ul>
+<li>Limited documentation from Microsoft - There a just a few pages in the docs for Windows 10 that cover options for managing Feature Updates via servicing. The examples are very high level and basic and since most people are using Task Sequences, it has been hard to find (m)any sources to help navigate enterprise management of Windows 10 Features Update servicing.</li>
+<li>Reporting capability is lacking when compare to Task Sequences</li>
+<li>Poor reliability track record - previous releases have stumbled and many people who tried Feature Update servicing previously have given up and gone with Task Sequences instead. As of 1803, Custom Actions were added, which many people haven&rsquo;t looked into.</li>
+<li><a href="https://oofhours.com/2019/08/06/uup-is-still-coming-soon-and-dynamic-update-is-still-important/">Dynamic Updates</a> - We have been fighting to stay on top of Dynamic Updates for the past year or so and now they have been moved out of WSUS and are pulled directly from the internet - this just doesn&rsquo;t work for many orgs with bandwidth limitations.</li>
+<li>Features On Demand and Language Packs - Some people have seen where they don&rsquo;t get preserved during Feature Updates and are somewhat difficult to manage.</li>
+</ul>
+<p>For the above reasons alone, the safe bet is Task Sequences for Feature Updates but I also know that the time I&rsquo;ve spent on building and managing Task Sequences compared to the work required for Feature Updates is enough motivation to give up on one of those things and move forward.</p>
+<h2 id="real-world-implementation">Real World Implementation</h2>
+<p>We just spent the past 6 months upgrading from Windows 7 to Windows 10 1803 (1803 because 1809 kept having issues initially and 1803 was a huge improvement over 1709). We knew that we&rsquo;d be up against the 18-month support window for 1803, so as soon as we could, we began working on a plan for 1809. As we began testing Feature Updates, we ran into 4 main challenges that I built workable solutions around:</p>
+<ul>
+<li>Non-Blocking Driver &amp; App Compatibility Blocks</li>
+<li>802.1x/NAC whitelisting</li>
+<li>Error Handling</li>
+<li>Logs/Reporting</li>
+</ul>
+<p>The solution and scripts provided in this series are copies of what we deployed to our enterprise. We deployed the update as available for about 2 weeks with a required deployment set for a Thursday night, just before a holiday weekend (maybe could have had a bit better timing). Within a week of the update deadlining over 90% of our 1803 devices have been upgraded to 1809. As we began looking at the remaining devices, we found a few devices that had upgraded, but SCCM/WSUS weren&rsquo;t updating the status and kept triggering a reboot every 1.5hrs. These were easily identified and remediated by resetting SCCM client policies. We didn&rsquo;t encounter a single instance of a user&rsquo;s machine failing outright or even rolling back due to an error.</p>
+<hr>
+<h2 id="my-organization-doesnt-support-additional-language-packs-and-we-havent-had-to-deal-with-major-driver-issues-so-i-havent-spent-any-time-working-with-them-at-this-point-though-i-likely-will-do-some-testing-in-the-future"><strong>Note:</strong>
+My organization doesn&rsquo;t support additional language packs and we haven&rsquo;t had to deal with major driver issues, so I haven&rsquo;t spent any time working with them at this point, though I likely will do some testing in the future.</h2>
+<h4 id="a-bit-about-application-compatibility">A Bit About Application Compatibility</h4>
+<p>One of the major areas that causes organizations issues is application compatibility. We have been leveraging Upgrade Readiness and now <a href="https://docs.microsoft.com/sccm/desktop-analytics/overview">Desktop Analytics</a> to manage our upgrades since we began our Windows 7 to Windows 10 migration. It gave us the insight into our application compatibility which greatly reduced our application testing efforts and allowed us to rapidly move to 1809 with no application issues.
+I don&rsquo;t mean to imply that we don&rsquo;t have any application compatibility issues. We do. However, we were able to use these amazing tools to help drive our testing and remediation efforts and most importantly, identify devices which SHOULD NOT be upgraded yet. This is why we have been able to user Feature Update servicing with confidence. In fact, we built up our confidence in Upgrade Readiness while we were building our 7 to 10 Task Sequences and were able to In-Place upgrade over 50% of our environment (the remainder were hardware lifecycle replacements) without having to perform any device-based pre-assessments.</p>
+<p>By shining a light on Application Compatibility, we have been able to build up confidence in the toolset and worry less about applications causing issues with deployments.</p>
+<h4 id="a-note-about-drivers">A Note About Drivers</h4>
+<p>Since I started this post, I have done some basic driver analysis and found that existing drivers from 1803 were migrated to 1809 without issue. If you know that you will have driver issues for specific models, you should either pre-upgrade the drivers if possible OR pre-stage the new drivers and add a line to setupconfig.ini to reference the staged drivers. You just need to get the drivers onto a known location on the device before the feature update AND point setupconfig.ini to that location.</p>
+<p><a href="https://twitter.com/MrWyss">Marius Wyss</a>, a Microsoft PFE, built a solution for managing his setupconfig.ini using a silent Task Sequence. It has great examples for how to manage Drivers and Language Packs. I&rsquo;m not saying that you need to use a Task Sequence to manage it, just want to share ONE possible option, which is pretty clever. You can find more info here: <a href="https://github.com/MrWyss-MSFT/PrepareIPUTaskSequence">https://github.com/MrWyss-MSFT/PrepareIPUTaskSequence</a></p>
+<h2 id="the-enterprise-solution">The Enterprise Solution</h2>
+<p>We identified 4 main hurdles to overcome when deploying Feature Updates so I built a set of scripts and other components to address each of them. Combining them, we now have a relatively robust solution that has streamlined our Feature Update servicing. I built each piece to be as modular as possible, so only use what&rsquo;s required for your organization. The list below matches up the challenge with a detailed post about that topic and associated scripts.</p>
+<ol>
+<li>Driver Compatibility Blocks = <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">SetupConfig.ini</a></li>
+<li>802.1x/NAC whitelisting = <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Custom Actions - precommit.cmd</a></li>
+<li>Error Handling = Failure.cmd/<a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">SetupDiag</a></li>
+<li>Logs/Reporting = Setupcomplete.cmd/Failure.cmd/<a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">SetupDiag</a>/Custom Inventory</li>
+</ol>
+<p>I will also included a guide in the repo (soon-ish) for how to manage the included scripts if they aren&rsquo;t intuitive. At a minimum, to get started with Feature Update servicing, you should deploy Setupconfig.ini to your clients with the Compat option set to Ignore Dismissable Warnings. This setting alone will reduce your Feature Update issues greatly. Everything else just adds nice-to-have features to be more like the Task Sequence experience.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">[Setupconfig]</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Compat</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">IgnoreWarning</span>
+</code></pre></div><h2 id="looking-back">Looking Back</h2>
+<p>It has been over a month since I built the solutions above (and wrote the post honestly). In that time, I&rsquo;ve had time to fine tune some things in our environment and assess the effectiveness/necessity of the toolset. (I have some updates to the scripts that I need to publish to the repo - nothing major, just a few minor bug fixes/tweaks. You <a href="https://github.com/AdamGrossTX/Windows10FeatureUpdates">can find everything here</a> - if you Watch the repo, you will get alerted when I publish updated scripts.).</p>
+<ul>
+<li>Currently, we run the copy logs routine for success and failure. I think I may update it to only copy logs on failure since I don&rsquo;t think I even looked at any logs that were copied.</li>
+<li>I debated whether running setupdiag, whether or not there was a failure, and I am glad that I did. I&rsquo;ve actually added a baseline to SCCM now that will run setupdiag on any machine that hasn&rsquo;t run it (it doesn&rsquo;t report anything for new builds, just upgrades). This gives me a more complete picture of deployment when we run reports.</li>
+<li>I&rsquo;m not entirely happy with how each solution needs to be managed. I need to combine them a bit more to make changes easier to handle. I know, I should just use a Task Sequence right???</li>
+<li>Drivers - I still need to figure out how I want to deal with these. I plan to add some things for managing them for the next feature update (I hope).</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>I hope that you are inspired to give Feature Updates another go. I know I&rsquo;ve covered a lot of ground in these posts, but there is even more that needs to be said and plenty of room for Microsoft to close the gaps needed to make Feature Updates more accessible to everyone.</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>How to find Settings Preventing Application Deletion in ConfigMgr-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="How to find Settings Preventing Application Deletion in ConfigMgr"/>
+<meta name="twitter:description" content="Today my co-worker was attempting to delete an old application and got blocked with the following message message and I wanted to document it for future reference.
+Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
+1Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment. 2 3Details: 4Number of dependent applications: 0 5Number of active deployments: 1 6Number of dependent task sequences: 9 7Number of virtual environments:0 8Number of settings:1 9 10To view the dependent applications, open the application properties, and then click the References tab."/>
+
+
+        <link rel="canonical" href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>How to find Settings Preventing Application Deletion in ConfigMgr</h1>
+				<span class="post-date">January 12, 2021</span>
+			</div>
+			<div class="post-entry">
+				<p>Today my co-worker was attempting to delete an old application and got blocked with the following message message and I wanted to document it for future reference.</p>
+<p>Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.</p>
+<p><img src="/img/2021/01/image-8.png" alt="A Square Dozen Image"></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>Details:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>Number of dependent applications: 0
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>Number of active deployments: 1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>Number of dependent task sequences: 9 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>Number of virtual environments:0
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>Number of settings:1
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>To view the dependent applications, open the application properties, and then click the References tab.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>To view the active deployments, select the application, and then select the Deployments tab in the details pane.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>To view the dependent task sequences, select the task sequences in the Operating Systems node, and then select the References tab in the details pane.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>To view the virtual environments, open the application properties, and then click the References tab.
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>
+</code></pre></div><h2 id="number-of-settings--number-of-configuration-items">Number of Settings = Number of Configuration Items</h2>
+<p>The first items listed are easy to find and the dialog even provides instructions for finding the blocking references to the application. The last item in the list was the confusing one. <strong><code>Number of settings: 1</code></strong>. There is no information in the dialog to help find out what <strong><code>Settings</code></strong> refers to. To find the answer I opened up <strong><code>smsprov.log</code></strong> from the site server logs to see which query was being run. This is a great technique for finding out where data is coming from within the ConfigMgr console. As you can see in the screenshot, I found the WMI class being queried - <strong><code>SMS_ApplicationLatest</code></strong>.</p>
+<p>SMS_ApplicationLatest
+<img src="/img/2021/01/image-1.png" alt="A Square Dozen Image"></p>
+<p>To query this in WMI the query would be:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>SMS_ApplicationLatest<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>ModelName<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;ScopeId_FC07EA7F-55AD-47CC-90AA-2A3E907188DF/Application_dda94e21-8237-4403-ba24-0f36ce2f9213&#39;</span><span style="color:#bbb">
+</span></code></pre></div><p>The equivalent query in SQL would use a ConfigMgr SQL function. If you were building a report, you&rsquo;d want to use the RBAC function <strong><code>fn_rbac_ListLatestApplicationCIs</code></strong> but to keep this simple, we will use the non-RBAC function <strong><code>fn_ListLatestApplicationCIs</code></strong>.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>fn_ListLatestApplicationCIs(<span style="color:#099">1033</span>)<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>modelname<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;ScopeId_FC07EA7F-55AD-47CC-90AA-2A3E907188DF/Application_dda94e21-8237-4403-ba24-0f36ce2f9213&#39;</span><span style="color:#bbb">
+</span></code></pre></div><p>The result of this query includes the <strong><code>NumberOfSettings</code></strong> column which populates the count for <strong><code>Number of settings:</code></strong> in the error message.</p>
+<p>fn_ListLatestApplicationCIs - NumberOfSettings
+<img src="/img/2021/01/image-2.png" alt="A Square Dozen Image"></p>
+<p>Unfortunately, this function only provides the summarized count for this column, we need the underlying table(s) in order to determine the source of this count.</p>
+<blockquote>
+<p><strong>STOP!</strong>
+The following should only be done in your test/lab environment. I do not recommend doing this in production since you could unintentionally break things. I take no responsibility for your actions.</p>
+</blockquote>
+<p>In SSMS, you can right click on the function and open it in the editor to see what queries are being used to generate the output for the function. This was my next step.</p>
+<p><img src="/img/2021/01/image-4.png" alt="A Square Dozen Image"></p>
+<p>This function is quite complex but searching for <strong><code>NumberOfSettings</code></strong> made it easy to find the source tables in the queries.</p>
+<p><img src="/img/2021/01/image-6.png" alt="A Square Dozen Image"></p>
+<p><img src="/img/2021/01/image-7.png" alt="A Square Dozen Image"></p>
+<p>Within the console there are Configuration Items that go with Configuration Baselines, but within the ConfigMgr backend, Configuration Items can be any object within the database. My next step was to determine what a <strong><code>RelationType</code></strong> of 21 mapped to. I quickly found another view that gave me a full list.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>v_CIRelationTypes<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb"></span><span style="color:#998;font-style:italic">--Results
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#998;font-style:italic"></span>RelationType<span style="color:#bbb">	</span>Description<span style="color:#bbb">	</span>IsRecursive<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb"></span><span style="color:#099">1</span><span style="color:#bbb">	</span>Bundled<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb"></span><span style="color:#099">2</span><span style="color:#bbb">	</span>Required<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb"></span><span style="color:#099">3</span><span style="color:#bbb">	</span>Prohibited<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb"></span><span style="color:#099">4</span><span style="color:#bbb">	</span>Optional<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span><span style="color:#099">5</span><span style="color:#bbb">	</span>Derived<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb"></span><span style="color:#099">6</span><span style="color:#bbb">	</span>Superseded<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb"></span><span style="color:#099">7</span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">Self</span><span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb"></span><span style="color:#099">8</span><span style="color:#bbb">	</span>Reference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb"></span><span style="color:#099">9</span><span style="color:#bbb">	</span>AppToDTReference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb"></span><span style="color:#099">10</span><span style="color:#bbb">	</span>AppDependence<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#bbb"></span><span style="color:#099">11</span><span style="color:#bbb">	</span>Intention<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#bbb"></span><span style="color:#099">12</span><span style="color:#bbb">	</span>Platform<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#bbb"></span><span style="color:#099">13</span><span style="color:#bbb">	</span>GlobalConditionReference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#bbb"></span><span style="color:#099">15</span><span style="color:#bbb">	</span>ApplicationSuperSeded<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#bbb"></span><span style="color:#099">16</span><span style="color:#bbb">	</span>ApplicationType<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#bbb"></span><span style="color:#099">17</span><span style="color:#bbb">	</span>ApplicationHost<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#bbb"></span><span style="color:#099">18</span><span style="color:#bbb">	</span>ApplicationInstaller<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#bbb"></span><span style="color:#099">19</span><span style="color:#bbb">	</span>SupersedOrDependent<span style="color:#bbb">	</span><span style="color:#099">1</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span><span style="color:#bbb"></span><span style="color:#099">20</span><span style="color:#bbb">	</span>VirtualEnvironmentReference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#bbb"></span><span style="color:#099">21</span><span style="color:#bbb">	</span>AppDCMReference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#bbb"></span><span style="color:#099">22</span><span style="color:#bbb">	</span>DeploymentTypeToPolicyTemplateReference<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span><span style="color:#bbb"></span><span style="color:#099">23</span><span style="color:#bbb">	</span>CIInheritanceRelation<span style="color:#bbb">	</span><span style="color:#099">0</span><span style="color:#bbb">
+</span></code></pre></div><p>As you can see on line 23, RelationType 21 = AppDCMReference. (Desired Configuration Management) which is part of your Compliance Settings in the for ConfigMgr. You may also notice that RelationType 9 was also used in the query. This was the relationship mapping the Application to the Application Deployment Type. Then the Application Deployment Type was mapped to the Configuration Item.</p>
+<h2 id="building-a-query-to-map-applications-to-dcm-configuration-items">Building a Query to map Applications to DCM Configuration Items</h2>
+<p>From there I was able to build a simple query to use to pinpoint the Configuration Item that is preventing the application from being deleted.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">DECLARE</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>LocaleID<span style="color:#bbb"> </span><span style="color:#0086b3">int</span>,<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>ApplicationName<span style="color:#bbb"> </span>nvarchar(<span style="color:#099">500</span>)<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">@</span>LocaleID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">1033</span>,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">@</span>ApplicationName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;MDOP MBAM 2.5 SP1&#39;</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb">	</span>lci.DisplayName<span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>ApplicationName,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">	</span>lci.ci_id<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ApplicationCIID,<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb">	</span>loc.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>CIName<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#bbb">	</span>fn_ListLatestApplicationCIs(<span style="color:#099">1033</span>)<span style="color:#bbb"> </span>lci<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#bbb">	</span>vSMS_CombinedConfigurationItemRelations<span style="color:#bbb"> </span>appToDTRel<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>lci.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appToDTRel.FromCI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">inner</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">join</span><span style="color:#bbb"> </span>vSMS_CombinedConfigurationItemRelations<span style="color:#bbb"> </span>cidt<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">on</span><span style="color:#bbb"> </span>appToDTRel.ToCI_ID<span style="color:#000;font-weight:bold">=</span>cidt.FromCI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">and</span><span style="color:#bbb"> </span>appToDTRel.RelationType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">9</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">inner</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">join</span><span style="color:#bbb"> </span>vSMS_CombinedConfigurationItemRelations<span style="color:#bbb"> </span>settingsToDTRel<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">on</span><span style="color:#bbb"> </span>settingsToDTRel.ToCI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>cidt.FromCI_ID<span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">inner</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">join</span><span style="color:#bbb"> </span>v_ConfigurationItems<span style="color:#bbb"> </span>settingsCI<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">on</span><span style="color:#bbb"> </span>settingsToDTRel.FromCI_ID<span style="color:#000;font-weight:bold">=</span>settingsCI.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">and</span><span style="color:#bbb"> </span>settingsToDTRel.RelationType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">21</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">and</span><span style="color:#bbb"> </span>settingsCI.IsTombstoned<span style="color:#000;font-weight:bold">=</span><span style="color:#099">0</span><span style="color:#bbb">   
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">inner</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">join</span><span style="color:#bbb"> </span>fn_LocalizedCIProperties(<span style="color:#000;font-weight:bold">@</span>LocaleID)<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>loc<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>loc.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>settingsCI.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#bbb">	</span>lci.DisplayName<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>ApplicationName<span style="color:#bbb">
+</span></code></pre></div><p>In this case, we had to look at the revision history for a CI for another application and delete an older version of the CI where the old application was being referenced. We had created a CI that we used as a template for several others and each time we changed from the template app to the new app, the template app was left in the revision history, making it less than obvious where it was hiding.</p>
+<h2 id="extending-the-console">Extending the Console</h2>
+<p>If you want to take it to the next level and add a custom pane to your ConfigMgr console, you can use this WMI query as the starting point then use this great post by <a href="https://twitter.com/IoanPopovici">Ioan Popovici</a> to build the custom extension <a href="https://sccm-zone.com/extend-the-sccm-console-to-show-collection-membership-using-console-builder-c6db52b408d8">https://sccm-zone.com/extend-the-sccm-console-to-show-collection-membership-using-console-builder-c6db52b408d8</a>. More info on the WMI Class SMS_CIRelation_Flat can be found here <a href="https://docs.microsoft.com/mem/configmgr/develop/reference/compliance/sms_cirelation_flat-server-wmi-class">https://docs.microsoft.com/mem/configmgr/develop/reference/compliance/sms_cirelation_flat-server-wmi-class</a></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">DISTINCT</span><span style="color:#bbb"> </span>settingsCI.<span style="color:#000;font-weight:bold">*</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#bbb">	</span>SMS_ApplicationLatest<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#bbb">	</span>sms_CIRelation_flat<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>appToDTRel<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>SMS_ApplicationLatest.CI_ID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>appToDTRel.FromCIID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#bbb">	</span>sms_CIRelation_flat<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>cidt<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>appToDTRel.ToCIID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>cidt.FromCIID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#bbb">	</span>sms_CIRelation_flat<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>settingsToDTRel<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>settingsToDTRel.ToCIID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>cidt.FromCIID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">INNER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">JOIN</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#bbb">	</span>SMS_ConfigurationItem<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">AS</span><span style="color:#bbb"> </span>settingsCI<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>settingsToDTRel.FromCIID<span style="color:#000;font-weight:bold">=</span>settingsCI.CI_ID<span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">	</span>SMS_ApplicationLatest.ModelName<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;ScopeId_FC07EA7F-55AD-47CC-90AA-2A3E907188DF/Application_dda94e21-8237-4403-ba24-0f36ce2f9213&#39;</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">and</span><span style="color:#bbb"> </span>appToDTRel.RelationType<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">9</span><span style="color:#bbb">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">and</span><span style="color:#bbb"> </span>settingsToDTRel.RelationType<span style="color:#000;font-weight:bold">=</span><span style="color:#099">21</span><span style="color:#bbb">
+</span></code></pre></div><h2 id="summary">Summary</h2>
+<p>Sometimes things within ConfigMgr can be a mystery but with a little bit of digging you can solve the puzzle. If you ever see the message above when deleting an application, just remember that <strong>Settings refers to Configuration Items</strong>. I hope you found this helpful - if nothing else, I&rsquo;ve got this documented for the next time I need to deal with it.</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en-us">
+	    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Demystifying Windows 10 Feature Update Blocks-A Square Dozen | A. Gross Blog</title>
+
+        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+        
+
+        
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
+}
+</script>
+
+        <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
+
+<meta name="twitter:title" content="Demystifying Windows 10 Feature Update Blocks"/>
+<meta name="twitter:description" content="Disclaimer - if you manually bypass Feature Update blocks, you risk causing issues with your device. The blocks exist for a reason and should be respected. This information is provided for educational purposes only. Proceed with caution.
+ Windows 10 Feature Updates are released twice per year. For each release, Microsoft has the ability to block the update from being installed or even showing up in Widows Update for applications/drivers/devices that have known compatibility issues."/>
+
+
+        <link rel="canonical" href="/2020/07/26/demystifying-windows-10-feature-update-blocks/">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+        
+        
+
+        
+    </head>
+		<body class="home blog">
+			<div id="asd-container">
+				
+				
+<div id="top-bar">
+    <div class="container">
+        <div id="nav-wrapper">
+                <ul class="menu" id="menu-top-menu">
+                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Feature Updates</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
+                                    
+                                    <span>ConfigMgr AdminService</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>802.1x for OSD</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>Task Sequence Hacks</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                        
+                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="https://github.com/AdamGrossTX">
+                                    
+                                    <span>GitHub</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                <a href="#">
+                                    
+                                    <span>MORE&gt;</span>
+                                </a>
+                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/about/">About</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/consulting/">Consulting</a>
+                                        </li>
+                                    
+                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+                                            <a href="/contact/">Contact</a>
+                                        </li>
+                                    
+                                </ul>
+                            </li>
+                        
+                    
+                
+                </ul>
+        </div>
+    </div>
+</div>
+				<header id="header" class="noslider">
+	<div class="container">
+		<div id="logo">
+			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
+		</div>
+	</div>
+</header>
+				<div class="container">
+					<div id="content">
+						<div id="main">
+							
+		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+			<div class="post-header">
+				<h1>Demystifying Windows 10 Feature Update Blocks</h1>
+				<span class="post-date">July 27, 2020</span>
+			</div>
+			<div class="post-entry">
+				<hr>
+<p><strong>Disclaimer</strong> - if you manually bypass Feature Update blocks, you risk causing issues with your device. The blocks exist for a reason and should be respected. This information is provided for educational purposes only. Proceed with caution.</p>
+<hr>
+<p>Windows 10 Feature Updates are released twice per year. For each release, Microsoft has the ability to block the update from being installed or even showing up in Widows Update for applications/drivers/devices that have known compatibility issues. This is a pretty great feature since it helps prevent unnecessary failures for already known issues that Microsoft is possibly already working to address.
+The flaw in this feature is the lack of visibility into what is being blocked and how/when it should be unblocked. Microsoft has gotten a little better with this area by keeping this site updated <a href="https://docs.microsoft.com/windows/release-information/status-windows-10-2004">https://docs.microsoft.com/windows/release-information/status-windows-10-2004</a>, however from a client installation perspective, it is often difficult or even impossible to match up an error message/code with anything published on that site (or any other Microsoft site). When Windows 10 2004 was released, there was a block in place for certain hardware models including the Surface line. When your boss has a Surface Pro 7 that can&rsquo;t upgrade to the latest feature update, you&rsquo;re not going to have a good time. This post is a deep dive into my experience with identifying Hard Blocks and making sense out of generic error messages like the one below. It will also contain some best guesses for how some things work where I may not have a 100% clear understanding.</p>
+<h2 id="last-things-first">Last things First</h2>
+<p>After writing this, I realized that I have crammed a lot if stuff in here. I want to highlight the main points to keep things from getting lost in the pile.</p>
+<ol>
+<li>Gain a better understanding of Feature Update blocks that prevent devices from upgrading - sometimes blocking the update from even showing up on the device as available.</li>
+<li>Understand how to manually convert Appraiser results to XML then compare to the Windows Compatibility Database (appraiser.sdb).</li>
+<li>Automate the collection and assessment of Feature Update blocks using custom PowerShell module <a href="https://www.powershellgallery.com/packages/FU.WhyAmIBlocked">FU.WhyAmIBlocked</a>.</li>
+</ol>
+<h2 id="blocked-upgrade-messages">Blocked Upgrade Messages</h2>
+<p>When Windows 10 2004 shipped, the internet filled up with reports of people getting messages indicating that their devices couldn&rsquo;t be upgraded. Everyone was asking - &lsquo;Why am I blocked?&rsquo;. Presenting a message telling us that we are blocked, but providing no actionable information is less than helpful. This needs to improve.</p>
+<h4 id="this-pc-cant-be-upgraded-to-windows-10">This PC can&rsquo;t be upgraded to Windows 10</h4>
+<p>Let&rsquo;s start with this message. It is very generic and less than helpful. It can appear in the setup UI if you are manually running <strong><code>setup.exe</code></strong> or in <strong><code>c:\$WINDOWS.~BT\Sources\Panther\ActionableReport.html</code></strong>.
+<img src="/img/2020/07/image-18.png" alt="A Square Dozen Image"></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">This PC can&#39;t be upgraded to Windows 10.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Your PC settings aren&#39;t supported yet on this version of Windows 10. Microsoft is working to support your settings soon. No action is needed. Windows Update will offer this version of Windows 10 automatically when these settings are supported.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">Learn More (https://docs.microsoft.com/windows/release-information/status-windows-10-2004)</span>
+</code></pre></div><h4 id="your-device-isnt-quite-ready-for-it">&hellip;Your device isn&rsquo;t quite ready for it&hellip;</h4>
+<p>On these same devices, if you attempt to pull the feature update from Windows Update, you may see a message like this one that showed up for Windows 10 2004.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Feature update to Windows 10, version 2004</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">The Windows 10 May 2020 Update is on its way. We&#39;re offering this update to compatible devices, but your device isn&#39;t quite ready for it. Once your device is ready, you&#39;ll see the update available on this page. There&#39;s nothing you need to do at this time.</span>
+</code></pre></div><h4 id="compatdata-hard-block">CompatData Hard Block</h4>
+<p>When a Feature Update fails to install, you can generally check in the last CompatData_*.xml file for information about the failure. Unfortunately, sometimes the information is vague.</p>
+<p><img src="/img/2020/07/2020-07-26_22-54-08.png" alt="A Square Dozen Image"></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#000080">&lt;CompatReport</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.microsoft.com/ApplicationExperience/UpgradeAdvisor/01012009&#34;</span> <span style="color:#008080">MigXmlFile=</span><span style="color:#d14">&#34;P6MUWe3Hb0aa0MLV.9.8.0.0_APPRAISER_Migration.xml&#34;</span><span style="color:#000080">&gt;&lt;System</span> <span style="color:#008080">X64Capable=</span><span style="color:#d14">&#34;True&#34;</span> <span style="color:#008080">X64Running=</span><span style="color:#d14">&#34;True&#34;</span><span style="color:#000080">/&gt;&lt;Hardware&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_BitlockerNoTargetSupport&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_TargetIsNonStagedBuild&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_LanguagePackDetected&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_LicenseActivation&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_FeaturesOnDemandDetected&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_PendingFirmwareUpdateWithPower&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_FlightSigningEnabled&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_SecureBoot&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Generic&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>			<span style="color:#000080">&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;Hard&#34;</span> <span style="color:#008080">Message=</span><span style="color:#d14">&#34;Your PC isn&#39;t supported yet on this version of Windows 10. No action is needed. Windows Update will offer this version of Windows 10 automatically once the issue has been resolved.&#34;</span> <span style="color:#008080">Title=</span><span style="color:#d14">&#34;This PC can&#39;t be upgraded to Windows 10.&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>			<span style="color:#000080">&lt;Link</span> <span style="color:#008080">Target=</span><span style="color:#d14">&#34;https://go.microsoft.com/fwlink/?LinkId=2128961&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Learn More&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>		<span style="color:#000080">&lt;/HardwareItem&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span>	<span style="color:#000080">&lt;/Hardware&gt;&lt;SystemInfo</span> <span style="color:#008080">UplevelEdition=</span><span style="color:#d14">&#34;Windows 10&#34;</span> <span style="color:#008080">OSMajorVersion=</span><span style="color:#d14">&#34;10&#34;</span> <span style="color:#008080">OSMinorVersion=</span><span style="color:#d14">&#34;0&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span>	<span style="color:#000080">&lt;Devices/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span>
+</code></pre></div><h2 id="configmgr-and-desktop-analytics">ConfigMgr and Desktop Analytics</h2>
+<p>If you are an enterprise customer and are fortunate enough to use ConfigMgr, you can leverage <a href="https://docs.microsoft.com/mem/configmgr/desktop-analytics/overview">Desktop Analytics</a> to assess device and app compatibility BEFORE attempting to install feature updates. We have been using this (And Windows Analytics before DA) since it was released and it has almost eliminated the need for testing ALL of our applications before deploying the latest Feature Update - we still test critical apps. The shortcoming with DA is that is simply reports back what the Microsoft Compatibility Appraiser reports. It doesn&rsquo;t include details specific to the blocking app. Work is still being done with DA, so I think there&rsquo;s hope for integrating more data in the future.</p>
+<h2 id="microsoft-compatibility-appraiser">Microsoft Compatibility Appraiser</h2>
+<p>So, I mentioned the Microsoft Compatibility Appraiser in the previous section. Whether you are aware of it or not, your Windows 10 device is actively assessing your device&rsquo;s compatibility with Windows releases (possibly other monthly updates as well). I&rsquo;ll break down the pieces that I have put together, but I still feel like this a &lsquo;black box&rsquo; that I don&rsquo;t fully understand.</p>
+<h4 id="compattelrunner-scheduled-task">CompatTelRunner Scheduled Task</h4>
+<p>Open Task Scheduler and you will find the <strong><code>Microsoft Compatibility Appraiser</code></strong> task under <strong><code>Task Scheduler Library&gt;Microsoft&gt;Windows&gt;Application Experience</code></strong></p>
+<p><strong>Microsoft Compatibility Appraiser scheduled task</strong>
+<img src="/img/2020/07/image-1-1024x368.png" alt="A Square Dozen Image"></p>
+<p>This task launches:</p>
+<p><code>%windir%\system32\compattelrunner.exe</code></p>
+<p>which in turn launches:</p>
+<p><code>%windir%\system32\CompatTelRunner.exe -m:appraiser.dll -f:DoScheduledTelemetryRun</code></p>
+<p>The output of this task produces a set of registry entries as well as some output files (possibly others that I&rsquo;ve missed):</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>registry<span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>files<span style="color:#a61717;background-color:#e3d2d2">:</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>C:\Windows\appcompat\appraiser\*.bin
+</code></pre></div><p>These .bin files that are generated contain a list of compatibility assessment results. Portions of the results are also listed in the registry. For example, if there are hard blocks, a SdbAppGUID will be listed in the .bin file and a corresponding entry will be listed in the registry:</p>
+<p><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Appraiser\GWX\SdbEntries</code></p>
+<p>Since the entries are in the registry, you can easily use ConfigMgr&rsquo;s <a href="https://docs.microsoft.com/mem/configmgr/core/servers/manage/cmpivot">CMPivot</a> tool to query the values to determine which SdbAppGUIDs are causing blocks using this CMPivot query:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Registry(<span style="color:#d14">&#39;HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Appraiser\\GWX&#39;</span>) | <span style="color:#0086b3">where </span>Property == <span style="color:#d14">&#39;SdbEntries&#39;</span> and Value != <span style="color:#d14">&#39;&#39;</span>
+</code></pre></div><p><code>Compattelrunner.exe</code> also checked for any policies you may have enabled that prevent updates.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#998;font-style:italic">#Lists the policy locations for Windows Updates</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\<span style="color:#000;font-weight:bold">default</span>\Update
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span><span style="color:#998;font-style:italic">#One of the locations where the policies may reside</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy
+</code></pre></div><h4 id="appraisersdb-and-alternate-appraiser-data">Appraiser.sdb and Alternate Appraiser Data</h4>
+<p>The appraiser consumes a database of info from <strong><code>Appraiser.sdb</code></strong> and uses a task list file <strong><code>Appraiser_TelemetryRunList.xml</code></strong> to tell it what to process. The default location of these files is <strong><code>C:\Windows\System32\appraiser</code></strong>.</p>
+<p>If a machine is not on the latest Feature Update, <strong><code>compattelrunner.exe</code></strong> will download an <strong><code>Alternate_AppraiserData.cab</code></strong> file to <strong><code>c:\Windows\appcompat\appraiser</code></strong> from <strong><code>http://adl.windows.com/appraiseradl/YYYY_DD_MM_??_??_ARCH.CAB</code></strong></p>
+<p>Here&rsquo;s a list of cab files that I&rsquo;ve been able to find by looking at setupact.log files and searching the internet for other people&rsquo;s logs. I don&rsquo;t know where the current URL comes from to tell the client which file to get nor do I know what the last 2 sets of numbers stand for. I was thinking they may be HH_MM but that doesn&rsquo;t seem to line up every time.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2019_12_05_03_05_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_01_09_04_05_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_03_27_03_52_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_04_02_05_51_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_06_17_03_51_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_06_26_06_52_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_07_09_05_51_AMD64.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//adl.windows.com/appraiseradl/2020_07_23_05_02_AMD64.cab
+</code></pre></div><p>You can read more about data sharing and this URL here: <a href="https://docs.microsoft.com/mem/configmgr/desktop-analytics/enable-data-sharing">https://docs.microsoft.com/mem/configmgr/desktop-analytics/enable-data-sharing</a>. Be sure that you allow clients to access the listed URLs or you may experience issues with updates not having the latest compatibility information.
+When you expand the cab files using, you will get the following contents:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>C:\Windows\appcompat\appraiser\Alternate_AppraiserData.cab - Contents
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>appraiser.sdb
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>Appraiser_Data.ini
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>Appraiser_TelemetryRunList.xml
+</code></pre></div><p>These files are the key to understanding why machines will be blocked one day then unblocked the next and why you may experience different results on the same devices.</p>
+<h4 id="dynamic-updates">Dynamic Updates</h4>
+<p>If you disable Dynamic Updates or prevent your devices from going to the URLs listed above, you run the risk of preventing your devices from being able to install the latest Feature Update or install it properly. Whenever Windows setup runs, it will run a customized compatibility assessment and will download the latest Alternate_AppraiserData.cab files. This ensure that it has the latest compatibility information to assess a device against and provides a list of current migration shims that may mean the difference between success or failure of the upgrade.</p>
+<h4 id="setupactlog">Setupact.log</h4>
+<p>During or after a Feature Update, the setupact.log shows where it goes out to get the latest cab then runs a compatibility assessment. This one of several compatibility checks that are performed.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">MOUPG  Setup Phase: [4]</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">MOUPG  Setup SubPhase: [8]</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::SetupAppraiser::GetAlternateData (3854):   Setup alternate data in use [1], Url [http://adl.windows.com/appraiseradl/2020_07_23_05_52_AMD64.cab], Result [0x0].</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::SdbUtils::SendSdbInfoTelemetry (1089):   Using Sdb Id: [{11111111-1111-1111-1111-111111111111}] Size: [13013088] Modified: [2020-07-23T23:29:39], at path C:\$WINDOWS.~BT\Sources\Panther\appraiser.sdb</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaFactory::DoWicaRun (328):   WicaRun started.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1340):   Engine starting.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::SystemInventory::GetInventory (141):   Starting System Inventory.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaDeviceInventory::GetInventory (343):   Starting Device Inventory.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::SystemInventory::GetInventory (168):   Finished System Inventory.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaDeviceInventory::GetInventory (368):   DevInv version is 10.0.18362</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaDeviceInventory::GetInventory (369):   Processing Device Inventory File.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaDeviceInventory::GetInventory (409):   Finished reading Device Inventory. 0 Devices</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1345):   Tier complete: Inventory.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1350):   Tier complete: Data Source.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1355):   Tier complete: Decision Maker.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1360):   Tier complete: Decision Aggregator.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::WicaEngine::RunComponents (1366):   Engine finished.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#008080">CONX   Windows::Compat::Appraiser::SetupAppraiser::StartScan (159):   Start Scan Done</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#008080">CONX   ConX::Compatibility::CCompatibilityHost::SerializeData: Provider wsc:wica: is serializing 580 bytes of data.</span>
+</code></pre></div><p>Just as the CompatTelRunner scheduled task will create new bin files, the process during Windows Setup will create a set of XML and BIN files in the Panther folder.</p>
+<p><img src="/img/2020/07/image-2.png" alt="A Square Dozen Image"></p>
+<h4 id="appraiser_telemetryrunlistxml">Appraiser_TelemetryRunList.xml</h4>
+<p>The Appraiser_TelemetryRunList.xml file tells the appraiser which actions to perform. It also tells it which sdb to use and where to output results of each scan. You could compare this xml to the xml files output during Windows setup and match up the components. I haven&rsquo;t gotten that far into it. The module included at the end here has PowerShell to generate your own RunList.</p>
+<p><img src="/img/2020/07/image-3.png" alt="A Square Dozen Image"></p>
+<h4 id="force-a-new-appraisersdb-to-process">Force a new Appraiser.sdb to process</h4>
+<p>During testing, I was able to replace the current Appraiser_AlternateData.cab file with an older version and run the scheduled task and the old file would be used. This is because the registry key logs which files were used last. If the key isn&rsquo;t updated or deleted, a new file won&rsquo;t be downloaded. Comparing Appraiser_Data.ini with the registry key you can determine if the device has used the current database.</p>
+<p>I was also able to delete the Appraiser_AlternateData.cab from C:\Windows\appcompat\appraiser and re-run the scheduled task and it would pull down the latest version.</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Appraiser
+<img src="/img/2020/07/image-14.png" alt="A Square Dozen Image"></p>
+<p>Appraiser_Data.ini
+<img src="/img/2020/07/2020-07-26_17-25-53.png" alt="A Square Dozen Image"></p>
+<h2 id="deserialize-appraiser-bin-files">Deserialize Appraiser BIN files</h2>
+<p>The output of the appraiser process will be a .bin file (and during a feature update an .xml file). The bin file is just a binary XML file that can be converted by using the appraiser process. It&rsquo;s a configuration option built into the RunList XML. Here&rsquo;s an example XML file that will take the file <strong><code>C:\Windows\appcompat\appraiser\APPRAISER_TelemetryBaseline_20H1.bin</code></strong> and deserialize it into the XML file <strong><code>APPRAISER_TelemetryBaseline_20H1_HUMANREADABLE.xml</code></strong></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#000080">&lt;WicaRun&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>  <span style="color:#000080">&lt;RunInfos&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>    <span style="color:#000080">&lt;RunInfo&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>      <span style="color:#000080">&lt;Component</span> <span style="color:#008080">TypeIdentifier=</span><span style="color:#d14">&#34;InventoryBinaryDeserializer&#34;</span> <span style="color:#008080">SpecificIdentifier=</span><span style="color:#d14">&#34;InventoryBinaryDeserializer&#34;</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Inventory&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;BinaryDeserializerTier&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Inventory&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;BinaryDeserializerTier&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;DataSource&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;BinaryDeserializerTier&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;DecisionMaker&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;BinaryDeserializerTier&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;DecisionAggregator&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;BinaryDeserializerFilePath&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;C:\Windows\appcompat\appraiser\APPRAISER_TelemetryBaseline_20H1.bin&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>      <span style="color:#000080">&lt;/Component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>      <span style="color:#000080">&lt;Component</span> <span style="color:#008080">TypeIdentifier=</span><span style="color:#d14">&#34;OutputEverything&#34;</span> <span style="color:#008080">SpecificIdentifier=</span><span style="color:#d14">&#34;OutputEverything&#34;</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Outputter&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;OutputFilePath&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;APPRAISER_TelemetryBaseline_20H1_HumanReadable.xml&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>      <span style="color:#000080">&lt;/Component&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>    <span style="color:#000080">&lt;/RunInfo&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>  <span style="color:#000080">&lt;/RunInfos&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#000080">&lt;/WicaRun&gt;</span>
+</code></pre></div><p>Run this in a cmd prompt and point to your RunList.</p>
+<p><code>rundll32.exe appraiser.dll,RunTest MyRunList.xml</code></p>
+<p><img src="/img/2020/07/image-4.png" alt="A Square Dozen Image"></p>
+<p>I used this script from Technet gallery (which will be going away soon) to get started down this process. It appears to be maintained by someone from the Microsoft CSS team but I&rsquo;m not sure. <a href="https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee">https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee</a></p>
+<h2 id="humanreadablexml">*HumanReadable.XML</h2>
+<p>In the screenshot below of the Windows Panther folder, you&rsquo;ll see bin and xml files. These files were generated during a Feature Update and you&rsquo;ll see that they are already in XML format. From my experience, I&rsquo;ve found that the second entry is the one that will generally contain block information. They correspond to the bin files that we see in the <strong>appraiser</strong> folder. There will be an <strong><code>*_UNV.bin</code></strong> and one that corresponds to the Windows release like <strong><code>*_20H1.bin</code></strong>. Likewise, the files created during setup appear to be broken out the same way.</p>
+<p><img src="/img/2020/07/image.png" alt="A Square Dozen Image"></p>
+<p>An example of a device that&rsquo;s blocked by an entry in one of these files would look like this. This is from the appraiser output folder, not a Feature Update. Search the file for the <strong><code>BlockingMatchingInfo</code></strong> property to find blocks.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Inventory&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;AssetType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;BlockingMatchingInfo&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>      <span style="color:#000080">&lt;/PropertyList&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>      <span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;DataSource&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;ApplicableTargetVersion&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;20H1&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;ApplicableTargetVersion&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;20H1&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{afb67a42-a10a-48a0-9677-77b4d80efecc}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{afb67a42-a10a-48a0-9677-77b4d80efecc}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppName&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;OneDrive and Legacy filters&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppName&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;OneDrive and Legacy filters&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppVendor&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Microsoft&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppVendor&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Microsoft&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockOverrideType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;SDB_UX_BLOCKTYPE_OVERRIDE_UPGRADE_BLOCK&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockOverrideType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;SDB_UX_BLOCKTYPE_OVERRIDE_UPGRADE_BLOCK&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;BlockUpgrade&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;BlockUpgrade&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbEntryGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{b074d9ce-fc26-4e0b-9978-42e541e23388}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbEntryGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{19d3703c-f2f8-4d66-a480-078235f28797}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbFwLink&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbFwLink&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummary&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10028&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummary&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10028&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummaryStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummaryStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitle&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10026&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitle&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10026&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitleStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitleStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkTarget&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;https://go.microsoft.com/fwlink/?LinkId=2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkTarget&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;https://go.microsoft.com/fwlink/?LinkId=2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkText&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10041&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkText&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10041&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>      <span style="color:#000080">&lt;/PropertyList&gt;</span>
+</code></pre></div><p><img src="/img/2020/07/image-6.png" alt="A Square Dozen Image"></p>
+<p>Here&rsquo;s another example of the block generated during a Feature Update. The main differences are 1) there are 2 blocks in the first example 2) the feature update blocks render out the GenericMessage text where the appraiser version just points to a Resource ID.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Inventory&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;AssetType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;BlockingMatchingInfo&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>      <span style="color:#000080">&lt;/PropertyList&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>      <span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;DataSource&#34;</span><span style="color:#000080">&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;ApplicableTargetVersion&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;20H1&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{afb67a42-a10a-48a0-9677-77b4d80efecc}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppName&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;OneDrive and Legacy filters&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbAppVendor&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Microsoft&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockOverrideType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;SDB_UX_BLOCKTYPE_OVERRIDE_UPGRADE_BLOCK&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbBlockType&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;BlockUpgrade&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbEntryGuid&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;{b074d9ce-fc26-4e0b-9978-42e541e23388}&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbFwLink&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummary&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Your PC settings aren&#39;t supported yet on this version of Windows 10. Microsoft is working to support your settings soon. No action is needed. Windows Update will offer this version of Windows 10 automatically when these settings are supported.&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageSummaryStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitle&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;This PC can&#39;t be upgraded to Windows 10.&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbGenericMessageTitleStringPresent&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;TRUE&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkTarget&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;https://go.microsoft.com/fwlink/?LinkId=2133887&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkText&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Learn More&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;1&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>      <span style="color:#000080">&lt;/PropertyList&gt;</span>
+</code></pre></div><p>The entries are grouped by Name, so you have to follow the Ordinal values. All <strong><code>Ordinal = &quot;1&quot;</code></strong> entries belong to the same block. In this case we can see that this device has 2 blocks for <strong><code>OneDrive and Legacy filters</code></strong>. Not all entries listed in this section will be hard blocks but it&rsquo;s a good place to start.</p>
+<h2 id="what-the-heck-is-onedrive-and-legacy-filters">What the Heck is OneDrive and Legacy filters?!?</h2>
+<p>In my search to find answers, the OneDrive and Legacy filters block has been the thing that I just didn&rsquo;t understand. If you list an app or hardware model in the block, that makes sense, but this one was so vague that it drove me to dig deeper.</p>
+<p>I had a hunch that the info I needed would be in the appraiser.sdb files. After some digging around and lots of trial and error, I found 2 tools that ultimately helped convert the Compatibility Appraiser Database to XML.</p>
+<p><a href="https://github.com/TheEragon/SdbUnpacker">https://github.com/TheEragon/SdbUnpacker</a> - Python script to decompress the sdb.<br>
+<a href="https://devblogs.microsoft.com/setup/shim-database-to-xml">https://devblogs.microsoft.com/setup/shim-database-to-xml</a> - EXE to convert from sdb format to XML using the SDB API.</p>
+<p>Once I had extracted the SDB into XML. I was able to match the GUIDs from the appraiser bin files with entries in the database. Each entry lists the files and registry keys that are used to determine if something should be blocked. In my case, there were 4 relevant entries related to <strong><code>OneDrive and Legacy filters</code></strong>.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;MATCHING_INFO_BLOCK&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>      <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>      <span style="color:#000080">&lt;APP_NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>OneDrive and Legacy filters<span style="color:#000080">&lt;/APP_NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>      <span style="color:#000080">&lt;VENDOR</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>Microsoft<span style="color:#000080">&lt;/VENDOR&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>      <span style="color:#000080">&lt;EXE_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span> <span style="color:#008080">baseType=</span><span style="color:#d14">&#34;xs:base64Binary&#34;</span><span style="color:#000080">&gt;</span>{b074d9ce-fc26-4e0b-9978-42e541e23388}<span style="color:#000080">&lt;/EXE_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>      <span style="color:#000080">&lt;APP_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:base64Binary&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>      <span style="color:#000080">&lt;DEST_OS_GTE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>20H1<span style="color:#000080">&lt;/DEST_OS_GTE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>      <span style="color:#000080">&lt;DEST_OS_LT</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>21H1<span style="color:#000080">&lt;/DEST_OS_LT&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>      <span style="color:#000080">&lt;MATCHING_REG&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\BypassBlockUpgrade<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>        <span style="color:#000080">&lt;MATCH_LOGIC_NOT</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#000080">&lt;REG_VALUE_NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>{B074D9CE-FC26-4E0B-9978-42E541E23388}<span style="color:#000080">&lt;/REG_VALUE_NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;REG_VALUE_TYPE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>4<span style="color:#000080">&lt;/REG_VALUE_TYPE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>        <span style="color:#000080">&lt;REG_VALUE_DATA_DWORD</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>1<span style="color:#000080">&lt;/REG_VALUE_DATA_DWORD&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>      <span style="color:#000080">&lt;/MATCHING_REG&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>      <span style="color:#000080">&lt;PICK_ONE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>        <span style="color:#000080">&lt;MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>          <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>RegistryMatchingPlugin<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>          <span style="color:#000080">&lt;COMMAND_LINE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>&#34;HKEY_USERS\*\Software\Microsoft\OneDrive\Accounts\Personal&#34; ValueSearch FirstRun eq 1 REG_DWORD<span style="color:#000080">&lt;/COMMAND_LINE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>        <span style="color:#000080">&lt;/MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>        <span style="color:#000080">&lt;MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>          <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>RegistryMatchingPlugin<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>          <span style="color:#000080">&lt;COMMAND_LINE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>&#34;HKEY_USERS\*\Software\Microsoft\OneDrive\Accounts\Business*&#34; ValueSearch FirstRun eq 1 REG_DWORD<span style="color:#000080">&lt;/COMMAND_LINE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>        <span style="color:#000080">&lt;/MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>      <span style="color:#000080">&lt;/PICK_ONE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>      <span style="color:#000080">&lt;BLOCK_UPGRADE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>        <span style="color:#000080">&lt;BLOCK_UPGRADE_TYPE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>3<span style="color:#000080">&lt;/BLOCK_UPGRADE_TYPE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>        <span style="color:#000080">&lt;SUMMARY_MSG_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10028<span style="color:#000080">&lt;/SUMMARY_MSG_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>        <span style="color:#000080">&lt;TITLE_MSG_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10026<span style="color:#000080">&lt;/TITLE_MSG_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>        <span style="color:#000080">&lt;FW_LINK_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>2133887<span style="color:#000080">&lt;/FW_LINK_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>        <span style="color:#000080">&lt;LINK_TEXT_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10041<span style="color:#000080">&lt;/LINK_TEXT_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>      <span style="color:#000080">&lt;/BLOCK_UPGRADE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>    <span style="color:#000080">&lt;/MATCHING_INFO_BLOCK&gt;</span>
+</code></pre></div><p>From this entry, we can see that the appraiser is looking for the existence of registry keys. If they exit, it will block the upgrade and display messaged tied to the IDs listed in the BLOCK_UPGRADE section. Once I removed the registry keys for all of the blocks and re-ran the appraiser, the blocks went away and I was able to apply the Feature Update.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;MATCHING_INFO_BLOCK&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>      <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>      <span style="color:#000080">&lt;APP_NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>OneDrive and Legacy filters<span style="color:#000080">&lt;/APP_NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>      <span style="color:#000080">&lt;VENDOR</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>Microsoft<span style="color:#000080">&lt;/VENDOR&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>      <span style="color:#000080">&lt;EXE_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span> <span style="color:#008080">baseType=</span><span style="color:#d14">&#34;xs:base64Binary&#34;</span><span style="color:#000080">&gt;</span>{b074d9ce-fc26-4e0b-9978-42e541e23388}<span style="color:#000080">&lt;/EXE_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>      <span style="color:#000080">&lt;APP_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:base64Binary&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>      <span style="color:#000080">&lt;DEST_OS_GTE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>20H1<span style="color:#000080">&lt;/DEST_OS_GTE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>      <span style="color:#000080">&lt;DEST_OS_LT</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>21H1<span style="color:#000080">&lt;/DEST_OS_LT&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>      <span style="color:#000080">&lt;MATCHING_REG&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\BypassBlockUpgrade<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>        <span style="color:#000080">&lt;MATCH_LOGIC_NOT</span> <span style="color:#000080">/&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#000080">&lt;REG_VALUE_NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>{B074D9CE-FC26-4E0B-9978-42E541E23388}<span style="color:#000080">&lt;/REG_VALUE_NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#000080">&lt;REG_VALUE_TYPE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>4<span style="color:#000080">&lt;/REG_VALUE_TYPE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>        <span style="color:#000080">&lt;REG_VALUE_DATA_DWORD</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>1<span style="color:#000080">&lt;/REG_VALUE_DATA_DWORD&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>      <span style="color:#000080">&lt;/MATCHING_REG&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>      <span style="color:#000080">&lt;PICK_ONE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>        <span style="color:#000080">&lt;MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>          <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>RegistryMatchingPlugin<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>          <span style="color:#000080">&lt;COMMAND_LINE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>&#34;HKEY_USERS\*\Software\Microsoft\OneDrive\Accounts\Personal&#34; ValueSearch FirstRun eq 1 REG_DWORD<span style="color:#000080">&lt;/COMMAND_LINE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>        <span style="color:#000080">&lt;/MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>        <span style="color:#000080">&lt;MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>          <span style="color:#000080">&lt;NAME</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>RegistryMatchingPlugin<span style="color:#000080">&lt;/NAME&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>          <span style="color:#000080">&lt;COMMAND_LINE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:string&#34;</span><span style="color:#000080">&gt;</span>&#34;HKEY_USERS\*\Software\Microsoft\OneDrive\Accounts\Business*&#34; ValueSearch FirstRun eq 1 REG_DWORD<span style="color:#000080">&lt;/COMMAND_LINE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>        <span style="color:#000080">&lt;/MATCH_PLUGIN&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>      <span style="color:#000080">&lt;/PICK_ONE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>      <span style="color:#000080">&lt;BLOCK_UPGRADE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>        <span style="color:#000080">&lt;BLOCK_UPGRADE_TYPE</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>3<span style="color:#000080">&lt;/BLOCK_UPGRADE_TYPE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>        <span style="color:#000080">&lt;SUMMARY_MSG_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10028<span style="color:#000080">&lt;/SUMMARY_MSG_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>        <span style="color:#000080">&lt;TITLE_MSG_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10026<span style="color:#000080">&lt;/TITLE_MSG_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>        <span style="color:#000080">&lt;FW_LINK_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>2133887<span style="color:#000080">&lt;/FW_LINK_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>        <span style="color:#000080">&lt;LINK_TEXT_RC_ID</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;xs:int&#34;</span><span style="color:#000080">&gt;</span>10041<span style="color:#000080">&lt;/LINK_TEXT_RC_ID&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>      <span style="color:#000080">&lt;/BLOCK_UPGRADE&gt;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>    <span style="color:#000080">&lt;/MATCHING_INFO_BLOCK&gt;</span>
+</code></pre></div><p><img src="/img/2020/07/image-8.png" alt="A Square Dozen Image"></p>
+<p>While I was in the sdb, I discovered another registry key that allowed me to bypass the block without actually deleting registry keys that may be critical to the app causing the block.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\BypassBlockUpgrade</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Property: {B074D9CE-FC26-4E0B-9978-42E541E23388}</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">DWORD Value: 1</span>
+</code></pre></div><p><img src="/img/2020/07/image-9.png" alt="A Square Dozen Image"></p>
+<p>Once I created the regkeys and re-ran the appraiser, the blocks were still listed, but new entries appeared referencing the BypassBlockUpgrade keys.</p>
+<p><img src="/img/2020/07/2020-07-26_20-45-31.png" alt="A Square Dozen Image"></p>
+<p>Here&rsquo;s another example where the Surface Pro 7 was blocked for 2004. This one gets a bit tricky. The first image show 2 GUIDs that match the GUIDs for a MACHINE_BLOCK in the 4th image. The second image shows the SdbEntryGuid that matches the MATCHING_INFO_BLOCK in the 3rd image. You&rsquo;ll also see the registry key to bypass the block in the 3rd image. This whole time, we could have bypassed the Surface Pro 7 block!!!</p>
+<p>*Appraiser_HumanReadable.xml
+<img src="/img/2020/07/image-12.png" alt="A Square Dozen Image"></p>
+<p>*Appraiser_HumanReadable.xml
+<img src="/img/2020/07/image-10.png" alt="A Square Dozen Image"></p>
+<p>Appraiser.sdb entries
+<img src="/img/2020/07/image-13.png" alt="A Square Dozen Image"></p>
+<p>Appraiser.sdb entries
+<img src="/img/2020/07/image-11.png" alt="A Square Dozen Image"></p>
+<h2 id="fuwhyamiblocked-powershell-module">FU.WhyAmIBlocked Powershell Module</h2>
+<p><em><strong>FU is short for Feature Update</strong></em></p>
+<p>After going through all of this, I decided that this was too many steps to perform on a per-machine basis, so I took everything and created a new PowerShell module to help. Detailed usage info and updates can be found on the GitHub project site <a href="https://github.com/AdamGrossTX/FU.WhyAmIBlocked">https://github.com/AdamGrossTX/FU.WhyAmIBlocked</a>.<br>
+It has been published to the PowerShell Gallery (My first one, thanks Ben!) and you can install it directly on any machine you need to troubleshoot. <a href="https://www.powershellgallery.com/packages/FU.WhyAmIBlocked">https://www.powershellgallery.com/packages/FU.WhyAmIBlocked</a></p>
+<p>In order to process the database SDB files, you will need Python installed. I have tested with Python 3.8 using the msi installer or the Windows Store app (which is pretty sweet!).</p>
+<p>Also, I was limited on the block scenarios that I could replicate in my environment so results and match text files may not show everything. I suggest manually searching the appraiser.sdb.XML file for additional entries.</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">#Install and initialize</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#0086b3">Install-Module</span> FU.WhyAmIBlocked
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#0086b3">Initialize-FUModule</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#998;font-style:italic">#Get blocks on local device where the command is being run</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#0086b3">Get-FUBlocks</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#998;font-style:italic">#Get blocks from a remote device (Some limitations on features - registry key gathering and launching the appraiser)</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#0086b3">Get-FUBlocks</span> -DeviceName <span style="color:#d14">&#39;MyDevice&#39;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#998;font-style:italic">#Process files from an alternate source path. Need .bin and Appraiser_AlternateData.cab files for this.</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#0086b3">Get-FUBlocks</span> -AlternateSourcePath <span style="color:#d14">&#39;C:\AltSource&#39;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#998;font-style:italic">#Many more options available.</span>
+</code></pre></div><h2 id="assessing-your-compatibility-blocks-at-scale">Assessing your Compatibility Blocks at Scale</h2>
+<p>Here&rsquo;s what I did to assess my environment:</p>
+<ul>
+<li>Collect SDB Block GUIDS and SDB Versions from the Registry using CMPivot</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Registry(<span style="color:#d14">&#39;HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Appraiser\\GWX&#39;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>| <span style="color:#0086b3">where </span>Property == <span style="color:#d14">&#39;SdbEntries&#39;</span> and Value != <span style="color:#d14">&#39;&#39;</span>
+</code></pre></div><ul>
+<li>Export results to CSV and get a distinct GUID list</li>
+<li>Process GUIDs against Appraiser.sdb.xml</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#0086b3">Import-Module</span> FU.WhyAmIBlocked -Force
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">$BlockList</span> = (<span style="color:#d14">&#39;{62170609-e32b-4c80-a92a-a1025fd653af}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#d14">&#39;{1a55176d-2657-4b31-ba20-01721c9ab513}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#d14">&#39;{fa1d81f1-57b7-4907-970a-a37d80d41304}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#d14">&#39;{6c5378a1-aa13-4c12-95e8-11f90f27c528}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#d14">&#39;{691d652a-ea4b-4573-8c60-661049a36185}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#d14">&#39;{62170609-e32b-4c80-a92a-a1025fd653af}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#d14">&#39;{5e757e51-cc84-4a4a-ae70-d69a6a2b37f1}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#d14">&#39;{55350e5a-e423-48f8-8c4e-56c67315ec6f}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#d14">&#39;{1a55176d-2657-4b31-ba20-01721c9ab513}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#d14">&#39;{115791cb-3956-49d4-b375-30ec430137d3}&#39;</span>,
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#d14">&#39;{0c65fb7b-65d4-48f1-80ce-eb0e2e49d43a}&#39;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#0086b3">Extract-FUXMLFromSDB</span> -AlternateSourcePath C:\FeatureUpdateBlocks\AltSrc -Path C:\FeatureUpdateBlocks\Output -SDBCab AltData.cab
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">Find-FUBlocksInSDB</span> -Path C:\FeatureUpdateBlocks\Output -BlockList <span style="color:#008080">$BlockList</span>
+</code></pre></div><p>This should produce a Matches.txt file that you can use to review all of your enterprise&rsquo;s blocks without having to collect any additional client information.</p>
+<p><img src="/img/2020/07/image-16.png" alt="A Square Dozen Image"></p>
+<h2 id="summary">Summary</h2>
+<p>I feel like I&rsquo;ve covered all of the pieces of the puzzle that I&rsquo;ve put together at this point. I don&rsquo;t think I&rsquo;m finished with this process or the module, but needed to get this first round of info out of my head before I lose it. I&rsquo;d love to hear your thoughts and get feedback on the module.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>sdbUnpacker - <a href="https://github.com/TheEragon/SdbUnpacker">https://github.com/TheEragon/SdbUnpacker</a></li>
+<li>sdb2xml - <a href="https://devblogs.microsoft.com/setup/shim-database-to-xml/">https://devblogs.microsoft.com/setup/shim-database-to-xml/</a></li>
+<li>Shim Database API - <a href="https://docs.microsoft.com/windows/win32/devnotes/application-compatibility-database?redirectedfrom=MSDN">https://docs.microsoft.com/windows/win32/devnotes/application-compatibility-database?redirectedfrom=MSDN</a></li>
+<li>Get-SDBFileInfo.ps1 - <a href="https://github.com/cinglis-msft/UpdateComplianceConfigurationScript/blob/1ab7c920ea81b86a1b36c698027c8fb8fdd064d5/Pilot/Diagnostics/Get-SdbFileInfo.ps1">https://github.com/cinglis-msft/UpdateComplianceConfigurationScript/blob/1ab7c920ea81b86a1b36c698027c8fb8fdd064d5/Pilot/Diagnostics/Get-SdbFileInfo.ps1</a></li>
+<li>CSSAPRS - <a href="https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee">https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee</a></li>
+<li>AppRPS script. May be a predecessor to the one above - <a href="https://aka.ms/AppRPS">https://aka.ms/AppRPS</a></li>
+</ul>
+<h2 id="addendum">Addendum</h2>
+<p>After posting this, I got a <a href="https://twitter.com/SMSagentTrevor/status/1287827763118956545?s=20">message from Trevor Jones</a> pointing me to a Microsoft doc with a buried registry key to bypass any data collection compatibly checks for Feature Updates. <a href="https://docs.microsoft.com/windows/deployment/update/update-compliance-feature-update-status#opting-out-of-compatibility-hold">https://docs.microsoft.com/windows/deployment/update/update-compliance-feature-update-status#opting-out-of-compatibility-hold</a></p>
+<p>Here&rsquo;s the text from that post in case it ever goes away:</p>
+<h4 id="compatibility-holds">Compatibility holds</h4>
+<p>Microsoft uses diagnostic data to determine whether devices that use Windows Update are ready for a feature update in order to ensure a smooth experience. When Microsoft determines a device is not ready to update due to a known issue, a compatibility hold is generated to delay the device&rsquo;s upgrade and safeguard the end-user experience. Holds are released over time as diagnostic data is analyzed and fixes are addressed. Details are provided on some, but not all compatibility holds on the Windows 10 release information page for any given release.</p>
+<h4 id="opting-out-of-compatibility-hold">Opting out of compatibility hold</h4>
+<p>Microsoft will release a device from a compatibility hold when it has determined it can safely and smoothly install a feature update, but you are ultimately in control of your devices and can opt out if desired. To opt out, set the registry key <strong><code>HKLM\Software\Microsoft\Windows NT\CurrentVersion\502505fe-762c-4e80-911e-0c3fa4c63fb0</code></strong> to a name of <strong><code>DataRequireGatedScanForFeatureUpdates</code></strong> and a value of <strong>``</strong>.</p>
+<p>Setting this registry key to 0 will force the device to opt out from all compatibility holds. Any other value, or deleting the key, will resume compatibility protection on the device.</p>
+<p>I will test this when I get some time and see if how it behaves compared to the other options mentioned. Thanks Trevor!</p>
+
+			</div>
+			
+			
+		</article>
+
+						</div>
+						<aside id="sidebar">
+	<div class="widget widget_search">
+		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
+			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
+			<input type="hidden" name="sitesearch" value="asquaredozen.com">
+			<button type="submit" value="Search"/>
+		</form>
+		</div>
+	<div>
+	<div class="widget widget_MVP">
+		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
+		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
+		</a>
+	</div>	
+	<div class="widget widget_recent_entries">
+		<h4 class="widget-title">Recent Posts</h4>
+		<ul>
+			
+			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+			
+			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+			
+			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+			
+			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+			
+			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+			
+		</ul>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Consulting</h4>
+		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
+		<img src="/img/SCDLogo.png">
+		</a>
+	</div>
+	<div class="widget widget_SCD">
+		<h4 class="widget-title">Intune.Training</h4>
+		<a href="http://intune.training" target="_blank">
+		<img src="/img/ITLogo.png">
+		</a>
+	</div>	
+</aside>
+
+					</div>
+				</div>
+				<footer id="footer">
+	<div class="container">
+		<div id="footer-copyright">
+			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
+		</div>
+	</div>
+</footer>
+
+			</div>
+		</body>
+</html>
