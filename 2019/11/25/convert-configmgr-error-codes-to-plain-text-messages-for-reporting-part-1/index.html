@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 1</h1>
@@ -255,11 +255,12 @@ if (!doNotTrack) {
 <p>When I started trying to build a Power BI report to provide detailed status messages for Windows 10 Feature Updates, I discovered that the plain text wasn&rsquo;t in the database as I expected. I decided to see where the existing SSRS reports got the data so I opened the <strong>Troubleshooting 2 - Deployment Errors</strong> report from the ConfigMgr Console. Using the queries from that report, I began to build my Power BI report. However, whenever I got to the <strong>Error Description</strong> field, I realized that the query used by the dataset doesn&rsquo;t actually include the text, just the error codes!</p>
 <p>I discovered that the Error Description column in the SSRS report references a DLL using this expression <code>=SrsResources.Localization.GetErrorMessage(Fields!ErrorCode.Value,User!Language)</code>.</p>
 <p><div class="image">
-
-<a href="image-23.png" target="_blank">
-  <img src="image-23.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-23.png" target="_blank">
+      <img src="image-23.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The DLL is <strong><code>SrsResources.dll</code></strong> and can be found in the <strong><code>bin</code></strong> folder of you ConfigMgr console installation directory. I was intrigued. As I began searching the web for this DLL, I found several posts which used it in PowerShell, so I started testing with it. It turns out, this file has a lot of power. Not only can it look up error codes, but it can look up a number of items including <strong>Status Messages</strong>.</p>
 <h2 id="using-powershell-to-return-error-messages">Using PowerShell to Return Error Messages</h2>
@@ -404,25 +405,28 @@ This folder and all contents<br>
 <code>C:\Temp\Bin\resources\StatusMessages</code><br>
 <code>C:\Temp\Bin\resources\StatusMessages\00000409</code></p>
 <p><div class="image">
-
-<a href="image-52.png" target="_blank">
-  <img src="image-52.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-52.png" target="_blank">
+      <img src="image-52.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>
 <div class="image">
-
-<a href="image-53.png" target="_blank">
-  <img src="image-53.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-53.png" target="_blank">
+      <img src="image-53.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>
 <div class="image">
-
-<a href="image-54.png" target="_blank">
-  <img src="image-54.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-54.png" target="_blank">
+      <img src="image-54.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="custom-error-lookup-script">Custom Error Lookup Script</h2>
 <p>Now that we have all of the files, we just need an easy to call script that will give us the error message text. This script will be the basis for the Azure Function in my next post.</p>
@@ -462,11 +466,12 @@ This folder and all contents<br>
 </code></pre></div><p>Save the file into the root of the directory where your source files are and call it from the PowerShell command line.</p>
 <p><code>.\Get-ErrorMessage.ps1 -ExitCode '0x87D00664' -Language 'en-US'</code></p>
 <p><div class="image">
-
-<a href="image-24.png" target="_blank">
-  <img src="image-24.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-24.png" target="_blank">
+      <img src="image-24.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>This post has ended up much longer than I expected and has been &lsquo;in progress&rsquo; for a few months now. I&rsquo;m going to stop here on this one.</p>
@@ -491,51 +496,7 @@ This folder and all contents<br>
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>The ConfigMgr AdminService</h1>
@@ -518,14 +518,14 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="94"><a style="outline: none; text-decoration:none; color:inherit" href="#94">94</a></span>    ]
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="95"><a style="outline: none; text-decoration:none; color:inherit" href="#95">95</a></span>}
 </code></pre></div><p><div class="image">
-
   <figure>
     <a href="2018-10-23_0-34-32.png" target="_blank">
       <img src="2018-10-23_0-34-32.png" alt="http://localhost/AdminService/v2/Collection returns the same as Select * FROM SMS_Collection">
     </a>
+    
     <figcaption>`http://localhost/AdminService/v2/Collection` returns the same as `Select * FROM SMS_Collection`</figcaption>
+    
   </figure>
-
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic"># You can pass in the item&#39;s ID to return just a single </span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#998;font-style:italic"># instance of the class</span>
@@ -641,18 +641,20 @@ if (!doNotTrack) {
 </code></pre></div><h2 id="run-scripts-and-approvedeny-app-requests">Run Scripts and Approve/Deny App Requests</h2>
 <p>Here&rsquo;s where I think it gets fun. I found a few actions/functions. The RunScript action requires changing to POST and creating a body object using Key:Value format. The script GUID can be found in the ConfigMgr console by adding the Scripts GUID column or running <code>https://localhost/AdminService/Scripts/</code> to list all of your scripts.</p>
 <p><div class="image">
-
-<a href="2018-10-23_1-13-25.png" target="_blank">
-  <img src="2018-10-23_1-13-25.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-13-25.png" target="_blank">
+      <img src="2018-10-23_1-13-25.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="2018-10-23_0-57-58.png" target="_blank">
-  <img src="2018-10-23_0-57-58.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-10-23_0-57-58.png" target="_blank">
+      <img src="2018-10-23_0-57-58.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">#POST URL</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>http<span style="color:#a61717;background-color:#e3d2d2">:</span>//localhost/AdminService/v1/Collections(<span style="color:#d14">&#39;TST00014&#39;</span>)/RunScript
@@ -668,11 +670,12 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>}
 </code></pre></div><p>In the ConfigMgr console, look under Monitoring&gt;Script Status and you can see that the script ran by comparing the Client Operation ID with the value from the results.</p>
 <p><div class="image">
-
-<a href="2018-10-23_1-12-07.png" target="_blank">
-  <img src="2018-10-23_1-12-07.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-12-07.png" target="_blank">
+      <img src="2018-10-23_1-12-07.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can also approve or deny User Application requests, though you have to lookup the Email GUID from the ApplicationRequests table in SQL.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">#</span><span style="color:#000;font-weight:bold">SQL</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">to</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">get</span><span style="color:#bbb"> </span>email<span style="color:#bbb"> </span>GUID<span style="color:#bbb">
@@ -698,52 +701,56 @@ if (!doNotTrack) {
 <li>Open <strong>Power BI</strong> and Sign In (or don&rsquo;t, I don&rsquo;t care!)</li>
 <li>Click <strong>Get Data</strong> to create a new report.</li>
 <li>Select <strong>OData Feed</strong> from the list and Click <strong>Connect</strong>  <div class="image">
-
-<a href="2018-10-23_1-26-29.png" target="_blank">
-  <img src="2018-10-23_1-26-29.png" alt="Select OData Feed from the list and Click Connect">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-26-29.png" target="_blank">
+      <img src="2018-10-23_1-26-29.png" alt="Select OData Feed from the list and Click Connect">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Enter the v1 URL in the OData feed box <code>http://localhost/AdminService/v1</code> and click <strong>OK</strong> <div class="image">
-
-<a href="2018-10-23_1-28-07.png" target="_blank">
-  <img src="2018-10-23_1-28-07.png" alt="Enter the v1 URL in the OData feed box &lt;code&gt;http://localhost/AdminService/v1&lt;/code&gt; and click &lt;strong&gt;OK&lt;/strong&gt;">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-28-07.png" target="_blank">
+      <img src="2018-10-23_1-28-07.png" alt="Enter the v1 URL in the OData feed box &lt;code&gt;http://localhost/AdminService/v1&lt;/code&gt; and click &lt;strong&gt;OK&lt;/strong&gt;">
+    </a>
+    
+  </figure>
 </div></li>
 <li>The initial load will fail.  <div class="image">
-
-<a href="2018-10-23_1-28-59.png" target="_blank">
-  <img src="2018-10-23_1-28-59.png" alt="The initial load will fail.">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-28-59.png" target="_blank">
+      <img src="2018-10-23_1-28-59.png" alt="The initial load will fail.">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Change to authentication to <strong>Windows</strong> then click <strong>Connect</strong>  <div class="image">
-
   <figure>
     <a href="2018-10-23_1-29-25.png" target="_blank">
       <img src="2018-10-23_1-29-25.png" alt="Change to authentication to Windows then click Connect**">
     </a>
+    
     <figcaption>Change to authentication to Windows then click Connect</figcaption>
+    
   </figure>
-
 </div>]</li>
 <li>In the <strong>Navigator</strong> you should see a list of tables. Select the tables to show data previews. <em>**If you don&rsquo;t see data, ensure that your account is in the ConfigMgr console as an Admin.</em>  <div class="image">
-
-<a href="2018-10-23_1-30-10.png" target="_blank">
-  <img src="2018-10-23_1-30-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-10-23_1-30-10.png" target="_blank">
+      <img src="2018-10-23_1-30-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Click <strong>Load</strong>. <div class="image">
-
   <figure>
     <a href="2018-10-23_1-36-45.png" target="_blank">
       <img src="2018-10-23_1-36-45.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>You should end up with 4 tables with data. Now do cool data things!</figcaption>
+    
   </figure>
-
 </div></li>
 </ol>
 <h2 id="summary">Summary</h2>
@@ -768,51 +775,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

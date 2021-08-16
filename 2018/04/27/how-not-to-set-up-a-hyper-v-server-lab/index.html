@@ -238,8 +238,8 @@ Have you ever had one of those weeks where you just bang your head against the s
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>How NOT to Set Up a Hyper-V Server Lab</h1>
@@ -252,34 +252,35 @@ Have you ever had one of those weeks where you just bang your head against the s
 <p>I&rsquo;m using Hyper-V for this lab. It&rsquo;s a simple setup with 1 Domain Controller and 1 ConfigMgr server plus Windows client VM&rsquo;s for testing builds. They are all connected to a the same Hyper-V <strong>Internal</strong> Virtual Switch that I configured NAT on using <a href="https://twitter.com/AdaptivaAmi">Amy Casto&rsquo;s</a> <a href="https://deploymentresearch.com/Research/Post/558/Setting-Up-New-Networking-Features-in-Server-2016">cool PowerShell tip</a>. Unfortunately, I don&rsquo;t manage domain controllers, DHCP, DNS, etc in my day job. I&rsquo;m a Desktop guy. I let the Server guys handle all that stuff. That&rsquo;s why I used the Hydration Kit instead of manually building my servers - I don&rsquo;t want to deal with setting up Active directory and all that stuff (I should do it, but I don&rsquo;t want to and you can&rsquo;t make me!!).</p>
 <p>So there I am with a perfectly working setup and I decided that I had to break it, because I learn best by starting with a working product then tearing it apart to see how it works. Instead of having a private lab network, I thought it would be easier to change the lab to use the same subnet that my Host server/Router were on. During this process, things went south and I ended up deleting all of the records out of DHCP and DNS. I fought with it for a while and ended up reading that I could set up a Routing and Remote Access (RRAS) server that would bridge my internal and external networks without making my Host machine part of my Domain. Johan even had a <a href="https://deploymentresearch.com/Research/Post/285/Using-a-virtual-router-for-your-lab-and-test-environment">link to a write-up</a> for that too, I had just gone with Ami&rsquo;s simple Virtual Switch NAT instead and never realized he had the process documented.</p>
 <p><div class="image">
-
   <figure>
     <a href="2018-04-27_22-44-04.png" target="_blank">
       <img src="2018-04-27_22-44-04.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>post configuration</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Then I rebuilt the original subnet but could never get things to talk after that. They would either talk between the DC and RRAS or DC and CM and sometimes not a all, but never all 3 and DHCP never would work. I even disabled all Windows firewalls and uninstalled Defender and still nothing. I used Wireshark to watch traffic and it just kept searching for the DHCP and RRAS servers. I spent several long nights deleting and rebuilding DHCP, DNS and RRAS, deleting NICS and Switches and all sorts of things in between. I watched EVERY tutorial on and read every obscure blog and forum post about Hyper-V, DHCP, DNS, RRAS and AD communication issues. No matter, how simple everyone made it seem, I was still missing something.</p>
 <p>Tonight, I had decided that this was it. If it didn&rsquo;t work soon, I was going to delete it all and start over. Then I remembered something that I had skimmed over. Someone said, &lsquo;Don&rsquo;t check the <strong><em>Enable virtual LAN identification</em></strong> box!&rsquo; in Hyper-V. They didn&rsquo;t provide a reason, but the fact that they mentioned it made me wonder. On a whim, I went through and unchecked it from my NICs and <strong>THEY ALL STARTED TALKING</strong>!!!! Several times in the troubleshooting process, I had checked and unchecked that box, along with all of the other settings I kept toggling, thinking it would help when I was using Wireshark to monitor the traffic. It didn&rsquo;t. Just 1 simple check box.</p>
 <p><div class="image">
-
   <figure>
     <a href="2018-04-27_22-20-29.png" target="_blank">
       <img src="2018-04-27_22-20-29.png" alt="Don&amp;rsquo;t check this box!">
     </a>
+    
     <figcaption>Don&#39;t check this box!</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Once it was all working, I started Googling and found <a href="https://support.microsoft.com/help/2739081/hyper-v-virtual-machines-cannot-reach-the-network-when-the-vlan-taggin">this</a> KB for server 2008 that seems to indicate this is/was a known issue (clearly I&rsquo;m not &lsquo;in the know&rsquo;). The weird thing about this is that my virtual switches aren&rsquo;t connected to an internal network adapter - the article specifically calls out Intel. I&rsquo;m using the a Hyper-V Virtual Private Switch on my new setup since the Internal switch adds the Hyper-V Host server to become a Router and I figured that wasn&rsquo;t helping things. So, it may not be the exact issue and I&rsquo;m honestly tired of dealing with it and want to get back to whatever it was I was doing before I broke everything. I&rsquo;m just not going to check the box from now on. If you know the answer, please feel free to share and I&rsquo;ll update this post.</p>
 <p><div class="image">
-
-<a href="2018-04-27_23-17-59.png" target="_blank">
-  <img src="2018-04-27_23-17-59.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-04-27_23-17-59.png" target="_blank">
+      <img src="2018-04-27_23-17-59.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h1 id="tldr">TL;DR;</h1>
 <p>Don&rsquo;t check the <strong><em>Enable virtual LAN identification</em></strong> box in Hyper-V if you want your VM&rsquo;s to talk to each other.</p>
@@ -303,51 +304,7 @@ Have you ever had one of those weeks where you just bang your head against the s
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

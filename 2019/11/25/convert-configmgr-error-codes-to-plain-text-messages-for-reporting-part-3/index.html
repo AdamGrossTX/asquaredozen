@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 3</h1>
@@ -260,11 +260,12 @@ if (!doNotTrack) {
 <li>Click Manage Parameters</li>
 </ol>
 <p><div class="image">
-
-<a href="image-27.png" target="_blank">
-  <img src="image-27.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-27.png" target="_blank">
+      <img src="image-27.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <ol>
 <li>Click New</li>
@@ -273,27 +274,30 @@ if (!doNotTrack) {
 <li>Enter `` as Current Value</li>
 </ol>
 <p><div class="image">
-
-<a href="image-37.png" target="_blank">
-  <img src="image-37.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-37.png" target="_blank">
+      <img src="image-37.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Repeat for Language</p>
 <p><div class="image">
-
-<a href="image-34.png" target="_blank">
-  <img src="image-34.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-34.png" target="_blank">
+      <img src="image-34.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Repeat for Code. Code will store the function code from the Azure Function that was created in Step 2.</p>
 <p><div class="image">
-
-<a href="image-38.png" target="_blank">
-  <img src="image-38.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-38.png" target="_blank">
+      <img src="image-38.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <ol>
 <li>Click New Source</li>
@@ -302,11 +306,12 @@ if (!doNotTrack) {
 <li>Click Connect</li>
 </ol>
 <p><div class="image">
-
-<a href="image-31.png" target="_blank">
-  <img src="image-31.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-31.png" target="_blank">
+      <img src="image-31.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click the Advanced radio button in the new dialog. This will allow you to enter the web URL to the Azure Function that you created in Part 2. Then using the new Power BI parameters that you created. The items in order are as follows (for the screenshots, I had to scroll&hellip;) :</p>
 <ul>
@@ -318,85 +323,95 @@ if (!doNotTrack) {
 </ul>
 <p>Click OK when done.</p>
 <p><div class="image">
-
-<a href="2019-11-25_16-17-07.png" target="_blank">
-  <img src="2019-11-25_16-17-07.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_16-17-07.png" target="_blank">
+      <img src="2019-11-25_16-17-07.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You will be prompted to change permissions for the API. Since we are using the <code>Code</code> query parameter, we can just use Anonymous and click Connect.</p>
 <p><div class="image">
-
-<a href="image-40.png" target="_blank">
-  <img src="image-40.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-40.png" target="_blank">
+      <img src="image-40.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You will get a confirmation showing the first result from the function.</p>
 <p><div class="image">
-
-<a href="image-41.png" target="_blank">
-  <img src="image-41.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-41.png" target="_blank">
+      <img src="image-41.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The new data source may be labeled using the code. Rename the function.</p>
 <p><div class="image">
-
-<a href="2019-11-25_16-17-26.png" target="_blank">
-  <img src="2019-11-25_16-17-26.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_16-17-26.png" target="_blank">
+      <img src="2019-11-25_16-17-26.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Right click on the GetErrorMessage query from the right pane and click Create Function</p>
 <p><div class="image">
-
-<a href="2019-11-25_16-17-54.png" target="_blank">
-  <img src="2019-11-25_16-17-54.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_16-17-54.png" target="_blank">
+      <img src="2019-11-25_16-17-54.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Give the function a unique name</p>
 <p><div class="image">
-
-<a href="image-42.png" target="_blank">
-  <img src="image-42.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-42.png" target="_blank">
+      <img src="image-42.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The new function will be shown and prompt for the ExitCode and Language parameters</p>
 <p><div class="image">
-
-<a href="image-43.png" target="_blank">
-  <img src="image-43.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-43.png" target="_blank">
+      <img src="image-43.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Enter an exit code <code>0x87D00664</code> and language <code>en-US</code> then click Invoke to test</p>
 <p><div class="image">
-
-<a href="image-45.png" target="_blank">
-  <img src="image-45.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-45.png" target="_blank">
+      <img src="image-45.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>If you did it right, you should get the results shown below. Once you&rsquo;ve verified, right click on the Invoked Function results data set and delete it since it&rsquo;s just a temporary data set.</p>
 <p><div class="image">
-
-<a href="image-46.png" target="_blank">
-  <img src="image-46.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-46.png" target="_blank">
+      <img src="image-46.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="integrating-a-power-bi-function-with-a-sql-data-source">Integrating a Power BI Function with a SQL data source</h2>
 <p>Now that we have a function, we need to use it. To do this, we will need to grab a data set that has exit codes that we want to get text for. Since each call to the Azure Function will count towards your consumption in Azure and ultimately cost you some money, you will want to get a distinct list of values in your data set then use that data set as a cross reference table for other Power BI tables. I will be using the ConfigMgr <code>CI_AssignmentStatus</code> table from the ConfigMgr database.
 To start, we need to add the ConfigMgr SQL database as a new data source. Click on New Source then click SQL Server.</p>
 <p><div class="image">
-
-<a href="image-47.png" target="_blank">
-  <img src="image-47.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-47.png" target="_blank">
+      <img src="image-47.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Enter your database server name and database name. I highly recommend creating new parameters for Server and DB since you will likely reference them several times in any given report. It&rsquo;s just a good habit to get into. Add the SQL query below. Be sure to use Import, not DirectQuery and click OK when done. Also, for the purpose of this demo, I&rsquo;ve added a custom Language column with <code>en-US</code> hardcoded into it. You can change this to your language or use parameters in Power BI if you need to.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb">
@@ -423,89 +438,100 @@ To start, we need to add the ConfigMgr SQL database as a new data source. Click 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#bbb"> </span>LastEnforcementErrorCode<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">IS</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NULL</span><span style="color:#bbb">
 </span></code></pre></div><p><div class="image">
-
-<a href="2019-11-25_16-44-56.png" target="_blank">
-  <img src="2019-11-25_16-44-56.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_16-44-56.png" target="_blank">
+      <img src="2019-11-25_16-44-56.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Rename the data set to <code>ExitCodeXREF</code></p>
 <p><div class="image">
-
-<a href="image-66.png" target="_blank">
-  <img src="image-66.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-66.png" target="_blank">
+      <img src="image-66.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Next we need to look up the Error Message text and add it to the XREF table. We do this by Invoking a Custom Function. Click <strong>Add Column</strong> then <strong>Invoke Custom Function</strong>.</p>
 <p><div class="image">
-
-<a href="image-67.png" target="_blank">
-  <img src="image-67.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-67.png" target="_blank">
+      <img src="image-67.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Enter the name of the new column <code>ErrorMessage</code> then select the function name and parameters. It should look like this when you are done.</p>
 <p><div class="image">
-
-<a href="image-58.png" target="_blank">
-  <img src="image-58.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-58.png" target="_blank">
+      <img src="image-58.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The function will likely return an error code as below. You will need to open the Advanced Editor to change the query.</p>
 <p><div class="image">
-
-<a href="image-59.png" target="_blank">
-  <img src="image-59.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-59.png" target="_blank">
+      <img src="image-59.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-60.png" target="_blank">
-  <img src="image-60.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-60.png" target="_blank">
+      <img src="image-60.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click Advanced Editor from the ribbon. In the box, find the text <code>fnGetErrorMessage([ExitCode], [Language])</code> and change to <code>fnGetErrorMessage(Text.From([ExitCode]), Text.From([Language]))</code>. This will convert the negative integer values to text.</p>
 <p><div class="image">
-
-<a href="image-61.png" target="_blank">
-  <img src="image-61.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-61.png" target="_blank">
+      <img src="image-61.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select the double arrow symbol on the <code>ErrorMessage</code> column and uncheck the <code>Use original column name as prefix</code> box and click OK.</p>
 <p><div class="image">
-
-<a href="image-62.png" target="_blank">
-  <img src="image-62.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-62.png" target="_blank">
+      <img src="image-62.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-63.png" target="_blank">
-  <img src="image-63.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-63.png" target="_blank">
+      <img src="image-63.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Right click on <code>Column1</code> and click Rename and change to <code>ErrorMessage</code></p>
 <p><div class="image">
-
-<a href="2019-11-25_17-16-54.png" target="_blank">
-  <img src="2019-11-25_17-16-54.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_17-16-54.png" target="_blank">
+      <img src="2019-11-25_17-16-54.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>MAGIC!</p>
 <p><div class="image">
-
-<a href="image-64.png" target="_blank">
-  <img src="image-64.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-64.png" target="_blank">
+      <img src="image-64.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="linking-the-xref-table-to-data-table-for-reporting">Linking the XREF Table to Data Table for Reporting</h2>
 <p>Follow the steps above for adding a new data source and use the query below for the SQL query and rename the resulting table to DeploymentStatus.</p>
@@ -520,27 +546,30 @@ To start, we need to add the ConfigMgr SQL database as a new data source. Click 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a></span><span style="color:#bbb"> </span>vSMS_SUMDeploymentStatusPerAsset<span style="color:#bbb">
 </span></code></pre></div><p>All Set. Click Close and Apply to go to the report design front end.</p>
 <p><div class="image">
-
-<a href="image-71.png" target="_blank">
-  <img src="image-71.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-71.png" target="_blank">
+      <img src="image-71.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click on the relationships icon on the left nav bar and ensure that the relationship between the <code>DeploymentStatus</code> table and <code>ExitCodeXREF</code> is set to Many to One on <code>ExitCode</code>.</p>
 <p><div class="image">
-
-<a href="image-72.png" target="_blank">
-  <img src="image-72.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-72.png" target="_blank">
+      <img src="image-72.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Switch back to the report view using the left nav then select the columns from each table to create a table with results.</p>
 <p><div class="image">
-
-<a href="2019-11-25_18-13-28.png" target="_blank">
-  <img src="2019-11-25_18-13-28.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_18-13-28.png" target="_blank">
+      <img src="2019-11-25_18-13-28.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>That&rsquo;s about it. Hopefully you were able to follow along. This post does assume that you are at least somewhat familiar with Power BI. Ping me if you&rsquo;ve got any issues or questions.</p>
@@ -567,51 +596,7 @@ To start, we need to add the ConfigMgr SQL database as a new data source. Click 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

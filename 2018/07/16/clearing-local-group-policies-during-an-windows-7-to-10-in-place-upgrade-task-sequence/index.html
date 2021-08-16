@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</h1>
@@ -248,11 +248,12 @@ if (!doNotTrack) {
 				<p>Our Windows 7 Reference Image was originally built in 2011. At the time, we had some consultants in helping us migrate from Windows XP to Windows 7. At the time, the consultant who was building the image edited the Local Group Polices on the Windows 7 machine prior to capturing it. Since then, we&rsquo;ve continued to service the WIM and use it as our production image. Some years later, we were trying to change our Windows Update settings and found these nice Local Group Policies just sitting there screwing everything up!</p>
 <p>You can check if you have any Local Group Policies enabled by opening gpedit.msc as an Admin then expanding to the All Settings tab. Sort by State Descending and you should see if you have any Local Group Policies. <em>Note: Other products may add local group policies, so review what you find before just assuming the settings should be removed.</em>. You can also use GPRESULT -H to get an HTML report of ALL Group Policies being applied. Click <strong>Show All</strong> then search for <em>Local Group Policy</em> to find any settings that are applied from the local policies.</p>
 <p><div class="image">
-
-<a href="2018-07-13_22-14-11.jpg" target="_blank">
-  <img src="2018-07-13_22-14-11.jpg" alt="Local Group Policy">
-</a>
-
+  <figure>
+    <a href="2018-07-13_22-14-11.jpg" target="_blank">
+      <img src="2018-07-13_22-14-11.jpg" alt="Local Group Policy">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Fast forward to this week. We are in the process of rolling out Windows 10 and we hope to do a large portion of our clients as In-Place Upgrades. As I was comparing a completed In-Place Upgrade to a Bare Metal build, I noticed that the machines behaved differently when accessing Windows Update (Yep, again). I had wondered previously if local GPO&rsquo;s would be carried forward during an In-Place Upgrade and the answer is &lsquo;Yes&rsquo; - My &lsquo;Just Upgraded&rsquo; machine had over 20 local machine policies listed, compared to a bare metal build, which only had 3.</p>
 <p>One option to handle this would be to create new domain GPOs that counteract the local GPOs and let the domain GPOs win, but that just seemed like it would suck to maintain and potentially not work for some of the policies where <strong>Not Configured</strong> isn&rsquo;t the same is <strong>Enabled</strong> or <strong>Disabled</strong>. After a bit of Googling, I found some options, most of which were manual steps. The &lsquo;<em>IF Nothing Else Works</em>&rsquo; option was to just delete the GPO folders from the machine, so of course that&rsquo;s the option I chose.</p>
@@ -278,51 +279,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

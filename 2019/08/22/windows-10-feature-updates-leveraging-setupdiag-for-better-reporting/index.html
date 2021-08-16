@@ -238,8 +238,8 @@ What is SetupDiag If you have worked with Windows 10 Operating System Deployment
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</h1>
@@ -263,19 +263,21 @@ As a matter of fact, as I started writing this post, I checked the site and and 
 <h2 id="registry-entries">Registry Entries</h2>
 <p>In version 1.5.0.0 an option was added to write a registry key with values that get written to the output log file. In version 1.6.0.0, several new values were added. Here&rsquo;s an example from 1.6.0.0 of the current registry keys:</p>
 <p><div class="image">
-
-<a href="image-29.png" target="_blank">
-  <img src="image-29.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-29.png" target="_blank">
+      <img src="image-29.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>This is the same machine&rsquo;s XML output.</p>
 <p><div class="image">
-
-<a href="image-30.png" target="_blank">
-  <img src="image-30.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-30.png" target="_blank">
+      <img src="image-30.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="reading-setupdiag-results">Reading SetupDiag Results</h2>
 <p>SetupDiag output is pretty straightforward. Some key fields that I generally use are ProfileName, FailureData, FailureDetails, Remediation. Prior to 1.6.0.0, if you deployed the Feature Update with the /Compat IgnoreDismissable command line option, the OS would skip over dismissable compat blocks but setupdiag would report the ProfileName as CompatBlockedApplicationDismissable instead of FindSuccessfulUpgrade but the FailureData section would contain the text <code>SetupDiag reports successful upgrade found.</code> as seen above. Now in 1.6.0.0, the ProfileName includes each profile that was matched by SetupDiag.</p>
@@ -285,11 +287,12 @@ Ultimately, use the info that you get from SetupDiag to reference the docs site 
 <h2 id="inventorying-setupdiag-results">Inventorying SetupDiag Results</h2>
 <p>First - as of 1.6.0.0 you can use the <code>/RegPath</code> command line option to output the SetupDiag registry key to a custom location. You can find usage information by using <code>SetupDiag.exe /?</code>. At the time of this post, the docs don&rsquo;t have updated information and I&rsquo;m told that they will be rebuilding the page soon, so I&rsquo;m not sure if they will update it or not.</p>
 <p><div class="image">
-
-<a href="image-31.png" target="_blank">
-  <img src="image-31.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-31.png" target="_blank">
+      <img src="image-31.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Ok, so I&rsquo;ll admit that I MAY have gotten a bit carried away with my script writing. I wanted to write a reusable script to build a custom WMI class that can be inventoried by SCCM. I have used RegKey2MOF numerous times and it works great, but I didn&rsquo;t want to have to edit my configuration.mof AND I wanted to be able to merge multiple registry keys together. So if you&rsquo;re more comfortable with using RegKey2MOF, <a href="https://www.enhansoft.com/how-to-use-regkeytomof/">check out Garth Jones' great blog post</a> on using it and point it to the SetupDiag registry key. Just note that you will end up with 2 tables if you collect from the 2 registry keys I&rsquo;m using. The latest version is on the Technet Gallery <a href="https://gallery.technet.microsoft.com/RegKeyToMof-28e84c28">here</a>.</p>
 <p>If you are still with me, then you will need my script called New-WMIRegistryClass-SetupDiag.ps1. It is built so that you can quickly swap out the keys you want to collect and use it for other WMI/Registry collection.</p>
@@ -404,51 +407,7 @@ Ultimately, use the info that you get from SetupDiag to reference the docs site 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

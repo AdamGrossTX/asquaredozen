@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 2</h1>
@@ -255,19 +255,21 @@ if (!doNotTrack) {
 <h2 id="creating-an-azure-function-app">Creating an Azure Function App</h2>
 <p>This next bit should be pretty easy since it&rsquo;s mostly just stepping through Azure Function wizards. Once you have all of the files gathered, you simply need to create an Azure function. Log into your Azure Tenant. Search for <strong><code>Function App</code></strong> and browse to it.</p>
 <p><div class="image">
-
-<a href="image-2.png" target="_blank">
-  <img src="image-2.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click <strong>Add</strong> to create a new Function App</p>
 <p><div class="image">
-
-<a href="image-3.png" target="_blank">
-  <img src="image-3.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>This wizard change significantly since I began working on this, so if you are viewing this in the future and it&rsquo;s different than shown, just follow the wizard. The main considerations are:</p>
 <ul>
@@ -276,84 +278,94 @@ if (!doNotTrack) {
 <li>Runtime stack - Be sure to select <strong>PowerShell Core</strong> as your Runtime stack. I tried using the C# stuff but couldn&rsquo;t get the DLL to load on .NET Core, though I&rsquo;ll admit, I didn&rsquo;t spend a ton of time on it.</li>
 </ul>
 <p><div class="image">
-
-<a href="image-4.png" target="_blank">
-  <img src="image-4.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>For Hosting I just accepted the defaults.</p>
 <p><div class="image">
-
-<a href="image-5.png" target="_blank">
-  <img src="image-5.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-5.png" target="_blank">
+      <img src="image-5.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>I chose to enable Application Insights. This will likely add cost to your functions (I don&rsquo;t know for sure), but it will allow you to have visibility into your functions.</p>
 <p><div class="image">
-
-<a href="image-6.png" target="_blank">
-  <img src="image-6.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>On Tags, I didn&rsquo;t enter any.</p>
 <p><div class="image">
-
-<a href="image-7.png" target="_blank">
-  <img src="image-7.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>On the summary page, review everything then click <strong>Create</strong>.</p>
 <p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once it has been created, you can navigate to your new Azure Function App where you can configure it and begin creating your functions.</p>
 <p><div class="image">
-
-<a href="image-9.png" target="_blank">
-  <img src="image-9.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="creating-an-azure-function">Creating An Azure Function</h2>
 <p>To create a new Azure Function. Click Functions then click New function. I found that clicking the <strong><code>+</code></strong> next to Functions doesn&rsquo;t allow you to change the function name. It&rsquo;s great if you want to create a sample function to test with though.</p>
 <p><div class="image">
-
-<a href="image-10.png" target="_blank">
-  <img src="image-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select HTTP Trigger as the function type.</p>
 <p><div class="image">
-
-<a href="image-11.png" target="_blank">
-  <img src="image-11.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-11.png" target="_blank">
+      <img src="image-11.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Give the new function a name and configure the Authorization Level. I chose Function. This will case the API to pass a <strong>Code</strong> query string parameter for authorization. During testing, I was just using Anonymous which excludes the <strong>Code</strong> string. Choose an option that fits your security needs.</p>
 <p><div class="image">
-
-<a href="image-12.png" target="_blank">
-  <img src="image-12.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-12.png" target="_blank">
+      <img src="image-12.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once the new function has been created, you will have a fully functioning &lsquo;Hello World&rsquo; Azure Function. You can test it if you&rsquo;d like by clicking Save and run. I used this template as the basis for my function.</p>
 <p><div class="image">
-
-<a href="image-13.png" target="_blank">
-  <img src="image-13.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-13.png" target="_blank">
+      <img src="image-13.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>In the web console editor, replace the default function code with the following code. This code is similar to what I used in Part 1 of this series, but it has been modified to work as a web API function.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>using namespace System.Net
@@ -407,53 +419,59 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>})
 </code></pre></div><p>It should look like this whenever you are done.</p>
 <p><div class="image">
-
-<a href="image-14.png" target="_blank">
-  <img src="image-14.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-14.png" target="_blank">
+      <img src="image-14.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>For this test case, the function requires extra files. If you don&rsquo;t have the same need, you can skip the next section.</p>
 <h2 id="adding-files-to-the-azure-function">Adding Files to the Azure Function</h2>
 <p>Once you&rsquo;ve updated the <code>run.ps1</code> file. navigate to the main Function App node. Click <strong>Platform features</strong> then <strong>Advanced Tools (Kudu)</strong>.</p>
 <p><div class="image">
-
-<a href="image-15.png" target="_blank">
-  <img src="image-15.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-15.png" target="_blank">
+      <img src="image-15.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select The Debug console drop down and select PowerShell</p>
 <p><div class="image">
-
-<a href="image-16.png" target="_blank">
-  <img src="image-16.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-16.png" target="_blank">
+      <img src="image-16.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Navigate using the upper pane to get to the folder for your new Azure Function website. My path is <code>D:\home\site\wwwroot\GetErrorMessage</code></p>
 <p><div class="image">
-
-<a href="image-43.png" target="_blank">
-  <img src="image-43.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-43.png" target="_blank">
+      <img src="image-43.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Drag the <strong><code>Bin</code></strong> folder and it&rsquo;s contents into the root of your site&rsquo;s folder. You can watch the progress indicator to see when the upload has been completed.</p>
 <p><div class="image">
-
-<a href="image-17.png" target="_blank">
-  <img src="image-17.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-17.png" target="_blank">
+      <img src="image-17.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Verify that the folder and contents are present.</p>
 <p><div class="image">
-
-<a href="image-48.png" target="_blank">
-  <img src="image-48.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-48.png" target="_blank">
+      <img src="image-48.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="testing-the-azure-function">Testing the Azure Function</h2>
 <ol>
@@ -467,19 +485,21 @@ if (!doNotTrack) {
 <li>The output box should show the result.</li>
 </ol>
 <p><div class="image">
-
-<a href="image-20.png" target="_blank">
-  <img src="image-20.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-20.png" target="_blank">
+      <img src="image-20.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can also click on <strong><code>Get function URL</code></strong> to run the function directly in a web browser or anything else.</p>
 <p><div class="image">
-
-<a href="2019-11-25_10-52-46.png" target="_blank">
-  <img src="2019-11-25_10-52-46.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-11-25_10-52-46.png" target="_blank">
+      <img src="2019-11-25_10-52-46.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Your URL will be the base URL including your function authentication code (unless you chose anonymous when you set up the function.</p>
 <p><code>https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=fasweAWDAWDFAWF/ADwdawdafASEFSE==</code></p>
@@ -488,11 +508,12 @@ if (!doNotTrack) {
 <code>&amp;Language=en-US</code></p>
 <p>With the final URL being  <code>[https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=fasweAWDAWDFAWF/ADwdawdafASEFSE==&amp;ExitCode=0x87D00664&amp;Language=en-US](https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=jcctioioyOCFDr584iP0F/nUyGHCkPldlRJvM8xxajm9pGUoToLq4A==&amp;ExitCode=0x87D00664&amp;Language=en-US)</code></p>
 <p><div class="image">
-
-<a href="image-25.png" target="_blank">
-  <img src="image-25.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-25.png" target="_blank">
+      <img src="image-25.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>As you can see, you can basically take &lsquo;any&rsquo; PowerShell code and stick it into an Azure Function with a little bit of modification. For my use-case I just wanted to get error codes for reporting, but you could easily move PowerShell utility scripts to Azure Functions and leverage them in ConfigMgr task sequences or just about anywhere else. I love the idea of being able to build an API in a matter of minutes with almost no real dev work involved. Hopefully this will inspire you to check out Azure Functions!</p>
@@ -517,51 +538,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -239,8 +239,8 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</h1>
@@ -254,27 +254,30 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 <p>You can edit your <strong>Unattend.XML</strong> using the <strong>Windows System Image Manager</strong> that&rsquo;s part of <strong>Windows ADK</strong> or you can manually edit it. The script needs to run during <strong>specialize</strong> pass.</p>
 <p>After loading your OS media into WSIM, follow the steps below to add the commandline for your 802.1x authentication script.<br>
 <div class="image">
-
-<a href="2018-07-29_1-04-00.jpg" target="_blank">
-  <img src="2018-07-29_1-04-00.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_1-04-00.jpg" target="_blank">
+      <img src="2018-07-29_1-04-00.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="2018-07-29_1-04-38.jpg" target="_blank">
-  <img src="2018-07-29_1-04-38.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_1-04-38.jpg" target="_blank">
+      <img src="2018-07-29_1-04-38.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Add the following as the Path. It should point to the location where you will copy your auth package to in the next step.</p>
 <p><code>cmd /c C:\Temp\ImportComputerAuthProfile.bat</code></p>
 <p><div class="image">
-
-<a href="2018-07-29_1-05-32.jpg" target="_blank">
-  <img src="2018-07-29_1-05-32.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_1-05-32.jpg" target="_blank">
+      <img src="2018-07-29_1-05-32.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>This is what the resulting XML should look like.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;unattend</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style="color:#000080">&gt;</span>
@@ -293,11 +296,12 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 </code></pre></div><h1 id="adding-everything-to-your-bare-metal-task-sequence">Adding everything to your Bare Metal Task Sequence</h1>
 <p>Create a new Package in ConfgMgr and include all of your script files in the package. Then add a new <strong>Run Command Line</strong> Task Sequence step before <strong>Install Operating System</strong> step. Set the Package source to the new package your created.</p>
 <p><div class="image">
-
-<a href="2018-07-29_1-11-19.jpg" target="_blank">
-  <img src="2018-07-29_1-11-19.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_1-11-19.jpg" target="_blank">
+      <img src="2018-07-29_1-11-19.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The path in this command line needs to match the path in the Unattend.XML file.</p>
 <p><code>xcopy.exe &quot;.\*.*&quot; c:\Temp\ /E /C /I /Q /H /R /Y /S</code></p>
@@ -315,51 +319,7 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

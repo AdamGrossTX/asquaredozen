@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>ConfigMgr 1906 Technical Preview – Testing CMPivot over CMG using AdminService</h1>
@@ -248,11 +248,12 @@ if (!doNotTrack) {
 				<p><a href="https://docs.microsoft.com/sccm/core/get-started/2019/technical-preview-1906">ConfigMgr 1906 Technical Preview</a> was released last week and I immediately upgraded one of my tech preview labs I have running in Hyper-V on my laptop. As you may know, I&rsquo;m a huge fan of the new <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">AdminService </a>functionality which will allow you to interact with the <a href="https://docs.microsoft.com/sccm/core/plan-design/hierarchy/plan-for-the-sms-provider#bkmk_admin-service">SMS Provider over HTTPS</a>. With each release, it has had more features added. With Tech preview 1906, I noticed that you can run CMPivot using the AdminService. In 1905 you could use RunScript, though the functionality for that has been disabled in the frontend for 1906. With both of these tools, you can extend your reach to all of your devices, no matter where they are, or how they are connected (within reason I suppose).</p>
 <p>As I was experimenting with CMPivot over AdminService, I wrote a quick PowerShell to test it and ended up <a href="https://twitter.com/AdamGrossTX/status/1139420372606914560">Tweeting about it</a>. David James <a href="https://twitter.com/djammmer/status/1139749713110953984">responded with a challenge</a> that I couldn&rsquo;t pass up:</p>
 <p><a href="https://twitter.com/djammmer/status/1139749713110953984"><div class="image">
-
-<a href="image.png" target="_blank">
-  <img src="image.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></a></p>
 <p>Since I was working in my disposable Technical Preview lab, I&rsquo;ve never set up any cloud services for it. I have to say, the process (and documentation) to configure Azure Active Directory, Intune, AutoPilot, Co-Management, Cloud Management Gateway, etc has gotten much better. I think that I spent more time waiting for NameCheap to replicate my DNS entries than I did for anything else.</p>
 <h2 id="the-setup">The Setup</h2>
@@ -288,14 +289,14 @@ if (!doNotTrack) {
 <h4 id="cmpivot-in-the-console">CMPivot in the Console</h4>
 <p>My first test was just opening the ConfigMgr console and launching CMPivot from my All Systems collection (I only have 3 devices in my lab, you may want to use a different collection). Inside CMPivot, I submitted a few queries and got results back from the client.
 <div class="image">
-
   <figure>
     <a href="image-2.png" target="_blank">
       <img src="image-2.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Inside CMPivot, I submitted a few queries and got results back from the client.</figcaption>
+    
   </figure>
-
 </div></p>
 <h4 id="postman-chrome-extension">Postman Chrome Extension</h4>
 <p>Next I used the Google Chrome Postman extension to test using the AdminService.</p>
@@ -308,11 +309,12 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>Request Body
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>{<span style="color:#d14">&#34;InputQuery&#34;</span><span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#d14">&#34;OperatingSystem&#34;</span>}
 </code></pre></div><p><div class="image">
-
-<a href="image-3.png" target="_blank">
-  <img src="image-3.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="powershell">PowerShell</h4>
 <p>After Postman, I tested with Powershell and had similar results. Each time I ran CMPivot using AdminService, I would see the the CMPivot script payload on the client then I could view the results in the database OR with AdminService using the <code>SMS_CMPivotStatus</code> method. (You can obviously run these in Postman as well).</p>
@@ -851,14 +853,14 @@ Anyway, here&rsquo;s the Powershell that I wrote. It will output the results to 
 </code></pre></div><h2 id="run-scripts-over-cmg">Run Scripts over CMG</h2>
 <p>I didn&rsquo;t cover using Scripts in this post, but I did test the over the Cloud Management Gateway as well and they worked the same way as CMPivot, in fact, if you look at the Scripts table in the database, you will see the CMPivot master script listed along with any of your other scripts. While the AdminService can&rsquo;t run scripts in 1906 (as far as I can tell), it can in 1905 and I believe the guts are still in the AdminService just not exposed this time. So in a real world situation, you would be able to run CMPivot then use Scripts to take immediate action - all through the Cloud Managemen Gateway on internet connected clients.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-1.png" target="_blank">
       <img src="image-1.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>This is a terrible screenshot. Just go query your DB `SELECT * FROM Scripts`</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="a-note-about-cmg">A note about CMG</h2>
 <p>I feel like CMG may need it&rsquo;s own post. Just a quick note about it. When an internet-only client checks in, it uses an internet facing proxy address that points to the CMG server in your Azure tenant. Here&rsquo;s a snippet from <code>StatusAgent.log</code> showing the internet-facing CMG address <code>ASDCMTP1906CMG.ASDCMTP1906.SITE</code>. This is the same way that Email Approvals work when you click the approval link while connected to the internet.</p>
@@ -876,11 +878,12 @@ Anyway, here&rsquo;s the Powershell that I wrote. It will output the results to 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>
 </code></pre></div><p>Here&rsquo;s where that address is configured in the console on your Cloud Management Gateway. Additionally, you have to set up a CName record to point the url to the cloudapp.net address listed below it.</p>
 <p><div class="image">
-
-<a href="image-4.png" target="_blank">
-  <img src="image-4.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>So, thanks for the challenge David! The scenario you described is not only a common scenario to encounter, but can easily be accomplished using ConfigMgr integrated with Intune using Co-Management and a Cloud Management Gateway.
@@ -906,51 +909,7 @@ Quick Scenario - A user with an internet-only, Azure AD joined, co-managed devic
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

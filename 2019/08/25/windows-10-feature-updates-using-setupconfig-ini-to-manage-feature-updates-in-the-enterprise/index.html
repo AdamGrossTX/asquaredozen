@@ -238,8 +238,8 @@ Setupconfig.ini Setupconfig.ini is a file that can be used to pass command line 
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</h1>
@@ -271,11 +271,12 @@ Setupconfig.ini Setupconfig.ini is a file that can be used to pass command line 
 <p>If you have dealt with Windows 10 upgrades (7-10 or 10-10 Feature Updates) you have likely run into blocks due to drivers or applications. Many of these blocks can be ignored but only if you include <code>/Compat IgnoreWarning</code> in command line either using media or a Task Sequence. If you&rsquo;ve ever tried to apply a Feature Update from Windows Update or through SCCM&rsquo;s Windows 10 Servicing, you have likely run into blocks that prevented you from upgrading certain devices that would have otherwise worked fine from a Task Sequence using the <code>/Compat IgnoreWarning</code> argument. You can just add the line <code>Compat=IgnoreWarning</code> to your Setupconfig.ini now and breeze right past those annoying blocks.
 When we first started testing Feature Updates, we were seeing a high number of failed upgrades compared to our InPlace Upgrade Task Sequence and nearly all of them ended up being dismissable compat issues. Once we added Setupconfig.ini, our failures were almost non-existent. In the donut chart below you can see that over 27% of devices reported dismissable errors and were successfully upgraded since we are using the Compat=IgnoreWarning option.</p>
 <p><div class="image">
-
-<a href="image-34.png" target="_blank">
-  <img src="image-34.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-34.png" target="_blank">
+      <img src="image-34.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="dynamicupdateenable">DynamicUpdate=Enable</h4>
 <p>Another one that really deserves it&rsquo;s own blog post some day is the change in Dynamic Updates in Windows 10 1809 and up. Several of us in the community have been writing and speaking how important Dynamic Updates are for successful upgrades but in Windows 10 1809 the mechanism for applying Dynamic Updates changed. As you may have read recently on <a href="https://oofhours.com/2019/08/06/uup-is-still-coming-soon-and-dynamic-update-is-still-important/">Michael Niehus&rsquo;s blog on the topic</a>, Dynamic Updates can ONLY be pulled from the internet currently and are <strong>ENABLED BY DEFAULT!!</strong> Delivery Optimization and BracheCache don&rsquo;t help either. Your clients may download large amounts of data (Latest Cumulative Update, Dynamic Updates, Etc) directly from the internet if you leave Dynamic Updates enabled.</p>
@@ -317,14 +318,14 @@ If you&rsquo;re thinking that since <a href="/2018/08/20/adding-dynamic-updates-
 <h4 id="sccm-client-settings">SCCM Client Settings</h4>
 <p>New Client Settings policies have been added to SCCM 1902 and 1906 that modify Setupconfig.ini to change <a href="https://docs.microsoft.com/sccm/core/plan-design/changes/whats-new-in-version-1902#bkmk_sum">priority for Feature Updates from Low to Normal</a> (speeds up the <a href="https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-installation-process">downlevel</a> portion of the upgrade) and <a href="https://docs.microsoft.com/sccm/core/plan-design/changes/whats-new-in-version-1906#configure-dynamic-update-during-feature-updates">disable Dynamic Updates</a>. If you want to customize Setupconfig.ini, consider whether you will also be using these client settings. If so, you need to ensure that you aren&rsquo;t overwriting the file with whatever process you use to maintain the file.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-3.png" target="_blank">
       <img src="image-3.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>New settings for SCCM 1902 and 1906. Screenshot from 1906.</figcaption>
+    
   </figure>
-
 </div></p>
 <h4 id="sccm-task-sequence">SCCM Task Sequence</h4>
 <p>At the August 2019 Charlotte Systems Management User Group hosted by Microsoft PFE <a href="https://twitter.com/jandreacola">Julie Andreacola</a>, she detailed how to deploy a Task Sequence that can customize the file based on device type and driver requirements. If you have driver requirements, this could certainly be a viable option. If you don&rsquo;t it may be a bit complex when a simple file copy will work for you.</p>
@@ -337,55 +338,61 @@ No matter which approach you take to managing Setupconfig.ini, be sure that it c
 <h4 id="0xc190010a-1047527158">0xC190010A(-1047527158)</h4>
 <p>This error occurs whenever you have line items in your Setupconfig.ini file that aren&rsquo;t valid command line options. This is typically a typo or incorrect entry in the Setupconfig.ini file.</p>
 <p><div class="image">
-
-<a href="2019-08-13_10-41-29.png" target="_blank">
-  <img src="2019-08-13_10-41-29.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-08-13_10-41-29.png" target="_blank">
+      <img src="2019-08-13_10-41-29.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="0xc190010d-1047527155">0xC190010D(-1047527155)</h4>
 <p>Some entries in Setupconfig.ini are paths to files such as <code>PostOOBE=c:\~FeatureUpdateTemp\Scripts\SetupComplete.cmd</code>. Any files you specify must exist at the time that you launch the Feature Update, or you will receive this message.</p>
 <p><div class="image">
-
-<a href="2019-08-11_23-09-10.png" target="_blank">
-  <img src="2019-08-11_23-09-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-08-11_23-09-10.png" target="_blank">
+      <img src="2019-08-11_23-09-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can run ProcMon from the <a href="https://docs.microsoft.com/sysinternals/">SysInternals</a> suite to track down issues like this. I was able to quickly determine that SetupHost was looking at Setupconfig.ini then looking for SetupComplete.cmd and returned File Not Found.</p>
 <p><div class="image">
-
-<a href="2019-08-25_16-58-18.png" target="_blank">
-  <img src="2019-08-25_16-58-18.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2019-08-25_16-58-18.png" target="_blank">
+      <img src="2019-08-25_16-58-18.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="script-for-managing-setupconfigini">Script for Managing Setupconfig.ini</h2>
 <p>As I mentined above, I&rsquo;m managing Setupconfig.ini in production using an SCCM Configuration Item and Baseline. In my <a href="https://github.com/AdamGrossTX/Windows10FeatureUpdates">Windows10FeatureUpdates</a> GitHub Repo, I&rsquo;ve included the script that I wrote to manage the file. Thanks to <a href="https://twitter.com/SysBehr">Colin Wilkins</a> for helping me get started with the script and CI (<a href="https://github.com/SysBehr/BehrNecessities/tree/master/ConfigItems/SetupConfig_ExtraParameters">see the original here</a>). To use this file in production, you will set up a Configuration Item and Baseline in SCCM. The script will perform the Detection and Remediation all in one.</p>
 <p>Before you start, download the script from my <a href="https://github.com/AdamGrossTX/Windows10FeatureUpdates">Github Repo</a>. It is located under <code>Admin\ComplianceScripts\FeatureUpdateCIScript.ps1</code></p>
 <p>Edit the parameters of the script to match settings required for your environment. Here&rsquo;s a snippet of the params. Read the help in the script for more info. You will use this script in Steps 4 &amp; 5 below.</p>
 <p><div class="image">
-
-<a href="image-39.png" target="_blank">
-  <img src="image-39.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-39.png" target="_blank">
+      <img src="image-39.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>In the SCCM Console under \Assets and Compliance\Overview\Compliance Settings\Configuration Items, Click Create Configuration Item and enter a new name for the CI then click Next.</p>
 <p><div class="image">
-
-<a href="image-36.png" target="_blank">
-  <img src="image-36.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-36.png" target="_blank">
+      <img src="image-36.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>For Supported Platforms click Windows 10.</p>
 <p><div class="image">
-
-<a href="image-37.png" target="_blank">
-  <img src="image-37.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-37.png" target="_blank">
+      <img src="image-37.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>On Settings click New then Enter the following:</p>
 <ol>
@@ -395,11 +402,12 @@ No matter which approach you take to managing Setupconfig.ini, be sure that it c
 <li>Remediation Script - Click Add Script and paste the contents of the script from the repo. Ensure that the $Remediate variable in the is set to $Remediate=$True</li>
 <li>Click Compliance Rules.
 <div class="image">
-
-<a href="image-40.png" target="_blank">
-  <img src="image-40.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-40.png" target="_blank">
+      <img src="image-40.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 </ol>
 <p>Click New. In the Create Rule Pane enter the following:</p>
@@ -412,29 +420,32 @@ No matter which approach you take to managing Setupconfig.ini, be sure that it c
 <li>Click OK.</li>
 </ol>
 <p><div class="image">
-
-<a href="image-41.png" target="_blank">
-  <img src="image-41.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-41.png" target="_blank">
+      <img src="image-41.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click OK again. You should be back at the main wizard.
 Click Summary, Next, Close.</p>
 <p><div class="image">
-
-<a href="image-42.png" target="_blank">
-  <img src="image-42.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-42.png" target="_blank">
+      <img src="image-42.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Next we you need to create a new Configuration Baseline and select the new CI that you just created (Just follow the wizard). Then deploy to a collection of your Windows 10 devices that you expect to manage with Feature Update servicing.</p>
 <p>Clients will get the baseline whenever they check in for new Machine Policies. You can manually launch the baseline from the Configuration Manager applet. My baseline is named Feature Update Files.</p>
 <p><div class="image">
-
-<a href="image-43.png" target="_blank">
-  <img src="image-43.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-43.png" target="_blank">
+      <img src="image-43.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>When you run this on a client, you should see a new Setupconfig.ini file appear on the client under <code>C:\Users\Default\AppData\Local\Microsoft\Windows\WSUS\Setupconfig.ini</code>.</p>
 <h2 id="summary">Summary</h2>
@@ -459,51 +470,7 @@ Click Summary, Next, Close.</p>
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

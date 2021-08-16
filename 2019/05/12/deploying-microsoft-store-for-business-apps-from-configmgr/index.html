@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Deploying Microsoft Store for Business Apps from ConfigMgr</h1>
@@ -252,284 +252,318 @@ if (!doNotTrack) {
 <h4 id="creating-a-new-azure-tenant">Creating a New Azure Tenant</h4>
 <p>Since there&rsquo;s no link, simply select an app that you&rsquo;d like to add to your new store. In my example, I chose <strong>Sway</strong>. Note, I&rsquo;ve noticed that if you select an education based app at this stage like Duolingo, you will be prompted to sign up as an Education account, instead of business.</p>
 <p><div class="image">
-
-<a href="image.png" target="_blank">
-  <img src="image.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click <strong>Get the App</strong></p>
 <p><div class="image">
-
-<a href="image-2.png" target="_blank">
-  <img src="image-2.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>If you aren&rsquo;t signed in, you will see the message <strong>Let&rsquo;s check if you have an account</strong>. If you don&rsquo;t see the <strong>work email address</strong> message as shown below, select another application, otherwise you will sign up for an education store.</p>
 <p><div class="image">
-
-<a href="image-3.png" target="_blank">
-  <img src="image-3.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Fill in the application form. Use your business email address. This account will become an administrator of your store.</p>
 <p><div class="image">
-
-<a href="image-4.png" target="_blank">
-  <img src="image-4.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Enter the name of your new Azure Tenant.</p>
 <p><div class="image">
-
-<a href="image-6.png" target="_blank">
-  <img src="image-6.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Prove you&rsquo;re not a robot. Nice try robot!</p>
 <p><div class="image">
-
-<a href="image-7.png" target="_blank">
-  <img src="image-7.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Consent to allow Microsoft to collect data about your company.</p>
 <p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once you&rsquo;ve completed the registration, the application you selected will be added to your inventory.</p>
 <p><div class="image">
-
-<a href="image-9.png" target="_blank">
-  <img src="image-9.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="adding-the-microsoft-store-for-business-to-configmgr">Adding the Microsoft Store for Business to ConfigMgr</h2>
 <p>Note: The screenshots used for this post are from ConfigMgr 1904 TP but should be nearly the same as Current Branch. I just didn&rsquo;t have a fresh CB lab available to demo with.</p>
 <p>Open your ConfigMgr console and navigate to \Administration\Overview\Cloud Services\Azure Services. Click Configure Azure Services.
 <div class="image">
-
-<a href="image-10.png" target="_blank">
-  <img src="image-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select Microsoft Store for Business and enter a name for the connector and click <strong>Next</strong>.</p>
 <p><div class="image">
-
-<a href="image-11.png" target="_blank">
-  <img src="image-11.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-11.png" target="_blank">
+      <img src="image-11.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click <strong>Browse</strong> to add an Azure web application.
 <div class="image">
-
-<a href="image-12.png" target="_blank">
-  <img src="image-12.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-12.png" target="_blank">
+      <img src="image-12.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select <strong>Create</strong> to create a new server application. If you have already added other cloud services, you may choose to select one from the list instead of creating a new one.</p>
 <p><div class="image">
-
-<a href="image-13.png" target="_blank">
-  <img src="image-13.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-13.png" target="_blank">
+      <img src="image-13.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Fill in the form and click <strong>Sign in</strong> to sign into your Azure tenant with an Azure tenant administrator account. Remember the <strong>Application Name</strong>since you will need to use it later. The <strong>URL</strong> and <strong>URI</strong> can be customized as needed, I just accepted the defaults. Click <strong>OK</strong> when complete.</p>
 <p><div class="image">
-
-<a href="image-14.png" target="_blank">
-  <img src="image-14.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-14.png" target="_blank">
+      <img src="image-14.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Select the newly added application from the list and click <strong>OK</strong>.</p>
 <p><div class="image">
-
-<a href="image-16.png" target="_blank">
-  <img src="image-16.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-16.png" target="_blank">
+      <img src="image-16.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click Next</p>
 <p><div class="image">
-
-<a href="image-17.png" target="_blank">
-  <img src="image-17.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-17.png" target="_blank">
+      <img src="image-17.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Create a new share to store your Business Store application data in. You will need to enable write access to this share for your ConfigMgr server machine account. Once complete, click <strong>Next</strong>.</p>
 <p><div class="image">
-
-<a href="image-18.png" target="_blank">
-  <img src="image-18.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-18.png" target="_blank">
+      <img src="image-18.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Verify that everything is correct and click <strong>Next</strong>.</p>
 <p><div class="image">
-
-<a href="image-19.png" target="_blank">
-  <img src="image-19.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-19.png" target="_blank">
+      <img src="image-19.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>In the console, you should see the newly created connector and the <strong>Last Sync Status</strong> will show <strong>Failed</strong>. This is because the Azure web app needs to be granted permissions to manage the Business Store.</p>
 <p><div class="image">
-
-<a href="image-20.png" target="_blank">
-  <img src="image-20.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-20.png" target="_blank">
+      <img src="image-20.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>If you open <strong>WsfbSyncWorker.log</strong> from your site server, you can monitor sync progress. The store will automatically sync every 10 minutes, so you will need to wait until the next sync window to see any changes made in the store.</p>
 <p><div class="image">
-
-<a href="image-21.png" target="_blank">
-  <img src="image-21.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-21.png" target="_blank">
+      <img src="image-21.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="giving-configmgr-permissions-to-manage-the-store">Giving ConfigMgr Permissions to Manage the Store</h4>
 <p>Open the store web page again and click on Manage&gt;Settings&gt;Distribute&gt;Add management tool</p>
 <p><div class="image">
-
-<a href="image-22.png" target="_blank">
-  <img src="image-22.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-22.png" target="_blank">
+      <img src="image-22.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>In the search box, search for the name that you gave the new web application. In my case, I called it <strong>ConfigMgrService</strong>.</p>
 <p><div class="image">
-
-<a href="image-23.png" target="_blank">
-  <img src="image-23.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-23.png" target="_blank">
+      <img src="image-23.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once added, click <strong>Activate</strong> to enable the service. Note: This is also where you would enable <strong>Intune</strong> management as well.</p>
 <p><div class="image">
-
-<a href="image-25.png" target="_blank">
-  <img src="image-25.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-25.png" target="_blank">
+      <img src="image-25.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="sync-your-store">Sync Your Store</h4>
 <p>Back in the console, you can be impatient like me and keep clicking the Sync from Microsoft Store for Business button or just wait for 10 minutes for the sync to happen. Once complete here&rsquo;s what you should see in the console and logs.</p>
 <p><div class="image">
-
-<a href="image-27.png" target="_blank">
-  <img src="image-27.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-27.png" target="_blank">
+      <img src="image-27.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-28.png" target="_blank">
-  <img src="image-28.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-28.png" target="_blank">
+      <img src="image-28.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Navigate to Software Library&gt;Overview&gt;Application Management&gt;License Information for Store Apps to see a list of your store apps.</p>
 <p><div class="image">
-
-<a href="image-29.png" target="_blank">
-  <img src="image-29.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-29.png" target="_blank">
+      <img src="image-29.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can find more info <a href="https://docs.microsoft.com/sccm/apps/deploy-use/manage-apps-from-the-windows-store-for-business#bkmk_setup">here</a>.</p>
 <h2 id="adding-apps-to-your-store">Adding Apps to Your Store</h2>
 <p>From your business store, search or browse for an application that you&rsquo;d like to make available in your private store. In this example, I will select Power BI Desktop. On the product page, click <strong>Get the app</strong>. Note, for paid apps, you will need to provide additional information for the purchase.</p>
 <p><div class="image">
-
-<a href="image-30.png" target="_blank">
-  <img src="image-30.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-30.png" target="_blank">
+      <img src="image-30.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>A confirmation message will appear. Click <strong>Close</strong>.</p>
 <p><div class="image">
-
-<a href="image-31.png" target="_blank">
-  <img src="image-31.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-31.png" target="_blank">
+      <img src="image-31.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>At this point, the application will appear in ConfigMgr on your next sync. To configure how it appears in your Private Store using the Windows Store app, select the <strong>…</strong> next to the Install button and click <strong>Manage</strong>.</p>
 <p><div class="image">
-
-<a href="image-32.png" target="_blank">
-  <img src="image-32.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-32.png" target="_blank">
+      <img src="image-32.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="private-store-vs-software-center-vs-windows-store">Private Store vs Software Center vs Windows Store</h2>
 <p>This is where things get a bit tricky. Up until this point, I have walked you through how to set up a Business Store and connect it to ConfigMgr. Depending on your organizational needs, you can choose to configure one or more delivery options for apps. I&rsquo;m no expert but will try to explain the difference.</p>
 <h4 id="windows-store">Windows Store</h4>
 <p>This is the default consumer store that shows up when you install Windows 10. Don&rsquo;t uninstall it as part of your operating system deployment or you&rsquo;ll have to reimage to get it back! If you don&rsquo;t want users to have access to applications in the consumer store, use group policies to manage it. There&rsquo;s an option in ConfigMgr to create a Windows Store application and it depends on the consumer store being enabled. Just keep that in mind as you experiment with delivery options.</p>
 <p><div class="image">
-
-<a href="image-36.png" target="_blank">
-  <img src="image-36.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-36.png" target="_blank">
+      <img src="image-36.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="private-store"><strong>Private Store</strong></h4>
 <p>Once you enroll in the Windows Store for Business, your company&rsquo;s Private Store is enabled and several applications are added to it by default. It can be accessed in Windows 10 by clicking the people icon and clicking <strong>Add work or school account</strong>.</p>
 <p><div class="image">
-
-<a href="image-37.png" target="_blank">
-  <img src="image-37.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-37.png" target="_blank">
+      <img src="image-37.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once signed in, your store name will appear and users can see applications that they have access to.</p>
 <p><div class="image">
-
-<a href="image-38.png" target="_blank">
-  <img src="image-38.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-38.png" target="_blank">
+      <img src="image-38.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can use group policies to manage the Private Store as well, but you will also manage user access to specific applications and application groups through the business store portal.
 <div class="image">
-
-<a href="image-34.png" target="_blank">
-  <img src="image-34.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-34.png" target="_blank">
+      <img src="image-34.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="software-center">Software Center</h4>
 <p>If you choose to fully disable the Windows Store application, you can deliver your Store for Business applications through your newly connected ConfigMgr web application and Software Center. The applications will appear in Software Center just like any other application and the interaction will be seamless to the user.</p>
 <p><div class="image">
-
-<a href="image-39.png" target="_blank">
-  <img src="image-39.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-39.png" target="_blank">
+      <img src="image-39.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-40.png" target="_blank">
-  <img src="image-40.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-40.png" target="_blank">
+      <img src="image-40.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="online-and-offline-apps">Online and Offline Apps</h2>
 <p>Whenever you &lsquo;Get&rsquo; (free or paid) an application from the Business Store, you will have the option to choose an online of offline version of the application. Regardless of your delivery mechanism, online apps will auto-update using the store update engine. If you choose an offline version, you will need to manually manage any upgrades for that application.
@@ -538,56 +572,62 @@ Online apps in ConfigMgr don&rsquo;t require content, but offline ones do. Onlin
 <h2 id="creating-and-deploying-an-online-store-app-in-configmgr">Creating and Deploying an Online Store App in ConfigMgr</h2>
 <p>In the console, navigate to Software Library&gt;Application Management&gt;License Information for Store Apps. Select the application you want to deploy and click <strong>Create Application</strong>.</p>
 <p><div class="image">
-
-<a href="image-41.png" target="_blank">
-  <img src="image-41.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-41.png" target="_blank">
+      <img src="image-41.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Click Next through the wizard unless you want to change anything. I always accept the defaults. Note: As of ConfigMgr 1902 CB, the icons for store apps do not get included with the app during this process. We spoke to the devs at MMSMOA and they are aware of this issue.</p>
 <p>Navigate to Software Library&gt;Application Management&gt;Applications and you will find your newly created store app in the root. Select the app and click Deploy.</p>
 <p><div class="image">
-
-<a href="image-42.png" target="_blank">
-  <img src="image-42.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-42.png" target="_blank">
+      <img src="image-42.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Deploy the app like any other application or package. You can select a Device or User collection - I prefer User collections.</p>
 <p>On a client machine, you can refresh policies and the application will show up as available to install.</p>
 <p><div class="image">
-
-<a href="image-43.png" target="_blank">
-  <img src="image-43.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-43.png" target="_blank">
+      <img src="image-43.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Before clicking Install, verify that your Work or School account has been linked to the device you are installing on. Open Settings from the Start Menu and click Accounts&gt;Access work or school. If you don&rsquo;t see your work or school account listed, you will need to click Connect to link it before the application will install properly. The symptom of the account not being linked is that the application will appear to install, but will not appear on the start menu.</p>
 <p><div class="image">
-
-<a href="image-44.png" target="_blank">
-  <img src="image-44.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-44.png" target="_blank">
+      <img src="image-44.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once you have linked your work or school account, click Install in Software Center. You will see the Uninstall button appear once the installation is complete. Verify your installation by launching the application from the Start Menu.</p>
 <p><div class="image">
-
-<a href="image-45.png" target="_blank">
-  <img src="image-45.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-45.png" target="_blank">
+      <img src="image-45.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>To deploy an offline app, you&rsquo;d follow the same steps. The only difference is that the offline content will be downloaded to your Store For Business share.</p>
 <p>You can find more info <a href="https://docs.microsoft.com/sccm/apps/deploy-use/manage-apps-from-the-windows-store-for-business#deploying-online-apps-using-the-microsoft-store-for-business-to-devices-that-run-the-configuration-manager-client">here</a>.</p>
 <h2 id="other-deployment-options">Other Deployment Options</h2>
 <p>As I mentioned earlier, in ConfigMgr, you can also use the Create Application wizard to add offline apps (.appx) and Windows (consumer) Store apps. These options can be found in the Create Application Wizard Type dropdown. I will not go into detail on these options in this post. I just wanted to mention them for completeness.</p>
 <p><div class="image">
-
-<a href="image-46.png" target="_blank">
-  <img src="image-46.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-46.png" target="_blank">
+      <img src="image-46.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>Assuming you have ConfigMgr working and don&rsquo;t have an Azure tenant configured, you can have the Microsoft Store for Business integrated with ConfigMgr and have your first app deployed within 30 minutes or less. The trickier part will be ensuring that your user accounts are being synced to Azure using Azure AD Connect and that you have your sign-in and Store policies configured to allow all of the pieces to function properly. Hopefully this guide will help you get started quickly. The <a href="https://docs.microsoft.com/sccm/apps/deploy-use/manage-apps-from-the-windows-store-for-business">ConfigMgr docs</a> contain great information on the process.</p>
@@ -603,51 +643,7 @@ Online apps in ConfigMgr don&rsquo;t require content, but offline ones do. Onlin
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

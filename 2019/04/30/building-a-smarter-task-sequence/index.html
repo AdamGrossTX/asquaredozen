@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Building a Smarter Task Sequence</h1>
@@ -262,93 +262,93 @@ We use a small wizard to gather info about the build type and primary user, then
 <h4 id="milestone-logging">Milestone Logging</h4>
 <p>One concept that I haven&rsquo;t implemented into production yet is milestone logging. The idea is that at the end of each main section of the task sequence, we set a variable or write a registry entry or local file that you can query to determine where to jump to in the task sequence. I haven&rsquo;t found a way to tell the task sequence go to a specific step when it starts, so you have to add criteria onto your groups to check for the name of the last run group. Here&rsquo;s an example of what I mean:</p>
 <p><div class="image">
-
   <figure>
     <a href="image-7.png" target="_blank">
       <img src="image-7.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>A Smarter Task Sequence</figcaption>
+    
   </figure>
-
 </div></p>
 <p>We have a variable called <code>CustOSLastStepNum</code> that only gets set if a group succeeded. At the end of each group, add a <strong>Set Task Sequence Variable</strong> step to set <code>CustOSLastStepNum</code> to a number assigned to a variable with the same name as the group. If the task sequence fails, write the<br>
 <code>CustOSLastStepNum</code> variable to the registry or a file. Then add criteria to each main group to check if <code>CustOSLastStepNum</code> is less than the number and if so, skip the step.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-6.png" target="_blank">
       <img src="image-6.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Variables for each main group</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="putting-it-together">Putting it Together</h2>
 <p>Adding this logic will take some careful planning to ensure you aren&rsquo;t skipping over key parts of your task sequence when you restart. The sample task sequence includes a <code>CustDeploymentType</code> that gets set to <code>AlreadyInstalled</code> if the <code>CustBuildVersion</code> registry key exists or it gets set to Recovery if the <code>CustLastStepNum</code> registry key has a number greater than 0. Essentially, you can add a check to each group to skip if the <code>CustDeploymentType</code> is set to <code>Recovery</code> or <code>AlreadyInstalled</code> to have more global control over which steps run.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-8.png" target="_blank">
       <img src="image-8.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Custom registry keys</figcaption>
+    
   </figure>
-
 </div></p>
 <p>When the task sequence runs any Install Application steps, the application detection method logic will run and automatically skip anything that has already been installed. In production, we have logic on any place that can&rsquo;t be re-run as well so we don&rsquo;t cause an error by re-running the step.</p>
 <h2 id="sample-task-sequence">Sample Task Sequence</h2>
 <p>Since the task sequence is self documenting, you should just download it and walk through the steps - be sure to check each step and group Options tab to follow the criteria - but I&rsquo;d like to highlight a few bits.</p>
 <p>Each RunPowerShell script has a simple registry read or write in it. If you import the sample task sequence below, the script content will import.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-9.png" target="_blank">
       <img src="image-9.png" alt="1902 Run PowerShell Script Step">
     </a>
+    
     <figcaption>1902 Run PowerShell Script Step</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-10.png" target="_blank">
       <img src="image-10.png" alt="Get Registry Value Script">
     </a>
+    
     <figcaption>Get Registry Value Script</figcaption>
+    
   </figure>
-
 </div></p>
 <p>For the sake of clarity and centralized management, I&rsquo;m using variables for each group number, but you could just as easily use numbers for comparisons on the groups.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-13.png" target="_blank">
       <img src="image-13.png" alt="Centralize variables for use in each group">
     </a>
+    
     <figcaption>Centralize variables for use in each group</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-11.png" target="_blank">
       <img src="image-11.png" alt="Using Variables for comparison">
     </a>
+    
     <figcaption>Using Variables for comparison</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-12.png" target="_blank">
       <img src="image-12.png" alt="Alternative approach - Numbers for comparison - No variables needed.">
     </a>
+    
     <figcaption>Alternative approach - Numbers for comparison - No variables needed.</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>If you are managing complex task sequences or in place upgrades, adding some simple steps to your task sequence can allow you to save time and troubleshooting effort and greatly improve your user experience. Import the sample <a href="https://github.com/AdamGrossTX/BlogFiles/raw/master/Building%20A%20Smarter%20Task%20Sequence.zip">Task Sequence from GitHub</a> and get started testing. I hope this methodology improves the success of your deployments as well as it has for my site.</p>
@@ -364,51 +364,7 @@ We use a small wizard to gather info about the build type and primary user, then
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Finding ConfigMgr Task Sequences with Invalid References</h1>
@@ -247,43 +247,45 @@ if (!doNotTrack) {
 			<div class="post-entry">
 				<p>Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.</p>
 <p><div class="image">
-
-<a href="image-1.png" target="_blank">
-  <img src="image-1.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-1.png" target="_blank">
+      <img src="image-1.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="disabled-ts-references">Disabled TS References</h2>
 <p>So the first thing we learned is that if you disable the Install Application step in a Task Sequence, the application reference gets removed from the Task Sequence References tab. This is good and bad. It&rsquo;s good because it won&rsquo;t prevent an application from being deleted. It&rsquo;s bad because there&rsquo;s no way to find out if it exists in any Task Sequences from the console.</p>
 <p><div class="image">
-
-<a href="image-4.png" target="_blank">
-  <img src="image-4.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="invalid-applications">Invalid Applications</h2>
 <p>We have around 75 Task Sequences currently. We keep archives of old ones plus we use several nested ones so they add up. I thought I could quickly find the reference manually so I started out manually clicking through each Task Sequence with the References tab selected so I could quickly skim through the references. Within a few minutes, I was done and was unable to find the reference. I thought that maybe the Application was disabled in the TS but based on the way Disabled works, we should have been able to delete.
 I ended up running some PowerShell commands (script below) and was able to find the Task Sequence where the application was referenced. When I opened the Task Sequence, I received an alert indicating that one of my application references was invalid. During the cleanup process, the deployment type had been deleted from the application. While you can&rsquo;t delete an application if it&rsquo;s referenced by a Task Sequence, you CAN delete it&rsquo;s deployment types, which then breaks the reference apparently.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-2.png" target="_blank">
       <img src="image-2.png" alt="Missing deployment type breaks step.">
     </a>
+    
     <figcaption>Missing deployment type breaks step.</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-3.png" target="_blank">
       <img src="image-3.png" alt="One or more of selected applications is not valid">
     </a>
+    
     <figcaption>One or more of selected applications is not valid</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="scripting-the-fix">Scripting the Fix</h2>
 <p>If you launch the PowerShell console from the ConfigMgr console, you can run these commands to find out useful information about your Applications and their references.</p>
@@ -375,51 +377,7 @@ I ended up running some PowerShell commands (script below) and was able to find 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

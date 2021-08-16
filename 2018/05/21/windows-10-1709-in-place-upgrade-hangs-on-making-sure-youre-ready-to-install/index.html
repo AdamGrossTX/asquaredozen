@@ -239,8 +239,8 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Windows 10 1709 In-Place Upgrade Hangs on Making sure you&#39;re ready to install</h1>
@@ -253,43 +253,48 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <h1 id="update-2---5242018"><strong>UPDATE #2 - 5/24/2018</strong></h1>
 <p>After posting this, I came across these <a href="https://twitter.com/jarwidmark/status/998591545392685057">https://twitter.com/jarwidmark/status/998591545392685057</a> and <a href="http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/">http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/</a> which indicated that the fix was to update the devinv.dll file in Sources directory of your Windows 10 Upgrade media. This led me to finding out that KB2952664 updates devinv.dll to a new version. Also, I found that my Windows 7 Reference image already had a version of both the hotfix and the dll - version 10.0.14979.1011 from 12/31/2016.<br>
 <div class="image">
-
-<a href="KB2952664-22.jpg" target="_blank">
-  <img src="KB2952664-22.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-22.jpg" target="_blank">
+      <img src="KB2952664-22.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="updated-fix"><strong>Updated Fix</strong></h2>
 <p>Using the instructions from <a href="https://twitter.com/surferstylee13">Mark Graham (@surferstylee13)</a><a href="http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/">http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/</a> I have added the latest version of <strong>devinv.dll</strong> to my upgrade media and in my In-Place Upgrade TS, instead of uninstalling the hotfix (which also seems to work, but I don&rsquo;t know the side effects of removing it), I&rsquo;m installing the latest version which I&rsquo;ve downloaded from the <a href="https://www.catalog.update.microsoft.com/Search.aspx?q=kb2952664">Windows Update Catalog</a>. According to the file name, <strong>KB2952664</strong> is on revision 24. I haven&rsquo;t found an easy to find which version of the KB you have installed other than checking the file versions.</p>
 <ol>
 <li>Make the changes to the <strong>Prepare for Upgrade</strong> section.<br>
 <div class="image">
-
-<a href="KB2952664-23.jpg" target="_blank">
-  <img src="KB2952664-23.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-23.jpg" target="_blank">
+      <img src="KB2952664-23.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>On the Check if KB2952664 group&rsquo;s Options tab, add a condition to check for the file version information. This will allow us to only apply the patch if the file isn&rsquo;t current.<br>
 <div class="image">
-
-<a href="KB2952664-26.jpg" target="_blank">
-  <img src="KB2952664-26.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-26.jpg" target="_blank">
+      <img src="KB2952664-26.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>  <div class="image">
-
-<a href="KB2952664-25.jpg" target="_blank">
-  <img src="KB2952664-25.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-25.jpg" target="_blank">
+      <img src="KB2952664-25.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Add the new install command line for the KB. Make sure to update the MSU filename to match what you download from the catalog. <div class="image">
-
-<a href="KB2952664-24.jpg" target="_blank">
-  <img src="KB2952664-24.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-24.jpg" target="_blank">
+      <img src="KB2952664-24.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div><br>
 <code>wusa windows6.1-kb2952664-v24-x64_cd95eff6a0b4dc190709f9a0e7a00f782a74ee5c.msu /quiet /norestart</code></li>
 </ol>
@@ -312,19 +317,21 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 </code></pre></div><ul>
 <li>The setupact.log under c:$WINDOWS.~BT\Sources\Panther will be ~200 KB (depends on the device) and won&rsquo;t get updated after the first few mins.<br>
 <div class="image">
-
-<a href="KB2952664-12.jpg" target="_blank">
-  <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-12.jpg" target="_blank">
+      <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Task Manager will show setup.exe and SetupHost.exe in the task list, but CPU usage on both will show 00.<br>
 <div class="image">
-
-<a href="KB2952664-11.jpg" target="_blank">
-  <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-11.jpg" target="_blank">
+      <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Once you&rsquo;ve determined that the installer is hung, you can kill the process by opening Task Manager and ending task on SetupHost.exe</li>
 </ul>
@@ -333,11 +340,12 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <li>The installation wizard will proceed as normal.</li>
 <li>The setupact.log under <strong>c:$WINDOWS.~BT\Sources\Panther</strong> will be ~200 KB (depends on the device) and won&rsquo;t get updated after the first few mins.<br>
 <div class="image">
-
-<a href="KB2952664-12.jpg" target="_blank">
-  <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-12.jpg" target="_blank">
+      <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>One of the last steps in setupact.log (you have to copy the file with admin rights to a different location before you can open it) will be</li>
 </ul>
@@ -345,19 +353,21 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 </code></pre></div><ul>
 <li>You will the screen &lsquo;<strong>Making sure you&rsquo;re ready to install</strong>&rsquo;.<br>
 <div class="image">
-
-<a href="KB2952664-15.png" target="_blank">
-  <img src="KB2952664-15.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-15.png" target="_blank">
+      <img src="KB2952664-15.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Task Manager will show setup.exe and SetupHost.exe in the task list, but CPU usage on both will be 0.<br>
 <div class="image">
-
-<a href="KB2952664-11.jpg" target="_blank">
-  <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-11.jpg" target="_blank">
+      <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Once you&rsquo;ve determined that the installer is hung, you can kill the process by opening Task Manager and ending task on SetupHost.exe</li>
 </ul>
@@ -367,18 +377,20 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <ol>
 <li>In your <strong>Prepare for Upgrade</strong> group, create a new group called <strong>KB292446 Install check.</strong><br>
 <div class="image">
-
-<a href="KB2952664-20.jpg" target="_blank">
-  <img src="KB2952664-20.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-20.jpg" target="_blank">
+      <img src="KB2952664-20.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>On the Options tab of the <strong>KB292446 Install check</strong> group, add a new WMI Query condition <div class="image">
-
-<a href="KB2952664-18.jpg" target="_blank">
-  <img src="KB2952664-18.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-18.jpg" target="_blank">
+      <img src="KB2952664-18.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>
 <ul>
 <li><strong>WMI Namespace:</strong> root\cimv2</li>
@@ -386,21 +398,23 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 </ul>
 </li>
 <li>Add Run Command Line Step called <strong>Uninstall KB292446</strong> <div class="image">
-
-<a href="KB2952664-19.jpg" target="_blank">
-  <img src="KB2952664-19.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-19.jpg" target="_blank">
+      <img src="KB2952664-19.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div><br>
 <strong>Command Line:</strong> <code>wusa /uninstall /kb:2952664 /quiet /norestart</code>
 Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</code> and the Task Sequence will fail due to an unexpected reboot. I suspect you could create a Program to do this and it would allow the Task Sequence to manage the reboot.</li>
 <li>Add <strong>Restart Computer Step</strong></li>
 <li><strong>Optional:</strong> Add new Run Command Line step called <strong>Uninstall of KB2952664 Failed - Exit TS.</strong> This step will cause the Task Sequence to fail if the KB is still detected after a reboot. <div class="image">
-
-<a href="KB2952664-15.jpg" target="_blank">
-  <img src="KB2952664-15.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-15.jpg" target="_blank">
+      <img src="KB2952664-15.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>On the Options tab add a new WMI Query condition
 <ul>
@@ -422,11 +436,12 @@ Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</c
 <li>Click <strong>View Installed Updates</strong></li>
 <li>Find the entry for KB2952664. I added the <strong>Update ID</strong> column to the view for easier sorting.<br>
 <div class="image">
-
-<a href="KB2952664-14.jpg" target="_blank">
-  <img src="KB2952664-14.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="KB2952664-14.jpg" target="_blank">
+      <img src="KB2952664-14.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></li>
 <li>Right click on the entry and click <strong>Uninstall</strong></li>
 <li>Reboot</li>
@@ -445,51 +460,7 @@ Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</c
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices</h1>
@@ -247,24 +247,25 @@ if (!doNotTrack) {
 			<div class="post-entry">
 				<p>I recently needed to query the <a href="https://docs.microsoft.com/previous-versions/windows/desktop/legacy/ee886409(v%3Dvs.85)">Win32_UserProfile</a> class in WMI for some reporting I was working on. This class is a default Hardware Inventory class in ConfigMgr. I noticed that we had a large number of devices were reporting NULL values for several properties in this class when I queried them in SQL so I decided to investigate. From the ConfigMgr console, I used <a href="https://docs.microsoft.com/configmgr/core/servers/manage/cmpivot">CMPivot</a> (only one of the best tools ever!!) to query the class (Listed as USMUserProfile in CMPivot). As CMPivot returned results, I noticed that about half of my devices were returning with a failure message and as I dug into the errors, I made a few discoveries and may have found a bug with the In-Place upgrade process for Windows 7 to Windows 10.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-2.png" target="_blank">
       <img src="image-2.png" alt="Win32_UserProfile Class in ConfigMgr Client Hardware Inventory">
     </a>
+    
     <figcaption>Win32_UserProfile Class in ConfigMgr Client Hardware Inventory</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="cmpivot-results">CMPivot Results</h2>
 <p>If you&rsquo;ve ever worked with SQL or WMI/WQL queries, you&rsquo;ve likely heard the advice that you shouldn&rsquo;t use <code>SELECT * FROM table</code> but should specifically list the columns that you want to query like <code>SELECT ColA, ColB, ColC FROM table</code> to have better query performance and only return the data needed for your specific query. Without going into too much detail on how CMPivot works, the bit that&rsquo;s relevant to this post is that whenever you query a class in CMPivot, it explicitly lists out the columns in the query that it sends down to the client.
 In this case, I selected the USMUserProfile entity from CMPivot and clicked Run Query.</p>
 <p><div class="image">
-
-<a href="image.png" target="_blank">
-  <img src="image.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>The WMI query that CMPivot attempts to run on the client is:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#0086b3">SELECT </span>
@@ -288,24 +289,24 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>	Win32_UserProfile
 </code></pre></div><p>In CMPivot, click on <strong>Query Summary</strong> to view Success, Failed and Offline totals and click through to see details for each category.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-3.png" target="_blank">
       <img src="image-3.png" alt="Summary of CMPivot Query Results">
     </a>
+    
     <figcaption>Summary of CMPivot Query Results</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-4.png" target="_blank">
       <img src="image-4.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Failed Device details in CMPivot</figcaption>
+    
   </figure>
-
 </div></p>
 <p>As you can see, my Failed Devices details show &lsquo;<strong>Invalid query&hellip;</strong>&rsquo;.</p>
 <h2 id="manually-validating-the-query">Manually Validating the Query</h2>
@@ -470,51 +471,7 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

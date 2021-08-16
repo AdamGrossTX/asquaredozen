@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Demystifying Windows 10 Feature Update Blocks</h1>
@@ -263,11 +263,12 @@ The flaw in this feature is the lack of visibility into what is being blocked an
 <h4 id="this-pc-cant-be-upgraded-to-windows-10">This PC can&rsquo;t be upgraded to Windows 10</h4>
 <p>Let&rsquo;s start with this message. It is very generic and less than helpful. It can appear in the setup UI if you are manually running <strong><code>setup.exe</code></strong> or in <strong><code>c:\$WINDOWS.~BT\Sources\Panther\ActionableReport.html</code></strong>.
 <div class="image">
-
-<a href="image-18.png" target="_blank">
-  <img src="image-18.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-18.png" target="_blank">
+      <img src="image-18.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">This PC can&#39;t be upgraded to Windows 10.</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Your PC settings aren&#39;t supported yet on this version of Windows 10. Microsoft is working to support your settings soon. No action is needed. Windows Update will offer this version of Windows 10 automatically when these settings are supported.</span>
@@ -280,11 +281,12 @@ The flaw in this feature is the lack of visibility into what is being blocked an
 </code></pre></div><h4 id="compatdata-hard-block">CompatData Hard Block</h4>
 <p>When a Feature Update fails to install, you can generally check in the last CompatData_*.xml file for information about the failure. Unfortunately, sometimes the information is vague.</p>
 <p><div class="image">
-
-<a href="2020-07-26_22-54-08.png" target="_blank">
-  <img src="2020-07-26_22-54-08.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2020-07-26_22-54-08.png" target="_blank">
+      <img src="2020-07-26_22-54-08.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#000080">&lt;CompatReport</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.microsoft.com/ApplicationExperience/UpgradeAdvisor/01012009&#34;</span> <span style="color:#008080">MigXmlFile=</span><span style="color:#d14">&#34;P6MUWe3Hb0aa0MLV.9.8.0.0_APPRAISER_Migration.xml&#34;</span><span style="color:#000080">&gt;&lt;System</span> <span style="color:#008080">X64Capable=</span><span style="color:#d14">&#34;True&#34;</span> <span style="color:#008080">X64Running=</span><span style="color:#d14">&#34;True&#34;</span><span style="color:#000080">/&gt;&lt;Hardware&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_BitlockerNoTargetSupport&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_TargetIsNonStagedBuild&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_LanguagePackDetected&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_LicenseActivation&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_FeaturesOnDemandDetected&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_PendingFirmwareUpdateWithPower&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_FlightSigningEnabled&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Setup_SecureBoot&#34;</span><span style="color:#000080">&gt;&lt;CompatibilityInfo</span> <span style="color:#008080">BlockingType=</span><span style="color:#d14">&#34;None&#34;</span><span style="color:#000080">/&gt;&lt;/HardwareItem&gt;&lt;HardwareItem</span> <span style="color:#008080">HardwareType=</span><span style="color:#d14">&#34;Generic&#34;</span><span style="color:#000080">&gt;</span>
@@ -301,14 +303,14 @@ The flaw in this feature is the lack of visibility into what is being blocked an
 <h4 id="compattelrunner-scheduled-task">CompatTelRunner Scheduled Task</h4>
 <p>Open Task Scheduler and you will find the <strong><code>Microsoft Compatibility Appraiser</code></strong> task under <strong><code>Task Scheduler Library&gt;Microsoft&gt;Windows&gt;Application Experience</code></strong></p>
 <p><div class="image">
-
   <figure>
     <a href="image-1.png" target="_blank">
       <img src="image-1.png" alt="Microsoft Compatibility Appraiser scheduled task">
     </a>
+    
     <figcaption>Microsoft Compatibility Appraiser scheduled task</figcaption>
+    
   </figure>
-
 </div></p>
 <p>This task launches:</p>
 <p><code>%windir%\system32\compattelrunner.exe</code></p>
@@ -374,43 +376,45 @@ When you expand the cab files using, you will get the following contents:</p>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#008080">CONX   ConX::Compatibility::CCompatibilityHost::SerializeData: Provider wsc:wica: is serializing 580 bytes of data.</span>
 </code></pre></div><p>Just as the CompatTelRunner scheduled task will create new bin files, the process during Windows Setup will create a set of XML and BIN files in the Panther folder.</p>
 <p><div class="image">
-
-<a href="image-2.png" target="_blank">
-  <img src="image-2.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="appraiser_telemetryrunlistxml">Appraiser_TelemetryRunList.xml</h4>
 <p>The Appraiser_TelemetryRunList.xml file tells the appraiser which actions to perform. It also tells it which sdb to use and where to output results of each scan. You could compare this xml to the xml files output during Windows setup and match up the components. I haven&rsquo;t gotten that far into it. The module included at the end here has PowerShell to generate your own RunList.</p>
 <p><div class="image">
-
-<a href="image-3.png" target="_blank">
-  <img src="image-3.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="force-a-new-appraisersdb-to-process">Force a new Appraiser.sdb to process</h4>
 <p>During testing, I was able to replace the current Appraiser_AlternateData.cab file with an older version and run the scheduled task and the old file would be used. This is because the registry key logs which files were used last. If the key isn&rsquo;t updated or deleted, a new file won&rsquo;t be downloaded. Comparing Appraiser_Data.ini with the registry key you can determine if the device has used the current database.</p>
 <p>I was also able to delete the Appraiser_AlternateData.cab from C:\Windows\appcompat\appraiser and re-run the scheduled task and it would pull down the latest version.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-14.png" target="_blank">
       <img src="image-14.png" alt="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Appraiser">
     </a>
+    
     <figcaption>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Appraiser</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="2020-07-26_17-25-53.png" target="_blank">
       <img src="2020-07-26_17-25-53.png" alt="Appraiser_Data.ini">
     </a>
+    
     <figcaption>Appraiser_Data.ini</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="deserialize-appraiser-bin-files">Deserialize Appraiser BIN files</h2>
 <p>The output of the appraiser process will be a .bin file (and during a feature update an .xml file). The bin file is just a binary XML file that can be converted by using the appraiser process. It&rsquo;s a configuration option built into the RunList XML. Here&rsquo;s an example XML file that will take the file <strong><code>C:\Windows\appcompat\appraiser\APPRAISER_TelemetryBaseline_20H1.bin</code></strong> and deserialize it into the XML file <strong><code>APPRAISER_TelemetryBaseline_20H1_HUMANREADABLE.xml</code></strong></p>
@@ -434,21 +438,23 @@ When you expand the cab files using, you will get the following contents:</p>
 </code></pre></div><p>Run this in a cmd prompt and point to your RunList.</p>
 <p><code>rundll32.exe appraiser.dll,RunTest MyRunList.xml</code></p>
 <p><div class="image">
-
-<a href="image-4.png" target="_blank">
-  <img src="image-4.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>I used this script from Technet gallery (which will be going away soon) to get started down this process. It appears to be maintained by someone from the Microsoft CSS team but I&rsquo;m not sure. <a href="https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee">https://gallery.technet.microsoft.com/scriptcenter/APPRAISE-APPRAISERbin-to-8399c0ee</a></p>
 <h2 id="humanreadablexml">*HumanReadable.XML</h2>
 <p>In the screenshot below of the Windows Panther folder, you&rsquo;ll see bin and xml files. These files were generated during a Feature Update and you&rsquo;ll see that they are already in XML format. From my experience, I&rsquo;ve found that the second entry is the one that will generally contain block information. They correspond to the bin files that we see in the <strong>appraiser</strong> folder. There will be an <strong><code>*_UNV.bin</code></strong> and one that corresponds to the Windows release like <strong><code>*_20H1.bin</code></strong>. Likewise, the files created during setup appear to be broken out the same way.</p>
 <p><div class="image">
-
-<a href="image.png" target="_blank">
-  <img src="image.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>An example of a device that&rsquo;s blocked by an entry in one of these files would look like this. This is from the appraiser output folder, not a Feature Update. Search the file for the <strong><code>BlockingMatchingInfo</code></strong> property to find blocks.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Inventory&#34;</span><span style="color:#000080">&gt;</span>
@@ -485,11 +491,12 @@ When you expand the cab files using, you will get the following contents:</p>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>        <span style="color:#000080">&lt;Property</span> <span style="color:#008080">Name=</span><span style="color:#d14">&#34;SdbHyperlinkText&#34;</span> <span style="color:#008080">Value=</span><span style="color:#d14">&#34;Resource: 10041&#34;</span> <span style="color:#008080">Ordinal=</span><span style="color:#d14">&#34;2&#34;</span> <span style="color:#000080">/&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>      <span style="color:#000080">&lt;/PropertyList&gt;</span>
 </code></pre></div><p><div class="image">
-
-<a href="image-6.png" target="_blank">
-  <img src="image-6.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Here&rsquo;s another example of the block generated during a Feature Update. The main differences are 1) there are 2 blocks in the first example 2) the feature update blocks render out the GenericMessage text where the appraiser version just points to a Resource ID.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;PropertyList</span> <span style="color:#008080">Type=</span><span style="color:#d14">&#34;Inventory&#34;</span><span style="color:#000080">&gt;</span>
@@ -586,71 +593,74 @@ When you expand the cab files using, you will get the following contents:</p>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>      <span style="color:#000080">&lt;/BLOCK_UPGRADE&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>    <span style="color:#000080">&lt;/MATCHING_INFO_BLOCK&gt;</span>
 </code></pre></div><p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>While I was in the sdb, I discovered another registry key that allowed me to bypass the block without actually deleting registry keys that may be critical to the app causing the block.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\BypassBlockUpgrade</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Property: {B074D9CE-FC26-4E0B-9978-42E541E23388}</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">DWORD Value: 1</span>
 </code></pre></div><p><div class="image">
-
-<a href="image-9.png" target="_blank">
-  <img src="image-9.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once I created the regkeys and re-ran the appraiser, the blocks were still listed, but new entries appeared referencing the BypassBlockUpgrade keys.</p>
 <p><div class="image">
-
-<a href="2020-07-26_20-45-31.png" target="_blank">
-  <img src="2020-07-26_20-45-31.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2020-07-26_20-45-31.png" target="_blank">
+      <img src="2020-07-26_20-45-31.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Here&rsquo;s another example where the Surface Pro 7 was blocked for 2004. This one gets a bit tricky. The first image show 2 GUIDs that match the GUIDs for a MACHINE_BLOCK in the 4th image. The second image shows the SdbEntryGuid that matches the MATCHING_INFO_BLOCK in the 3rd image. You&rsquo;ll also see the registry key to bypass the block in the 3rd image. This whole time, we could have bypassed the Surface Pro 7 block!!!</p>
 <p><div class="image">
-
   <figure>
     <a href="image-12.png" target="_blank">
       <img src="image-12.png" alt="*Appraiser_HumanReadable.xml">
     </a>
+    
     <figcaption>*Appraiser_HumanReadable.xml</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-10.png" target="_blank">
       <img src="image-10.png" alt="*Appraiser_HumanReadable.xml">
     </a>
+    
     <figcaption>*Appraiser_HumanReadable.xml</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-13.png" target="_blank">
       <img src="image-13.png" alt="Appraiser.sdb entries">
     </a>
+    
     <figcaption>Appraiser.sdb entries</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-11.png" target="_blank">
       <img src="image-11.png" alt="Appraiser.sdb entries">
     </a>
+    
     <figcaption>Appraiser.sdb entries</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="fuwhyamiblocked-powershell-module">FU.WhyAmIBlocked Powershell Module</h2>
 <p><em><strong>FU is short for Feature Update</strong></em></p>
@@ -702,11 +712,12 @@ It has been published to the PowerShell Gallery (My first one, thanks Ben!) and 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">Find-FUBlocksInSDB</span> -Path C:\FeatureUpdateBlocks\Output -BlockList <span style="color:#008080">$BlockList</span>
 </code></pre></div><p>This should produce a Matches.txt file that you can use to review all of your enterprise&rsquo;s blocks without having to collect any additional client information.</p>
 <p><div class="image">
-
-<a href="image-16.png" target="_blank">
-  <img src="image-16.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-16.png" target="_blank">
+      <img src="image-16.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>I feel like I&rsquo;ve covered all of the pieces of the puzzle that I&rsquo;ve put together at this point. I don&rsquo;t think I&rsquo;m finished with this process or the module, but needed to get this first round of info out of my head before I lose it. I&rsquo;d love to hear your thoughts and get feedback on the module.</p>
@@ -740,51 +751,7 @@ It has been published to the PowerShell Gallery (My first one, thanks Ben!) and 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

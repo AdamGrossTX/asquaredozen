@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>WinPE Image fails to load on HP Proliant Gen9 servers using ADK 1709</h1>
@@ -247,11 +247,12 @@ if (!doNotTrack) {
 			<div class="post-entry">
 				<p>We have several generations of HP ProLiant servers in our environment. We recently upgraded SCCM to 1710 then applied ADK 1709. We have been imaging these servers using the ADK 1703 Boot Image without issue. After upgrading to ADK 1709 and creating new boot images, we are unable to boot to into WinPE on any of our Gen9 servers. After doing the standard diagnostics (testing old, testing new, updating drivers, updating firmware, etc) we found that these servers would still freeze after downloading the boot WIM and get stuck on this screen:</p>
 <p><a href="/2018/01/27/winpe-image-fails-load-hp-proliant-gen9-servers-using-adk-1709/hpbootscreen/"><div class="image">
-
-<a href="HPBootScreen.jpg" target="_blank">
-  <img src="HPBootScreen.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="HPBootScreen.jpg" target="_blank">
+      <img src="HPBootScreen.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></a></p>
 <p>We found a <a href="https://support.hpe.com/hpsc/doc/public/display?docId=emr_na-a00037880en_us">support article from HP</a> that referred to Microsoft KB4055537, which didn&rsquo;t exist at the time we were troubleshooting and our Microsoft contacts didn&rsquo;t have any information either.</p>
 <p>In the meantime, I <a href="https://social.technet.microsoft.com/Forums/windowsserver/36858bf9-b9ad-4eb9-9b46-7b457be85f42/hp-proliant-gen9-servers-unable-to-pxe-boot-with-adk-1709-boot-image-older-adk-version-work-other?forum=winserversetup&amp;prof=required">posted the issue on the TechNet forums</a> and didn&rsquo;t get much help until earlier this week when <a href="https://social.technet.microsoft.com/profile/michael_jakob/?ws=usercard-mini">Michael Jakob</a>, who has been a TechNet member since 2014, made his first ever post with the solution. I had given up on the issue and turned it over to our server team who where waiting to hear back from Microsoft. As soon as I got the email alert from Technet, I forwarded the info over to the server guys who tested and verified it was indeed the solution.</p>
@@ -289,51 +290,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

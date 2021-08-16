@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>How to Identify Repeated SCCM Client Inventory Failures Using SQL</h1>
@@ -256,18 +256,20 @@ For more on MIFs, check out <a href="https://blogs.technet.microsoft.com/umairkh
 <p>First - let me start with a disclaimer on this section (see links at the end for more info from Garth and Benjamin on this). The views and tables that I&rsquo;m going to use are technically &lsquo;not supported&rsquo; by Microsoft in that they shouldn&rsquo;t be used in reports or used to share out to others. The main risks in using these are that 1) some day the view could change and would break your report 2) the view likely doesn&rsquo;t have the correct permissions on it and you should NEVER change permissions on your ConfigMgr Database. (Yeah, Yeah - I know some of you do change them, but that&rsquo;s just silly and you shouldn&rsquo;t do it)</p>
 <p>I started digging through the database and found the InventoryLog table and started playing with it. I discovered that it matched up nicely with the machines I was finding in the BADMIFs folders. I decided that this table could be the ticket to sorting this out. One great thing about the SCCM Database is that GENERALLY where there&rsquo;s a table, there&rsquo;s a view. You should always use the v_ views when they are available. If you can&rsquo;t find a view that matches, like v_InventoryLog, check for vInventoryLog (which is the one I found). You can also right click on the table or view in SQL Server Management Studio (SSMS) and click View Dependencies.</p>
 <p><div class="image">
-
-<a href="image-14.png" target="_blank">
-  <img src="image-14.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-14.png" target="_blank">
+      <img src="image-14.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-15.png" target="_blank">
-  <img src="image-15.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-15.png" target="_blank">
+      <img src="image-15.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Since I didn&rsquo;t know anything about the the table, I validated a few things first. I ran <code>SELECT DISTINCT ResourceID FROM vInventoryLog WHERE Name IS NOT NULL</code> and the total count matched up with my total device count (within reason). I also opened up the view in SSMS to see which tables/views it was using. Here&rsquo;s the view contents. As you can see, it&rsquo;s doing some cool math and using <code>InventoryLog</code> and <code>System_DISC</code>. This is perfect.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>il.MachineID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>ResourceID,<span style="color:#bbb"> </span>sd.Netbios_Name0<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">as</span><span style="color:#bbb"> </span>Name,<span style="color:#bbb"> 
@@ -320,11 +322,12 @@ For more on MIFs, check out <a href="https://blogs.technet.microsoft.com/umairkh
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span><span style="color:#bbb">	</span>Name<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">IS</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NULL</span><span style="color:#bbb">
 </span></code></pre></div><p><div class="image">
-
-<a href="image-16.png" target="_blank">
-  <img src="image-16.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-16.png" target="_blank">
+      <img src="image-16.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>From this data, I can see that within the past 90 days, I&rsquo;ve got several machines that are repeatedly sending in bad inventory. Next we need to find the max <code>LogUtcTime</code> for each device where the LogText is <code>full/resync report</code>. This will enable us to determine the last time a device reported a valid inventory.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
@@ -399,11 +402,12 @@ Then I summarized this list (you could just do it in Excel from here) to give me
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>	FailureCount desc
 </code></pre></div><p>You&rsquo;ll notice the low failure counts on many of the machines listed. When I began, I had many more with much higher counts. The ones with 1-3 failures don&rsquo;t concern me since I&rsquo;m sure they will auto-remediate on their next inventory attempt, but the higher counts may require a bit more attention.</p>
 <p><div class="image">
-
-<a href="image-18.png" target="_blank">
-  <img src="image-18.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-18.png" target="_blank">
+      <img src="image-18.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>Well, this was supposed to be a short post, but I never can get away with that. There&rsquo;s just too much good stuff to share (so I don&rsquo;t forget it 6 months from now as well). Hopefully this post has given you some thoughts on how you can keep an eye on your inventory. I do believe that the increased numbers of failures I&rsquo;m seeing are directly related to In-Place upgrades from Windows 7 to Windows 10 and in other cases related to devices changing from KMS to Subscription activation for Windows. I&rsquo;m still chasing down the latter. Please let me know if I missed anything or share any improvements that you can come up with.</p>
@@ -434,51 +438,7 @@ Then I summarized this list (you could just do it in Excel from here) to give me
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

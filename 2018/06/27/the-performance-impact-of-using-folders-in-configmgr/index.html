@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>The Performance Impact of Using Folders in ConfigMgr</h1>
@@ -253,39 +253,43 @@ if (!doNotTrack) {
 <h4 id="from-the-root">From the Root</h4>
 <p>From the <strong>ConfigMgr</strong> console, select the <strong>Device Collections</strong> node. Then click in the <strong>Search</strong> box. The menu bar should change to show the <strong>All Subfolders</strong> icon.  In my experience, it doesn&rsquo;t show up sometimes. Simply click away from the search dialog then back in and it will generally appear.  Be sure the loading indicator (green light bar thing just under the menu when busy). It should look like this:</p>
 <p><div class="image">
-
-<a href="2018-06-26_22-18-27.jpg" target="_blank">
-  <img src="2018-06-26_22-18-27.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-06-26_22-18-27.jpg" target="_blank">
+      <img src="2018-06-26_22-18-27.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>From here, you can simply type your search term(s) and click <strong>Search</strong>. That&rsquo;s the basics. From there, you can also select the <strong>Add Criteria</strong> button just to the right of the <strong>Search</strong> button. You can use this to more specifically define your search criteria (though I&rsquo;m not going to cover using this feature here, though it does positively impact search performance).</p>
 <p><div class="image">
-
-<a href="2018-06-26_23-13-05.jpg" target="_blank">
-  <img src="2018-06-26_23-13-05.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-06-26_23-13-05.jpg" target="_blank">
+      <img src="2018-06-26_23-13-05.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="from-a-folder">From a Folder</h4>
 <p>As you have probably guessed, since we have folders, we use them. My process is to drill into <strong>Device Collections\Desktop\Software</strong>, then begin my search. My thinking is, if I drill down to <strong>Software</strong>, I don&rsquo;t have to search as many other folders/collections and I should help speed up the query and while this is true, you will see why it&rsquo;s problematic if you have a lot folders.</p>
 <h4 id="the-difference">The Difference</h4>
 <p>Here&rsquo;s a little video demonstrating the time difference between the 2 methods.  Most people zone out well before the <strong>Folder Method</strong> returns. <strong>Spoiler</strong>: The <strong>Root Node</strong> search is basically instant, while the <strong>Folder</strong> search (with ~900 subfolders) takes about 45 seconds!!</p>
 <p><div class="image">
-
-<a href="5EB7AE52-FC33-4560-8B0C-FCAE696DF351.gif" target="_blank">
-  <img src="5EB7AE52-FC33-4560-8B0C-FCAE696DF351.gif" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="5EB7AE52-FC33-4560-8B0C-FCAE696DF351.gif" target="_blank">
+      <img src="5EB7AE52-FC33-4560-8B0C-FCAE696DF351.gif" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h1 id="whats-going-on-in-there">What&rsquo;s going on in there?</h1>
 <p>I&rsquo;ve learned that the <strong>SMSProv.log</strong> on your site server (I only have a single primary, not sure which server you&rsquo;d look at in a larger infrastructure) shows users and the actions they perform in the console in real time.  I opened the log and watched it in <strong>CMTrace</strong> as I performed the various queries was amazed at the things I found. (<em>Some items are formatted for readability and Names/IDs have been changed to protect the innocent</em>). When you open the log, each entry is created in a block similar to this one. You are looking for a block that contains the queries as highlighted below:</p>
 <p><div class="image">
-
-<a href="2018-06-27_9-11-17.jpg" target="_blank">
-  <img src="2018-06-27_9-11-17.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-06-27_9-11-17.jpg" target="_blank">
+      <img src="2018-06-27_9-11-17.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h4 id="space-vs-no-space">Space vs No Space</h4>
 <p>When you add a space to your search term, the terms are each broken apart into separate SQL clauses for comparison.</p>
@@ -398,51 +402,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

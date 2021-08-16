@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>LockDown Diary – How I used DJOIN to Build Test Machines over VPN</h1>
@@ -269,14 +269,14 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 <h4 id="provision">Provision</h4>
 <p>If you&rsquo;ve ever looked at logs during OSD, you&rsquo;ve likely seen references to DJOIN - that&rsquo;s pretty much where my experience with DJOIN ends.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-3.png" target="_blank">
       <img src="image-3.png" alt="SetupAct.Log from the Panther folder">
     </a>
+    
     <figcaption>SetupAct.Log from the Panther folder</figcaption>
+    
   </figure>
-
 </div></p>
 <p>As I started playing with it I discovered that it is a very powerful tool capable of not only creating an offline domain joined object, but you can specify the OU, certificate template and more. It was like finding a Swiss Army Knife while on a desert island. You can read more about DJOIN here <a href="https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)">https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)</a></p>
 <hr>
@@ -293,11 +293,12 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 </ul>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">DJOIN /PROVISION /DOMAIN &#34;asd.net&#34; /MACHINE &#34;ASD-MyVM1&#34; /MACHINEOU &#34;CN</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">Computers,DC=asd,DC=net&#34; /SAVEFILE &#34;C:\Temp\ASD-MyVM1_ODJ.txt&#34; /CERTTEMPLATE &#34;ASD-DomainComputerTemplate&#34; /REUSE</span>
 </code></pre></div><p><div class="image">
-
-<a href="image-1.png" target="_blank">
-  <img src="image-1.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-1.png" target="_blank">
+      <img src="image-1.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once you run this command, you can check Active Directory and you should see your new computer in the OU that you specified and you&rsquo;ll have a text file in the /SAVEFILE location.</p>
 <hr>
@@ -316,27 +317,30 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 </ul>
 <p><code>DJOIN /REQUESTODJ /LOADFILE c:\Temp\ASD-MyVM1_OSJ.txt /WINDOWSPATH %SystemRoot% /LOCALOS</code></p>
 <p><div class="image">
-
-<a href="image-2.png" target="_blank">
-  <img src="image-2.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Once you run the command, reboot the device and you&rsquo;ll be prompted to log in with your domain credentials. Since you won&rsquo;t be on the domain yet, log back in with your local admin credentials.</p>
 <p>To verify that this all worked, you can check Computer Management to see that you&rsquo;re on the domain and check your Local Computer personal certificate store and see that you have a domain CA cert issued to the device name that you specified and the root and intermediate certs should be there as well.</p>
 <p><div class="image">
-
-<a href="image-6.png" target="_blank">
-  <img src="image-6.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>
 <div class="image">
-
-<a href="image-7.png" target="_blank">
-  <img src="image-7.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="vpn">VPN</h2>
 <p>This is the part that may be a show stopper for you, depending on the type of VPN you use and the auth requirements for it. I got lucky with the device cert and user domain creds. At this point, you simply want to install your company VPN client and configure it properly. Since everyone will have something different, I&rsquo;m not going to go into details.</p>
@@ -366,51 +370,7 @@ Now, if you are offline servicing and doing a bunch of tweaking to your image or
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

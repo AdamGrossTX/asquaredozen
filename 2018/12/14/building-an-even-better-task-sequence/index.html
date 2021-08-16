@@ -239,8 +239,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Building An Even Better Task Sequence</h1>
@@ -257,62 +257,62 @@ if (!doNotTrack) {
 <h2 id="picking-up-where-we-left-off">Picking Up Where We Left Off</h2>
 <p>The problem we want to solve is this ugly mess of dialog boxes when the Task Sequence fails. One problem is that the error dialog is mostly generic and it hides the ProgressUI, so users may never see our cool modified dialog and we will end up back at the same problem - not getting good info at the time of failure since most users will just screenshot the error dialog and send it in for support.</p>
 <p><div class="image">
-
   <figure>
     <a href="2018-11-29_0-52-38.jpg" target="_blank">
       <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Example of both dialogs, with the error dialog moved to reveal the Progress UI where the real info is.</figcaption>
+    
   </figure>
-
 </div></p>
 <p>In the last post, I showed how to customize the ProgressUI. Now we will hide the ProgressUI and show a custom dialog with the same information that we need from the failed step.</p>
 <h2 id="showhide-progressui">Show/Hide ProgressUI</h2>
 <p>You may be aware that when you deploy a Task Sequence, you have the option to deploy it silently by unchecking the Show Task Sequence progress on the User Experience tab of your Task Sequence Deployment. The problem with this option is that it hides ALL of the dialogs, which may not be something you want to do — I know my users don&rsquo;t like to find out they have a new OS installing by having their machine randomly reboot with no warnings! However, if you want to display one of the many custom dialogs available from the ConfigMgr community, unchecking the box may be beneficial. Full list at the end.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-6.png" target="_blank">
       <img src="image-6.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Uncheck Show Task Sequence Progress to hide all progress and error dialogs</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Another option to consider is the <strong>TSDisableProgressUI</strong> variable. You can use it anywhere in your Task Sequence to toggle the dialog on or off. Simply add a Set Task Sequence Variable step before or after any step you want to change the dialog display for, then set the value to True or False depending on the desired display mode. Once the variable is set, <strong>ProgressUI</strong> will stay on or off until you toggle it again.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-1.png" target="_blank">
       <img src="image-1.png" alt="Toggle ProgressUI On by setting TSDisableProgressUI=False">
     </a>
+    
     <figcaption>Toggle ProgressUI On by setting TSDisableProgressUI=False</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-2.png" target="_blank">
       <img src="image-2.png" alt="Toggle ProgressUI Off by setting TSDisableProgressUI=True">
     </a>
+    
     <figcaption>Toggle ProgressUI Off by setting TSDisableProgressUI=True</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="custom-error-dialog">Custom Error Dialog</h2>
 <p>Disabling ProgressUI, allows us to fully control the Task Sequence dialogs. For example, if you wanted to suppress the default dialog and put up a splash screen or simply customize the ProgressUI itself - though that would require adding a step to update the dialog in between each step, which isn&rsquo;t really the best. I have worked on a script to monitor the TS progress and update the dialog, but it&rsquo;s quite unstable and unreliable. All that to say, you CAN do it, you just may not want to.</p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/5d58e1d7e7438aef00314e16ef5b34e0.js"></script>
 
 <p><div class="image">
-
   <figure>
     <a href="image-4.png" target="_blank">
       <img src="image-4.png" alt="The final result.">
     </a>
+    
     <figcaption>The final result.</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="putting-it-all-together">Putting it All Together</h2>
 <p>For my sample Task Sequence, I&rsquo;m reusing the one from the previous post and just modifying a few steps to give us the desired result. Full TS is is available for download at the end.</p>
@@ -320,103 +320,107 @@ if (!doNotTrack) {
 <p>03/12/2019 - These steps have been updated for SCCM 1902 CB functionality. The WMI Condition and additional &lsquo;Set Custom Dialog&rsquo; should only be needed if you are running this TS in an environment with 1810 AND newer clients. The change to TSProgressUI.exe is an additional argument has been added to the ShowErrorDialog Method.</p>
 <hr>
 <p><div class="image">
-
   <figure>
     <a href="image-4.png" target="_blank">
       <img src="image-4.png" alt="The basic TS structure">
     </a>
+    
     <figcaption>The basic TS structure</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-7.png" target="_blank">
       <img src="image-7.png" alt="Sample step that will case the TS to fail with exit code 12345">
     </a>
+    
     <figcaption>Sample step that will case the TS to fail with exit code 12345</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-5.png" target="_blank">
       <img src="image-5.png" alt="Condition on the Custom Error Dialog group to only run if there was a failure.">
     </a>
+    
     <figcaption>Condition on the Custom Error Dialog group to only run if there was a failure.</figcaption>
+    
   </figure>
-
 </div></p>
 <h4 id="1810-clients-only">1810 Clients Only</h4>
 <p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-9.png" target="_blank">
-  <img src="image-9.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
 <strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &lt; '5.00.8772.1000'</code></p>
 <p><div class="image">
-
   <figure>
     <a href="image-7.png" target="_blank">
       <img src="image-7.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>1810 Clients Only - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+    
   </figure>
-
 </div></p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/f9b1de89ad7a981ab5b5844bd9210cd1.js"></script>
 
 <h4 id="1901-tp-or-1902-cb-clients-and-newer">1901 TP or 1902 CB Clients and Newer</h4>
 <p><div class="image">
-
-<a href="image-10.png" target="_blank">
-  <img src="image-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="image-11.png" target="_blank">
-  <img src="image-11.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-11.png" target="_blank">
+      <img src="image-11.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
 <strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &gt;= '5.00.8772.1000'</code></p>
 <p><div class="image">
-
   <figure>
     <a href="image-6.png" target="_blank">
       <img src="image-6.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>1901 Clients and Newer - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+    
   </figure>
-
 </div></p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/1292134b0eb2d1a9f822bbd304289980.js"></script>
 
 <h4 id="remaining-shared-steps">Remaining Shared Steps</h4>
 <p><div class="image">
-
   <figure>
     <a href="image-10.png" target="_blank">
       <img src="image-10.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>Disable the progress dialog to suppress the default dialogs.</figcaption>
+    
   </figure>
-
 </div></p>
 <p><a href="image-11.png" title="Run Command Line step to run the code block that we stored into the CustomDialog variable.">A Square Dozen Image</a></p>
 <p>As you can see, the main changes from the previous post are that we are now toggling ProgressUI off and instead of using a variablized step name as the final step and we are going to call the PowerShell to show the custom dialog, but only <strong>AllStepsSucceeded = False</strong>.</p>
@@ -441,51 +445,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -238,8 +238,8 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Building a Better Task Sequence</h1>
@@ -266,19 +266,21 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
 </code></pre></div><h2 id="basic-framework">Basic Framework</h2>
 <p>Inside your Task Sequence, always create a top level group. I like doing this so it&rsquo;s easier to copy and paste the entire task sequence. Inside this group, create 4 groups at the same level. Main, Failure, Success, Cleanup.</p>
 <p><div class="image">
-
-<a href="2018-11-28_23-39-14.jpg" target="_blank">
-  <img src="2018-11-28_23-39-14.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-28_23-39-14.jpg" target="_blank">
+      <img src="2018-11-28_23-39-14.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>On the Main, Failure and Success groups, check the <strong>Continue on error</strong> box.</p>
 <p><div class="image">
-
-<a href="2018-11-28_23-41-46.jpg" target="_blank">
-  <img src="2018-11-28_23-41-46.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-28_23-41-46.jpg" target="_blank">
+      <img src="2018-11-28_23-41-46.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="main">Main</h2>
 <p>All of your task sequence logic will go into the Main section. If you already have an existing task sequence, you can just add a Run Task Sequence step and reference it! The biggest thing to keep in mind is that you should never enable <strong>Continue on error</strong> for any step that is critical or required for a deployment to be considered a success. In fact, if you have a step that occasionally fails, try to add logic to detect whether you need to run the step, before attempting it, just to eliminate any unnecessary errors from always showing up in the logs. Additionally, failures fail up the the parent group, so you could have steps fail inside a group, but have the group continue using <strong>Continue on error</strong>.
@@ -291,11 +293,12 @@ As the last step in Main, add:</p>
 <h2 id="failure">Failure</h2>
 <p>Next, select the <strong>Failure</strong> group and select <strong>Options</strong> and add the following Condition: <strong>Task Sequence Variable _SMSTSLastActionSucceeded equals False</strong></p>
 <p><div class="image">
-
-<a href="2018-11-28_23-55-49.jpg" target="_blank">
-  <img src="2018-11-28_23-55-49.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-28_23-55-49.jpg" target="_blank">
+      <img src="2018-11-28_23-55-49.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>This will ensure that the Failure group only gets processed if the previous action failed.</p>
 <p>Add a Set Dynamic Variables step and set the following:</p>
@@ -308,11 +311,12 @@ As the last step in Main, add:</p>
 <p><strong>Variable:</strong> <code>SMSTSErrorDialogTimeout</code><br>
 <strong>Value:</strong> <code>86400</code></p>
 <p><div class="image">
-
-<a href="2018-11-29_0-19-16.jpg" target="_blank">
-  <img src="2018-11-29_0-19-16.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-29_0-19-16.jpg" target="_blank">
+      <img src="2018-11-29_0-19-16.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>It&rsquo;s important that this is the first step that you run after a failed step or else you will lose the values. Now that you&rsquo;ve captured them, you can process any additional steps that you need to inside the Failure group.</p>
 <h2 id="success">Success</h2>
@@ -326,27 +330,30 @@ As the last step in Main, add:</p>
 <p>Options
 <strong>Task Sequence Variable:</strong> <code>AllStepsSucceeded equals False</code></p>
 <p><div class="image">
-
-<a href="2018-11-29_0-09-35.jpg" target="_blank">
-  <img src="2018-11-29_0-09-35.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-29_0-09-35.jpg" target="_blank">
+      <img src="2018-11-29_0-09-35.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
-<a href="2018-11-29_0-13-29.jpg" target="_blank">
-  <img src="2018-11-29_0-13-29.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-29_0-13-29.jpg" target="_blank">
+      <img src="2018-11-29_0-13-29.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>This last step is the one made possible with ConfigMgr 1810. Now, when my Task Sequence fails and the error dialog is still on the screen, it will display the name of the last step that ran before the error occurred using the <code>_SMSTSLastActionName</code> build-in variable.</p>
 <p>The result that a user will see (and likely send you a screenshot of) will show the name of the step that caused the failure now, even though you have already processed all of your cleanup steps, like copying logs. At least at my site, this is a HUGE feature that will make triage much simpler.</p>
 <p><div class="image">
-
-<a href="2018-11-29_0-52-38.jpg" target="_blank">
-  <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-11-29_0-52-38.jpg" target="_blank">
+      <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>If you build a better task sequence, you will build a better deployment experience for your users and your first line workers who have to troubleshoot issues. Next steps to consider would be adding things like splash screens or login blocking policies (lots of great community blogs about these concepts). You could even get fancy and hide the progress dialog box and show a custom one, including the error dialog. There are so many great ways to customize your Task Sequences, I am just really excited about the <strong><code>_SMSTSLastActionName</code></strong> variable!</p>
@@ -372,51 +379,7 @@ As the last step in Main, add:</p>
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -238,8 +238,8 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Troubleshooting ConfigMgr Enhanced HTTP and Azure Directory Group Sync</h1>
@@ -251,11 +251,12 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 <h2 id="finding-the-issue">Finding the Issue</h2>
 <p>HTTPS or <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/enhanced-http">Enhanced HTTP</a> is required for Azure Directory Group Sync - Adam confirmed that he had EHTTP enabled. According to Ronny&rsquo;s blog, EHTTP is responsible for updating the <strong>AADTenantID</strong> value in the <strong>ClientDataKeys</strong> table in the ConfigMgr SQL database. We were confused because in the ConfigMgr console, you can turn on the <strong>Azure Active Directory Tenant ID</strong> column in any Device view and it was populated for all of the devices in the collection to be synced.</p>
 <p><div class="image">
-
-<a href="image-26.png" target="_blank">
-  <img src="image-26.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-26.png" target="_blank">
+      <img src="image-26.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>However when we queried the <strong>ClientDataKeys</strong> table (Query from Nickolaj&rsquo;s blog) we found that the <strong>AADTenantID</strong> column was <strong>NULL</strong> while the <strong>AADTenantID</strong> column in <strong>System_DISC</strong> (Used by the console views) was populated.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
@@ -270,22 +271,23 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">BY</span><span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">	</span>ClientKeyData.AADTenantID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">DESC</span><span style="color:#bbb">
 </span></code></pre></div><p><div class="image">
-
-<a href="2020-08-07_11-25-05.jpg" target="_blank">
-  <img src="2020-08-07_11-25-05.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2020-08-07_11-25-05.jpg" target="_blank">
+      <img src="2020-08-07_11-25-05.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Thanks to Ronny for a great description of the difference between the <strong>AADTenantID</strong> values between <strong>System_Disc</strong> and <strong>ClientDataKeys</strong>:</p>
 <p><div class="image">
-
   <figure>
     <a href="image-24.png" target="_blank">
       <img src="image-24.png" alt="A Square Dozen Image">
     </a>
+    
     <figcaption>https://ronnydejong.com/2020/02/27/troubleshooting-device-collection-membership-azure-ad-group-sync/</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Ronny&rsquo;s blog section titled <strong>Validate SSL Communication</strong> would have helped with this next part if I had scrolled down a bit more, but instead we went about it the hard way and got to the same result - Enhanced HTTP wasn&rsquo;t configured even though everything looked correct from the console.</p>
 <h2 id="rolling-back-enhanced-http">Rolling back Enhanced HTTP</h2>
@@ -298,58 +300,58 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 <h2 id="enable-and-verify-enhanced-http-configuration-in-iis">Enable and Verify Enhanced HTTP Configuration in IIS</h2>
 <p>Follow the steps from the Docs to <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/enhanced-http">enable Enhanced HTTP</a>.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-25.png" target="_blank">
       <img src="image-25.png" alt="Enable Enhanced HTTP">
     </a>
+    
     <figcaption>Enable Enhanced HTTP</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Check <code>sitecomp.log</code> to see the change get processed.</p>
 <p><div class="image">
-
   <figure>
     <a href="2020-08-07_11-38-31.png" target="_blank">
       <img src="2020-08-07_11-38-31.png" alt="Detected change in SSLState for client settings.">
     </a>
+    
     <figcaption>Detected change in SSLState for client settings.</figcaption>
+    
   </figure>
-
 </div></p>
 <p>This will trigger a change that you can watch in mpcontrol.log (partial log shown here. There will be quite a few log entries here.)</p>
 <p><div class="image">
-
   <figure>
     <a href="2020-08-07_11-40-22.png" target="_blank">
       <img src="2020-08-07_11-40-22.png" alt="Detected token auth flag is changed. Currently enabled.">
     </a>
+    
     <figcaption>Detected token auth flag is changed. Currently enabled.</figcaption>
+    
   </figure>
-
 </div></p>
 <p>A new cert will be generated on the MP. The Friendly Name will be SMS Role SSL Certificate issued by SMS Issuing.</p>
 <p><div class="image">
-
   <figure>
     <a href="2020-08-07_11-40-48.png" target="_blank">
       <img src="2020-08-07_11-40-48.png" alt="Newly issued Cert Issued By SMS Signing">
     </a>
+    
     <figcaption>Newly issued Cert Issued By SMS Signing</figcaption>
+    
   </figure>
-
 </div></p>
 <p>In IIS on the Default Web Site, HTTPS will be added to the site bindings and the SMS Role SSL Certificate will be attached.</p>
 <p><div class="image">
-
   <figure>
     <a href="2020-08-07_11-41-50.png" target="_blank">
       <img src="2020-08-07_11-41-50.png" alt="HTTPS enabled and new Cert attached">
     </a>
+    
     <figcaption>HTTPS enabled and new Cert attached</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="test-collection-sync">Test Collection Sync</h2>
 <p>Once you&rsquo;ve verified that EHTTPS has been enabled successfully, you can clients will begin updating the ClientDataKeys table. Re-run the query above. Once you see the AADTenantID begin populating, any devices with a value in that column will be eligible to sync if they are in a collection you&rsquo;ve configured for sync. Once you&rsquo;ve verified the data, follow the steps in any of the blogs linked to set up collection sync. <a href="https://triplesixseven.com/syncing-device-collections-to-azure-ad/">Jake has the simplest writeup on the steps</a>. CollectionAADGroupSyncWorker.log and SMS_AZUREAD_DISCOVERY_AGENT.log are good logs to watch when working with Collection Sync. - <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/log-files">See notes here on log file changes after 1910</a>.</p>
@@ -372,51 +374,7 @@ In my lab testing, if I had already enabled the HTTPS/443 binding (which require
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

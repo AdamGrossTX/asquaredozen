@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Adding Dynamic Updates to Windows 10 In-Place Upgrade Media During Offline Servicing</h1>
@@ -300,28 +300,31 @@ if (!doNotTrack) {
 <p>I the absence of official Microsoft documentation, I&rsquo;m going to make some stuff up.</p>
 <p>If you search in your ConfigMgr console and turn on a few extra columns, you will see that the Dynamic Updates have 2 categories <strong>Setup Updates</strong> and <strong>Component Updates</strong>. Also, only the <strong>Setup Updates</strong> ever seem to get superseded, while the <strong>Component Updates</strong> are all still current.<br>
 <div class="image">
-
-<a href="2018-08-19_23-30-45.jpg" target="_blank">
-  <img src="2018-08-19_23-30-45.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-08-19_23-30-45.jpg" target="_blank">
+      <img src="2018-08-19_23-30-45.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>When you extract them, you find that the <strong>Setup Updates</strong> are replacement files for items in the <strong>Sources</strong> directory of your Windows 10 In-Place Upgrade media. If you extract the <strong>Component Updates</strong>, you will see that they contain various drivers and such. These items all have older, corresponding items in your <strong>install.wim</strong>. As you can see in this screenshot, I mounted my install.wim then applied one of the Dynamic Update Component Update CABs and you can see the old and new files side by side.</p>
 <p><div class="image">
-
-<a href="2018-08-18_13-01-52.jpg" target="_blank">
-  <img src="2018-08-18_13-01-52.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-08-18_13-01-52.jpg" target="_blank">
+      <img src="2018-08-18_13-01-52.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>So, you need to get the latest Setup Update and any other Component Updates and apply them to your WIM.</p>
 <p><strong>Side Note</strong>: If you launch Windows Setup.exe and begin the wizard, you have the option the download the latest updates - this gets the latest Dynamic Updates AND the latest Cumulative Update for the OS you are installing. So if you are installing an un-serviced image and enable Dynamic Updates, your client will go out to the internet and download an ~800 MB payload. If you check your <strong>C:$Windows.~BT</strong> folder before you complete the wizard and begin your install, you will find the following new folders. If you expand them, you will find that their contents match the contents of the Dynamic Updates that you are going to use for servicing here (What an amazing coincidence!)!!</p>
 <p><div class="image">
-
-<a href="2018-08-18_11-17-08.jpg" target="_blank">
-  <img src="2018-08-18_11-17-08.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-08-18_11-17-08.jpg" target="_blank">
+      <img src="2018-08-18_11-17-08.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div>]</p>
 <p>Also, you can watch your c:\Windows\WindowsUpdate.log (On Windows 7) live in CMTrace and watch Windows Update go out and get the Dynamic Updates. On Windows 10 you have to run Get-WindowsUpdateLog or something silly to get a log. (Sorry, don&rsquo;t have a screenshot yet)</p>
 <h1 id="getting-dynamic-updates">Getting Dynamic Updates</h1>
@@ -394,51 +397,7 @@ if (!doNotTrack) {
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

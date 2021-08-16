@@ -238,8 +238,8 @@ Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word 
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</h1>
@@ -336,11 +336,12 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
 </code></pre></div><p>These files are used by the <strong>OSDUpgrade.exe</strong> process during the Task Sequence to manage reboots and resume the Task Sequence as needed during the upgrade process. They run with every reboot AFTER Windows Setup completes, so they are the perfect place for us to add our service restart. If you look at the <strong>Upgrade Operating System</strong> step in the <strong>SMSTS.log</strong>, you will see an entry like this:</p>
 <p><div class="image">
-
-<a href="2018-07-29_22-22-46.jpg" target="_blank">
-  <img src="2018-07-29_22-22-46.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_22-22-46.jpg" target="_blank">
+      <img src="2018-07-29_22-22-46.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>These files are appended to your Windows setup command line like this:</p>
 <p><code>&quot;C:\_SMSTaskSequence\Packages\XXXXXXXXXX\SETUP.EXE&quot; /ImageIndex 1 /auto Upgrade /quiet /noreboot /postoobe &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&quot; /postrollback &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&quot;</code></p>
@@ -448,28 +449,31 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 </code></pre></div><p><div class="image">
-
-<a href="2018-07-29_23-00-24.jpg" target="_blank">
-  <img src="2018-07-29_23-00-24.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_23-00-24.jpg" target="_blank">
+      <img src="2018-07-29_23-00-24.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 </code></pre></div><p><div class="image">
-
-<a href="2018-07-29_23-00-45.jpg" target="_blank">
-  <img src="2018-07-29_23-00-45.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_23-00-45.jpg" target="_blank">
+      <img src="2018-07-29_23-00-45.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>It should look something like this:<br>
 <div class="image">
-
-<a href="2018-07-29_22-59-51.jpg" target="_blank">
-  <img src="2018-07-29_22-59-51.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-07-29_22-59-51.jpg" target="_blank">
+      <img src="2018-07-29_22-59-51.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>That&rsquo;s it! If you went through all 4 parts with me, you should be able to image machines anywhere that has 802.1x network authentication in place.</p>
 <p>Check out <a href="http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5</a> for how to skip all of this and just use a web service to whitelist!!</p>
@@ -485,51 +489,7 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

@@ -238,8 +238,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>The Microsoft Endpoint Configuration Manager Administration Service Guide</h1>
@@ -345,11 +345,12 @@ if (!doNotTrack) {
 <p>POST - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package</code><br>
 BODY - <code>{&quot;Name&quot;: &quot;Test Package&quot;, &quot;Manufacturer&quot;: &quot;ASD&quot;}</code></p>
 <p><div class="image">
-
-<a href="image-7.png" target="_blank">
-  <img src="image-7.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You should be able to see your new package in the console or you can use the AdminService to query SMS_Package to find it.</p>
 <p>GET - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package?$filter=Name eq 'Test Package'</code></p>
@@ -431,20 +432,22 @@ GET - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package?$filter=Name
 <p>POST - <code>https://&lt;SERVERNAME&gt;/AdminService/wmi/SMS_Package</code><br>
 Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &quot;Test Package #1&quot;, &quot;Manufacturer&quot;: &quot;A Square Dozen&quot;}</code></p>
 <p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>You can also return just the properties that you want, however in 1906 the $select operator doesn&rsquo;t work - but it does on 1910 TP and previous builds.</p>
 <p>GET - <code>https://&lt;SERVERNAME&gt;/AdminService/wmi/SMS_Package?$filter=Name eq 'Test Package %231'&amp;$select=PackageID,Name,Manufacturer</code></p>
 <p><div class="image">
-
-<a href="image-10.png" target="_blank">
-  <img src="image-10.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>{
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&#34;@odata.context&#34;</span>: <span style="color:#d14">&#34;https://cmtp1-cm1.asd.lab/AdminService/wmi/$metadata#SMS_Package&#34;</span>,
@@ -477,24 +480,24 @@ Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &qu
 <h2 id="application-approvals">Application Approvals</h2>
 <p>Depending on whether you&rsquo;ve enabled the AdminService to communicate through the CMG or not, the email approvals will include a URL to approve an application request. The URL can only be used once since the email GUID is removed from the database once the URL is clicked.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-1.png" target="_blank">
       <img src="image-1.png" alt="Check this box to allow the AdminService to use the Cloud Management Gateway">
     </a>
+    
     <figcaption>Check this box to allow the AdminService to use the Cloud Management Gateway</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image.png" target="_blank">
       <img src="image.png" alt="Application Approval Request Email">
     </a>
+    
     <figcaption>Application Approval Request Email</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Internal URL<br>
 <code>https://&lt;SERVERNAME&gt;/v1.0/UserApplicationRequest/AdminService.ApproveRequest(Guid=%27&lt;GUID&gt;%27)</code></p>
@@ -509,11 +512,12 @@ Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &qu
 <h2 id="odata">OData</h2>
 <p>I&rsquo;m having trouble getting this to work in 1906 and 1910 TP at the moment. Since the AdminService uses OData, it can be integrated directly into PowerBI with no need to understand the database or SQL queries.</p>
 <p><div class="image">
-
-<a href="image-12.png" target="_blank">
-  <img src="image-12.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-12.png" target="_blank">
+      <img src="image-12.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>I plan to update this page as new AdminService features are released. Please check back for more info. Also, I&rsquo;d love to hear what things you&rsquo;ve tested out. Check out my <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">ConfigMgrAdminService GitHub Repo</a> for more sample files in the future.</p>
@@ -529,51 +533,7 @@ Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &qu
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

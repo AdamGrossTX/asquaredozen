@@ -239,8 +239,8 @@ Failed to decrypt state encryption key (0x80070057)Failed to run the action: Re
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Failed to decrypt state encryption key (0x80070057) – Can&#39;t get StateEncryptDecryptKey property error in SCCM/ConfigMgr User State Migration Console</h1>
@@ -252,11 +252,12 @@ Failed to decrypt state encryption key (0x80070057)Failed to run the action: Re
 <p>While attempting to perform a user state backup on a machine using an SCCM task sequence, we received the error in SMSTS.LOG:</p>
 <p><code>Failed to decrypt state encryption key (0x80070057) Failed to run the action: Request User State Storage. The parameter is incorrect. (Error: 00000057; Source: Windows)</code></p>
 <p><div class="image">
-
-<a href="2018-08-09_22-01-33.jpg" target="_blank">
-  <img src="2018-08-09_22-01-33.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-08-09_22-01-33.jpg" target="_blank">
+      <img src="2018-08-09_22-01-33.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Looking at the <strong>User State Migration</strong> node in the SCCM console, I couldn&rsquo;t find any computer associations for this computer (it should have an In-place relationship created). I checked the <strong>StateMigration</strong> table in the DB found 3 entries for this device and <strong>none of them had an encryption key</strong> in the DB. When I SQL below, I found about 30 more records with no key (along with about 90 valid records).</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb">
@@ -266,11 +267,12 @@ Failed to decrypt state encryption key (0x80070057)Failed to run the action: Re
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>SMS_StateMigration<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>SourceClientResourceID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">12345678</span><span style="color:#bbb">
 </span></code></pre></div><p>At this point, I&rsquo;ve got an incomplete/invalid record in the DB that I can&rsquo;t access through WMI to delete using the <strong>DeleteAssociation</strong> method on the <strong>SMS_StateMigration</strong> object and I don&rsquo;t want to make direct change to the DB. Next I tried creating a new <strong>Computer Association</strong> in the ConfigMgr console. When I used the machine in question as either the source or destination machine, then opened the <strong>Recovery Information</strong> pane for the device, I received this error:</p>
 <p><div class="image">
-
-<a href="2018-08-09_16-46-26.jpg" target="_blank">
-  <img src="2018-08-09_16-46-26.jpg" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="2018-08-09_16-46-26.jpg" target="_blank">
+      <img src="2018-08-09_16-46-26.jpg" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">ConfigMgr Error Object:</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">instance of SMS_ExtendedStatus</span>
@@ -341,51 +343,7 @@ Failed to decrypt state encryption key (0x80070057)Failed to run the action: Re
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>

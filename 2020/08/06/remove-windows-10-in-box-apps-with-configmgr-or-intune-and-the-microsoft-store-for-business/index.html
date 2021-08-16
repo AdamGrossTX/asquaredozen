@@ -237,8 +237,8 @@ if (!doNotTrack) {
 </header>
 				<div class="container">
 					<div id="content">
-						<div id="main">
-							
+						
+<div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
 				<h1>Remove Windows 10 In-Box Apps with ConfigMgr or Intune and the Microsoft Store for Business</h1>
@@ -259,14 +259,14 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 <h2 id="making-a-list-of-apps-to-remove">Making a list of Apps to Remove</h2>
 <p>The first challenge is identifying the apps you want to remove. <a href="https://docs.microsoft.com/windows/application-management/apps-in-windows-10">This Microsoft Docs page</a> has some great info identifying which apps are already provisioned on a Windows 10 device and it also has a table to map the package name to the app name as it&rsquo;s listed in the Windows Store. The table also indicates which OS each app is included in. As of today 8/6/2020 Windows 10 2004 isn&rsquo;t included, however <a href="https://github.com/MicrosoftDocs/windows-itpro-docs/issues/8017">I filed an issue on the GitHub repo</a> asking for it to be added. Additionally, some of the store app names have changed so I <a href="https://github.com/MicrosoftDocs/windows-itpro-docs/issues/8017">submitted a PR</a> on the page with updates that you can reference if the page isn&rsquo;t updated soon.</p>
 <p><div class="image">
-
   <figure>
     <a href="image.png" target="_blank">
       <img src="image.png" alt="https://docs.microsoft.com/windows/application-management/apps-in-windows-10">
     </a>
+    
     <figcaption>https://docs.microsoft.com/windows/application-management/apps-in-windows-10</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Here&rsquo;s my list (from my servicing repo linked above).</p>
 <ul>
@@ -295,64 +295,66 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 <h2 id="mapping-provisioned-packages-to-microsoft-store-for-business-apps">Mapping Provisioned Packages to Microsoft Store for Business Apps</h2>
 <p>If you took a look at the table on the docs page, you will have noticed that there&rsquo;s a link included next to each package that opens the Windows Store to that app giving you the correct app name. You&rsquo;ll need to do this from a device where the Windows Store has not been locked down or the Docs links won&rsquo;t work properly.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-1.png" target="_blank">
       <img src="image-1.png" alt="https://docs.microsoft.com/windows/application-management/apps-in-windows-10">
     </a>
+    
     <figcaption>https://docs.microsoft.com/windows/application-management/apps-in-windows-10</figcaption>
+    
   </figure>
-
 </div></p>
 <p>In this example, I&rsquo;m going to use the <strong>Microsoft.OneConnect</strong> package. In the docs it&rsquo;s listed as <strong>Paid Wi-Fi &amp; Cellular</strong> (Cellular is a very funny looking word).</p>
 <p><div class="image">
-
-<a href="image-2.png" target="_blank">
-  <img src="image-2.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>When you click the <strong>Paid Wi-Fi &amp; Cellular</strong> link, it will prompt to open in the Windows Store which will open to <strong>Mobile Plans</strong></p>
 <p><div class="image">
-
-<a href="image-3.png" target="_blank">
-  <img src="image-3.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Next we just need to search for the app by the correct name <strong>Mobile Plans</strong> in the Microsoft Store for Business. Once you find <strong>Mobile Plans</strong>, click <strong>Get the app</strong> to add it to your store.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-5.png" target="_blank">
       <img src="image-5.png" alt="Searching for Mobile Plans worked!">
     </a>
+    
     <figcaption>Searching for Mobile Plans worked!</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="adding-unlisted-apps-to-your-private-store">Adding Unlisted apps to your Private Store</h2>
 <p>For many of the apps that you may want to remove, it&rsquo;s that simple to find them. However, for some apps like If you go search for the app in the <strong>MSfB</strong>, many of them aren&rsquo;t listed (no clue why). Here&rsquo;s the workaround for that. The <strong>Microsoft.MicrosoftSolitaireCollection</strong> package is a great example. If you search for it in the <strong>WSfB</strong>, you won&rsquo;t find it.</p>
 <p>From the Docs page, click the link next to <strong>Microsoft.MicrosoftSolitaireCollection</strong> to open the Store app on your computer. Next click the <strong>Share</strong> icon next to the app name then click <strong>Copy Link</strong> from the screen that pops up.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-6.png" target="_blank">
       <img src="image-6.png" alt="Video Game Hall of Fame 2019!! WOW!! Way to go Solitaire team!!">
     </a>
+    
     <figcaption>Video Game Hall of Fame 2019!! WOW!! Way to go Solitaire team!!</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-7.png" target="_blank">
       <img src="image-7.png" alt="Sharing is caring.">
     </a>
+    
     <figcaption>Sharing is caring.</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Your link will be something like this:</p>
 <p><code>https://www.microsoft.com/store/productId/9WZDNCRFHWD2</code></p>
@@ -376,19 +378,21 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span><span style="color:#008080">https://businessstore.microsoft.com/store/details/microsoft-solitaire-collection/9wzdncrfhwd2</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a></span>
 </code></pre></div><p><div class="image">
-
-<a href="image-8.png" target="_blank">
-  <img src="image-8.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p>Verify that the app has been added by navigating to <strong>Products &amp; Services</strong>. You don&rsquo;t need to add these to your Private Store unless you want people to see them listed. Otherwise, simply having them in your account is all that&rsquo;s needed.</p>
 <p><div class="image">
-
-<a href="image-9.png" target="_blank">
-  <img src="image-9.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <h2 id="sync-the-apps">Sync the Apps</h2>
 <p>Once you&rsquo;ve added all of apps from your list, you&rsquo;ll need to sync them to your deployment tool (or just wait a day) the Deploy. Follow steps for ConfigMgr and/or Intune. If you are using <a href="https://docs.microsoft.com/mem/configmgr/comanage/overview">ConfigMgr Co-Management</a> you can choose to use either option depending on where the <a href="https://docs.microsoft.com/mem/configmgr/comanage/workloads#client-apps">Client Apps Workload</a> is.</p>
@@ -403,92 +407,92 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 <p><strong>Note:</strong> You did you know you can paste <strong>Administration\Overview\Cloud Services\Azure Services</strong> into the breadcrumb/address bar in the console to navigate directly to this node?</p>
 <hr>
 <p><div class="image">
-
   <figure>
     <a href="image-10.png" target="_blank">
       <img src="image-10.png" alt="\Administration\Overview\Cloud Services\Azure Services">
     </a>
+    
     <figcaption>\Administration\Overview\Cloud Services\Azure Services</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Once the sync is complete, navigate to <strong>\Software Library\Overview\Application Management\License Information for Store Apps</strong></p>
 <p><div class="image">
-
   <figure>
     <a href="image-11.png" target="_blank">
       <img src="image-11.png" alt="\Software Library\Overview\Application Management\License Information for Store Apps">
     </a>
+    
     <figcaption>\Software Library\Overview\Application Management\License Information for Store Apps</figcaption>
+    
   </figure>
-
 </div></p>
 <p>From here you will click Create Application and NEXT through the wizard. Then just deploy as an Uninstall to a collection of All Users (or whoever you want to target). Once again, <a href="/2019/05/12/deploying-microsoft-store-for-business-apps-from-configmgr/">follow this guide</a> for the steps, except choose Uninstall instead of Install.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-14.png" target="_blank">
       <img src="image-14.png" alt="Deploy as a Required Uninstall">
     </a>
+    
     <figcaption>Deploy as a Required Uninstall</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-15.png" target="_blank">
       <img src="image-15.png" alt="Remember to Hide in Software Center">
     </a>
+    
     <figcaption>Remember to Hide in Software Center</figcaption>
+    
   </figure>
-
 </div></p>
 <p>That&rsquo;s it. Just deploy the uninstall to all users and anyone who logs into a ConfigMgr managed device will have the apps de-provisioned.</p>
 <h4 id="intune">Intune</h4>
 <p>Log into your Intune portal <a href="https://endpoint.microsoft.com/">https://endpoint.microsoft.com/</a> and navigate to <strong>Tenant administration &gt; Connectors and tokens &gt; Microsoft Store for Business</strong>. Click <strong>Sync</strong> and wait until <strong>Last sync</strong> shows an updated date/time.</p>
 <p><div class="image">
-
   <figure>
     <a href="2020-08-06_1-46-28.png" target="_blank">
       <img src="2020-08-06_1-46-28.png" alt="Tenant administration &amp;gt; Connectors and tokens &amp;gt; Microsoft Store for Business">
     </a>
+    
     <figcaption>Tenant administration &gt; Connectors and tokens &gt; Microsoft Store for Business</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Next navigate to <strong>Apps&gt;All apps</strong> and look for the newly added apps.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-16.png" target="_blank">
       <img src="image-16.png" alt="Apps&amp;gt;All apps">
     </a>
+    
     <figcaption>Apps&gt;All apps</figcaption>
+    
   </figure>
-
 </div></p>
 <p>Select the app then click <strong>Properties</strong> then click <strong>Edit</strong> next to <strong>Assignments</strong></p>
 <p><div class="image">
-
   <figure>
     <a href="image-17.png" target="_blank">
       <img src="image-17.png" alt="Edit Assignments">
     </a>
+    
     <figcaption>Edit Assignments</figcaption>
+    
   </figure>
-
 </div></p>
 <p>On the <strong>Edit application</strong> page, under the <strong>Uninstall</strong> section, select <strong>Add group</strong> or <strong>Add all users</strong>. We over at <a href="http://Intune.Training">Intune.Training</a> feel strongly about never deploying anything to All Users. Make a custom group that you add users to so you have more control over targeting. All Users is a big hammer approach. Now, your new group should include All Users, but then it&rsquo;s managed within a custom group instead of being all or nothing with the All Users option listed here. You can also target the devices, but since Store apps are user based, it makes more sense to just target the users. Hopefully this makes sense. Click Review and Save when done.</p>
 <p><div class="image">
-
   <figure>
     <a href="image-19.png" target="_blank">
       <img src="image-19.png" alt="Don&amp;rsquo;t use All Users.">
     </a>
+    
     <figcaption>Don&#39;t use All Users.</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="update-client-policies-and-watch-the-apps-disappear">Update Client Policies and Watch the Apps Disappear</h2>
 <h4 id="configmgr-1">ConfigMgr</h4>
@@ -496,31 +500,32 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 <h4 id="intune-1">Intune</h4>
 <p>From the Intune Portal, select your test device, Sync it, then check for the app uninstall status.</p>
 <p><div class="image">
-
-<a href="image-21.png" target="_blank">
-  <img src="image-21.png" alt="A Square Dozen Image">
-</a>
-
+  <figure>
+    <a href="image-21.png" target="_blank">
+      <img src="image-21.png" alt="A Square Dozen Image">
+    </a>
+    
+  </figure>
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-22.png" target="_blank">
       <img src="image-22.png" alt="Before:">
     </a>
+    
     <figcaption>Before:</figcaption>
+    
   </figure>
-
 </div></p>
 <p><div class="image">
-
   <figure>
     <a href="image-23.png" target="_blank">
       <img src="image-23.png" alt="After:">
     </a>
+    
     <figcaption>After:</figcaption>
+    
   </figure>
-
 </div></p>
 <h2 id="summary">Summary</h2>
 <p>As you can see, it take a few steps to get this all set up, but once you&rsquo;ve got it configured, you shouldn&rsquo;t have to touch it unless you need to adjust the list of apps you are removing. Plus, if you need to add the apps back in at any point, you can just change the deployment from Uninstall to Install and it will get added back in.</p>
@@ -543,51 +548,7 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 				async>
 			</script>
 		</article>
-
-						</div>
-						<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
-</aside>
+</div>
 
 					</div>
 				</div>
