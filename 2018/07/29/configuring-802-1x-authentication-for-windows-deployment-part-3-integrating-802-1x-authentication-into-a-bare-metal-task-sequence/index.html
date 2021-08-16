@@ -253,11 +253,29 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 <h1 id="unattendxml">Unattend.XML</h1>
 <p>You can edit your <strong>Unattend.XML</strong> using the <strong>Windows System Image Manager</strong> that&rsquo;s part of <strong>Windows ADK</strong> or you can manually edit it. The script needs to run during <strong>specialize</strong> pass.</p>
 <p>After loading your OS media into WSIM, follow the steps below to add the commandline for your 802.1x authentication script.<br>
-<img src="/img/2018/07/2018-07-29_1-04-00.jpg" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/07/2018-07-29_1-04-38.jpg" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="2018-07-29_1-04-00.jpg" target="_blank">
+  <img src="2018-07-29_1-04-00.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-07-29_1-04-38.jpg" target="_blank">
+  <img src="2018-07-29_1-04-38.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Add the following as the Path. It should point to the location where you will copy your auth package to in the next step.</p>
 <p><code>cmd /c C:\Temp\ImportComputerAuthProfile.bat</code></p>
-<p><img src="/img/2018/07/2018-07-29_1-05-32.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-07-29_1-05-32.jpg" target="_blank">
+  <img src="2018-07-29_1-05-32.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This is what the resulting XML should look like.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;unattend</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style="color:#000080">&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&lt;settings</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;specialize&#34;</span><span style="color:#000080">&gt;</span>
@@ -274,7 +292,13 @@ During a Bare Metal/Wipe &amp; Load OSD Task Sequence, the Task Sequence will st
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#000080">&lt;/unattend&gt;</span>
 </code></pre></div><h1 id="adding-everything-to-your-bare-metal-task-sequence">Adding everything to your Bare Metal Task Sequence</h1>
 <p>Create a new Package in ConfgMgr and include all of your script files in the package. Then add a new <strong>Run Command Line</strong> Task Sequence step before <strong>Install Operating System</strong> step. Set the Package source to the new package your created.</p>
-<p><img src="/img/2018/07/2018-07-29_1-11-19.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-07-29_1-11-19.jpg" target="_blank">
+  <img src="2018-07-29_1-11-19.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>The path in this command line needs to match the path in the Unattend.XML file.</p>
 <p><code>xcopy.exe &quot;.\*.*&quot; c:\Temp\ /E /C /I /Q /H /R /Y /S</code></p>
 <p>That&rsquo;s it for your <strong>Bare Metal Task Sequence</strong>. If you&rsquo;ve been following the steps and testing, you should be able to build a Bare Metal build using Computer Authentication on an 802.1x protected network.</p>

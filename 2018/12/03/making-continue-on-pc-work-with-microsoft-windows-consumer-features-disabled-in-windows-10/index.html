@@ -248,27 +248,102 @@ Some settings are hidden or managed by your organization."/>
 			<div class="post-entry">
 				<p>I recently had a request to make the Continue on PC feature work on our standard Windows 10 devices. Continue on PC is a Windows 10 feature that allows users to use the Edge browser on their phone then continue the browsing session on their PC. As I started testing the feature in Windows 10, I found that the setting was disabled with the message<br>
 <strong>Some settings are hidden or managed by your organization.</strong>, even though no group policies or registry settings were configured preventing the feature from working. Then I was in a <a href="https://mmsmoa.com/desertedition">MMSDE</a> session hosted by <a href="https://twitter.com/Geodesicz">Mark Godfrey</a>, <a href="https://twitter.com/gwblok">Gary Blok</a> and <a href="https://twitter.com/ccmexec">Jorgen Nilsson</a> and they mentioned using DisableMicrosoftConsumerFeatures as a Windows 10 customization option and it reminded me that I needed to post this.</p>
-<p>Some settings are hidden or managed by your organization.
-<img src="/img/2018/12/2018-12-03_15-02-48.jpg" alt="Some settings are hidden or managed by your organization."></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_15-02-48.jpg" target="_blank">
+      <img src="2018-12-03_15-02-48.jpg" alt="Some settings are hidden or managed by your organization.">
+    </a>
+    <figcaption>Some settings are hidden or managed by your organization.</figcaption>
+  </figure>
+
+</div></p>
 <p>I tried configuring the group policy to explicitly enable the <strong>Phone-PC linking on this device</strong> policy (which is enabled by default anyway), but it didn&rsquo;t help.</p>
-<p>Computer Configuration\Administrative Templates\System\Group Policy\Phone-PC linking on this device
-<img src="/img/2018/12/2018-12-03_16-47-06.jpg" alt="Computer Configuration\Administrative Templates\System\Group Policy\Phone-PC linking on this device"></p>
-<p>Phone-PC linking on this device
-<img src="/img/2018/12/2018-12-03_16-47-22.jpg" alt="Phone-PC linking on this device"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_16-47-06.jpg" target="_blank">
+      <img src="2018-12-03_16-47-06.jpg" alt="Computer Configuration\Administrative Templates\System\Group Policy\Phone-PC linking on this device">
+    </a>
+    <figcaption>Computer Configuration\Administrative Templates\System\Group Policy\Phone-PC linking on this device</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_16-47-22.jpg" target="_blank">
+      <img src="2018-12-03_16-47-22.jpg" alt="Phone-PC linking on this device">
+    </a>
+    <figcaption>Phone-PC linking on this device</figcaption>
+  </figure>
+
+</div></p>
 <p>After a bit more digging, I found that the <strong>Turn off Microsoft consumer features</strong> GPO was the culprit. We have a GPO in place the disable consumer features. Apparently, Phone-PC Linking is considered a consumer feature.</p>
-<p>Computer Configuration\Administrative Templates\Windows Components\Cloud Content\Turn off Microsoft consumer experience
-<img src="/img/2018/12/2018-12-03_15-11-34.jpg" alt="Computer Configuration\Administrative Templates\Windows Components\Cloud Content\Turn off Microsoft consumer experience"></p>
-<p><img src="/img/2018/12/2018-12-03_15-11-00.jpg" alt="Turn off Microsoft consumer experiences"></p>
-<p>HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\CloudContent\DisableWindowsConsumerFeatures
-<img src="/img/2018/12/2018-12-03_15-03-40.jpg" alt="HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\CloudContent\DisableWindowsConsumerFeatures"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_15-11-34.jpg" target="_blank">
+      <img src="2018-12-03_15-11-34.jpg" alt="Computer Configuration\Administrative Templates\Windows Components\Cloud Content\Turn off Microsoft consumer experience">
+    </a>
+    <figcaption>Computer Configuration\Administrative Templates\Windows Components\Cloud Content\Turn off Microsoft consumer experience</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_15-11-00.jpg" target="_blank">
+      <img src="2018-12-03_15-11-00.jpg" alt="Turn off Microsoft consumer experiences">
+    </a>
+    <figcaption>Turn off Microsoft consumer experiences</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_15-03-40.jpg" target="_blank">
+      <img src="2018-12-03_15-03-40.jpg" alt="HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\CloudContent\DisableWindowsConsumerFeatures">
+    </a>
+    <figcaption>HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\CloudContent\DisableWindowsConsumerFeatures</figcaption>
+  </figure>
+
+</div></p>
 <p>Once I disabled the GPO, Continue on PC began working.  However, all of the consumer features that I was using the policy to disable all came back. I did some checking and found that under user policies, there are several settings that you can configure that seem to remove most (maybe all) of the consumer features.</p>
-<p>Computer Configuration\Administrative Templates\Windows Components\Cloud Content
-<img src="/img/2018/12/2018-12-03_15-19-40.jpg" alt="Computer Configuration\Administrative Templates\Windows Components\Cloud Content"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-12-03_15-19-40.jpg" target="_blank">
+      <img src="2018-12-03_15-19-40.jpg" alt="Computer Configuration\Administrative Templates\Windows Components\Cloud Content">
+    </a>
+    <figcaption>Computer Configuration\Administrative Templates\Windows Components\Cloud Content</figcaption>
+  </figure>
+
+</div></p>
 <p>We have been testing this setting in production for a few months now I haven&rsquo;t seen a negative impact using the user GPOs vs using the DisableWindowsConsumerFeatures GPO. Your mileage may vary.</p>
 <p>Here&rsquo;s what it should look like when it does work.</p>
-<p><img src="/img/2018/12/IMG_3631-2018-12-03-22_16_33.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/IMG_3632-2018-12-03-22_16_34.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/2018-12-03_17-26-06.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="IMG_3631-2018-12-03-22_16_33.png" target="_blank">
+  <img src="IMG_3631-2018-12-03-22_16_33.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="IMG_3632-2018-12-03-22_16_34.png" target="_blank">
+  <img src="IMG_3632-2018-12-03-22_16_34.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-12-03_17-26-06.jpg" target="_blank">
+  <img src="2018-12-03_17-26-06.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 
 			</div>
 			

@@ -252,14 +252,45 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <a href="http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/">http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/</a></p>
 <h1 id="update-2---5242018"><strong>UPDATE #2 - 5/24/2018</strong></h1>
 <p>After posting this, I came across these <a href="https://twitter.com/jarwidmark/status/998591545392685057">https://twitter.com/jarwidmark/status/998591545392685057</a> and <a href="http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/">http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/</a> which indicated that the fix was to update the devinv.dll file in Sources directory of your Windows 10 Upgrade media. This led me to finding out that KB2952664 updates devinv.dll to a new version. Also, I found that my Windows 7 Reference image already had a version of both the hotfix and the dll - version 10.0.14979.1011 from 12/31/2016.<br>
-<img src="/img/2018/05/KB2952664-22.jpg" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="KB2952664-22.jpg" target="_blank">
+  <img src="KB2952664-22.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="updated-fix"><strong>Updated Fix</strong></h2>
 <p>Using the instructions from <a href="https://twitter.com/surferstylee13">Mark Graham (@surferstylee13)</a><a href="http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/">http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/</a> I have added the latest version of <strong>devinv.dll</strong> to my upgrade media and in my In-Place Upgrade TS, instead of uninstalling the hotfix (which also seems to work, but I don&rsquo;t know the side effects of removing it), I&rsquo;m installing the latest version which I&rsquo;ve downloaded from the <a href="https://www.catalog.update.microsoft.com/Search.aspx?q=kb2952664">Windows Update Catalog</a>. According to the file name, <strong>KB2952664</strong> is on revision 24. I haven&rsquo;t found an easy to find which version of the KB you have installed other than checking the file versions.</p>
 <ol>
 <li>Make the changes to the <strong>Prepare for Upgrade</strong> section.<br>
-<img src="/img/2018/05/KB2952664-23.jpg" alt="A Square Dozen Image"></li>
-<li>On the Check if KB2952664 group&rsquo;s Options tab, add a condition to check for the file version information. This will allow us to only apply the patch if the file isn&rsquo;t current. <img src="/img/2018/05/KB2952664-26.jpg" alt="A Square Dozen Image">  <img src="/img/2018/05/KB2952664-25.jpg" alt="A Square Dozen Image"></li>
-<li>Add the new install command line for the KB. Make sure to update the MSU filename to match what you download from the catalog. <img src="/img/2018/05/KB2952664-24.jpg" alt="A Square Dozen Image">
+<div class="image">
+
+<a href="KB2952664-23.jpg" target="_blank">
+  <img src="KB2952664-23.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
+<li>On the Check if KB2952664 group&rsquo;s Options tab, add a condition to check for the file version information. This will allow us to only apply the patch if the file isn&rsquo;t current.<br>
+<div class="image">
+
+<a href="KB2952664-26.jpg" target="_blank">
+  <img src="KB2952664-26.jpg" alt="A Square Dozen Image">
+</a>
+
+</div>  <div class="image">
+
+<a href="KB2952664-25.jpg" target="_blank">
+  <img src="KB2952664-25.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
+<li>Add the new install command line for the KB. Make sure to update the MSU filename to match what you download from the catalog. <div class="image">
+
+<a href="KB2952664-24.jpg" target="_blank">
+  <img src="KB2952664-24.jpg" alt="A Square Dozen Image">
+</a>
+
+</div><br>
 <code>wusa windows6.1-kb2952664-v24-x64_cd95eff6a0b4dc190709f9a0e7a00f782a74ee5c.msu /quiet /norestart</code></li>
 </ol>
 <h2 id="side-note">Side Note</h2>
@@ -280,43 +311,97 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-batch" data-lang="batch"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Executing command line: <span style="color:#d14">&#34;C:\_SMSTaskSequence\Packages\XXX00E99\SETUP.EXE&#34;</span> /ImageIndex 3 /auto Upgrade /quiet /noreboot /postoobe <span style="color:#d14">&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&#34;</span> /postrollback <span style="color:#d14">&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&#34;</span> /installdrivers <span style="color:#d14">&#34;C:\_SMSTaskSequence\Drivers&#34;</span> /DynamicUpdate Enable /pkey NPPR9-FWDCX-D2C8J-H872K-2YT43
 </code></pre></div><ul>
 <li>The setupact.log under c:$WINDOWS.~BT\Sources\Panther will be ~200 KB (depends on the device) and won&rsquo;t get updated after the first few mins.<br>
-<img src="/img/2018/05/KB2952664-12.jpg" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-12.jpg" target="_blank">
+  <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>Task Manager will show setup.exe and SetupHost.exe in the task list, but CPU usage on both will show 00.<br>
-<img src="/img/2018/05/KB2952664-11.jpg" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-11.jpg" target="_blank">
+  <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>Once you&rsquo;ve determined that the installer is hung, you can kill the process by opening Task Manager and ending task on SetupHost.exe</li>
 </ul>
 <h2 id="when-running-from-windows-setup-gui">When running from Windows Setup GUI</h2>
 <ul>
 <li>The installation wizard will proceed as normal.</li>
 <li>The setupact.log under <strong>c:$WINDOWS.~BT\Sources\Panther</strong> will be ~200 KB (depends on the device) and won&rsquo;t get updated after the first few mins.<br>
-<img src="/img/2018/05/KB2952664-12.jpg" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-12.jpg" target="_blank">
+  <img src="KB2952664-12.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>One of the last steps in setupact.log (you have to copy the file with admin rights to a different location before you can open it) will be</li>
 </ul>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>CONX   Windows::Compat::Appraiser::DriverInventory::GetInventory (179):   Finished Driver Inventory.
 </code></pre></div><ul>
 <li>You will the screen &lsquo;<strong>Making sure you&rsquo;re ready to install</strong>&rsquo;.<br>
-<img src="/img/2018/05/KB2952664-15.png" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-15.png" target="_blank">
+  <img src="KB2952664-15.png" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>Task Manager will show setup.exe and SetupHost.exe in the task list, but CPU usage on both will be 0.<br>
-<img src="/img/2018/05/KB2952664-11.jpg" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-11.jpg" target="_blank">
+  <img src="KB2952664-11.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>Once you&rsquo;ve determined that the installer is hung, you can kill the process by opening Task Manager and ending task on SetupHost.exe</li>
 </ul>
 <h2 id="workarounds">Workarounds</h2>
 <p>As of May 21,2018, my Windows 7 devices have <strong><a href="https://support.microsoft.com/help/2952664/compatibility-update-for-keeping-windows-up-to-date-in-windows-7">KB2952664</a></strong> installed. The KB was last updated on April 8, 2018. Uninstalling this KB before running Windows Setup allows the upgrade process to proceed as expected.</p>
 <h3 id="configmgr-task-sequence-steps">ConfigMgr Task Sequence Steps</h3>
 <ol>
-<li>In your <strong>Prepare for Upgrade</strong> group, create a new group called <strong>KB292446 Install check.</strong>
-<img src="/img/2018/05/KB2952664-20.jpg" alt="A Square Dozen Image"></li>
-<li>On the Options tab of the <strong>KB292446 Install check</strong> group, add a new WMI Query condition <img src="/img/2018/05/KB2952664-18.jpg" alt="A Square Dozen Image">
+<li>In your <strong>Prepare for Upgrade</strong> group, create a new group called <strong>KB292446 Install check.</strong><br>
+<div class="image">
+
+<a href="KB2952664-20.jpg" target="_blank">
+  <img src="KB2952664-20.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
+<li>On the Options tab of the <strong>KB292446 Install check</strong> group, add a new WMI Query condition <div class="image">
+
+<a href="KB2952664-18.jpg" target="_blank">
+  <img src="KB2952664-18.jpg" alt="A Square Dozen Image">
+</a>
+
+</div>
 <ul>
 <li><strong>WMI Namespace:</strong> root\cimv2</li>
 <li><strong>Query:</strong> <code>Select * from win32_QuickFixEngineering Where HotfixID = 'KB2952664'</code></li>
 </ul>
 </li>
-<li>Add Run Command Line Step called <strong>Uninstall KB292446</strong> <img src="/img/2018/05/KB2952664-19.jpg" alt="A Square Dozen Image">
+<li>Add Run Command Line Step called <strong>Uninstall KB292446</strong> <div class="image">
+
+<a href="KB2952664-19.jpg" target="_blank">
+  <img src="KB2952664-19.jpg" alt="A Square Dozen Image">
+</a>
+
+</div><br>
 <strong>Command Line:</strong> <code>wusa /uninstall /kb:2952664 /quiet /norestart</code>
 Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</code> and the Task Sequence will fail due to an unexpected reboot. I suspect you could create a Program to do this and it would allow the Task Sequence to manage the reboot.</li>
 <li>Add <strong>Restart Computer Step</strong></li>
-<li><strong>Optional:</strong> Add new Run Command Line step called <strong>Uninstall of KB2952664 Failed - Exit TS.</strong> This step will cause the Task Sequence to fail if the KB is still detected after a reboot. <img src="/img/2018/05/KB2952664-15.jpg" alt="A Square Dozen Image"></li>
+<li><strong>Optional:</strong> Add new Run Command Line step called <strong>Uninstall of KB2952664 Failed - Exit TS.</strong> This step will cause the Task Sequence to fail if the KB is still detected after a reboot. <div class="image">
+
+<a href="KB2952664-15.jpg" target="_blank">
+  <img src="KB2952664-15.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>On the Options tab add a new WMI Query condition
 <ul>
 <li><strong>WMI Namespace:</strong> root\cimv2</li>
@@ -336,7 +421,13 @@ Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</c
 <li>Open <strong>Programs and Features</strong></li>
 <li>Click <strong>View Installed Updates</strong></li>
 <li>Find the entry for KB2952664. I added the <strong>Update ID</strong> column to the view for easier sorting.<br>
-<img src="/img/2018/05/KB2952664-14.jpg" alt="A Square Dozen Image"></li>
+<div class="image">
+
+<a href="KB2952664-14.jpg" target="_blank">
+  <img src="KB2952664-14.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></li>
 <li>Right click on the entry and click <strong>Uninstall</strong></li>
 <li>Reboot</li>
 <li>Run Windows Setup</li>

@@ -253,7 +253,13 @@ if (!doNotTrack) {
 <p>Use with caution and test in your lab first. Also, I have not tested all of these actions. Some of them may be deprecated. The list came from <a href="https://blogs.technet.microsoft.com/charlesa_us/2015/03/07/triggering-configmgr-client-actions-with-wmic-without-pesky-right-click-tools/">here</a></p>
 <h2 id="script-to-create-task-sequence">Script to Create Task Sequence</h2>
 <p>I <a href="https://www.amazon.com/Stealing-Pride-Vol-Customizations-ConfigMgr/dp/9187445034">stole</a> the base code for this from Johan Arwidmark&rsquo;s (<a href="https://twitter.com/jarwidmark/">@jarwidmark</a>) <a href="https://deploymentresearch.com/Research/Post/658/Creating-Task-Sequences-in-ConfigMgr-via-PowerShell">Creating Task Sequences in ConfigMgr via PowerShell</a> blog post. The script is simple. Customize it as you see fit. It creates a list of actions that get added to an Enabled and Disabled group in a new Task Sequence. The Disabled Group is set to Disabled in the Task Sequence, but each item below it is not, can move steps in and out of the groups in your TS easily once you&rsquo;ve created the Task Sequence.</p>
-<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_23-11-40/"><img src="/img/2018/06/2018-06-14_23-11-40.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_23-11-40/"><div class="image">
+
+<a href="2018-06-14_23-11-40.jpg" target="_blank">
+  <img src="2018-06-14_23-11-40.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>You will need to connect to your ConfigMgr site to run this. The easiest way to do that is to open the ConfigMgr Console and click the upper left corner menu. Select Connect vis Windows PowerShell ISE.
 Then run the script that pops up. Don&rsquo;t edit that script! Once in ISE, copy the following code into a new window, customize it and run it.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">$ClientActions</span> = @()
@@ -352,11 +358,29 @@ Then run the script that pops up. Don&rsquo;t edit that script! Once in ISE, cop
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="94"><a style="outline: none; text-decoration:none; color:inherit" href="#94">94</a></span>ProcessActions <span style="color:#008080">$DisabledActions</span> <span style="color:#008080">$DisabledGroup</span>
 </code></pre></div><h2 id="results">Results</h2>
 <p>Once you have run the script, you should end up with a Task Sequence like this:</p>
-<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-22-36/"><img src="/img/2018/06/2018-06-14_22-22-36.jpg" alt="A Square Dozen Image"></a></p>
-<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-23-20/"><img src="/img/2018/06/2018-06-14_22-23-20.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-22-36/"><div class="image">
+
+<a href="2018-06-14_22-22-36.jpg" target="_blank">
+  <img src="2018-06-14_22-22-36.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
+<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-23-20/"><div class="image">
+
+<a href="2018-06-14_22-23-20.jpg" target="_blank">
+  <img src="2018-06-14_22-23-20.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>And entries like this:</p>
 <p>You should see entries in your smsts.log like this. Each step has Continue On Error turned on, so you will want to look at the logs to see if the steps are actually working.</p>
-<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-34-34/"><img src="/img/2018/06/2018-06-14_22-34-34.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/2018-06-14_22-34-34/"><div class="image">
+
+<a href="2018-06-14_22-34-34.jpg" target="_blank">
+  <img src="2018-06-14_22-34-34.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Expand a string: WinPEandFullOS    TSManager   6/14/2018 10:31:22 PM   8664 (0x21D8)</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Executing command line: smsswd.exe /run: %SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command &#34;Invoke-WmiMethod -Namespace root\CCM -Class SMS_Client -Name TriggerSchedule &#39;{00000000-0000-0000-0000-000000000021}&#39;;sleep -seconds 120;&#34;    TSManager   6/14/2018 10:31:22 PM   8664 (0x21D8)</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">[ smsswd.exe ]  InstallSoftware 6/14/2018 10:31:22 PM   9480 (0x2508)</span>

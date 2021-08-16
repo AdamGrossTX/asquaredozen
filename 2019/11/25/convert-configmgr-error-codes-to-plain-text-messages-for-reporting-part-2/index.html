@@ -254,35 +254,107 @@ if (!doNotTrack) {
 <p>I had heard of Azure Functions and I&rsquo;ve written web API&rsquo;s but I had never put the 2 together until I ran into this dilemma. I was trying to get the error text from ConfigMgr deployments into Power BI and ended up messing with Azure Functions to see if it was a viable alternative. This post is based on <a href="/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/">Part 1</a> which covers sourcing the files and creating a PowerShell script to look up error message. I&rsquo;ll cover how to create an Azure Function App in this post.</p>
 <h2 id="creating-an-azure-function-app">Creating an Azure Function App</h2>
 <p>This next bit should be pretty easy since it&rsquo;s mostly just stepping through Azure Function wizards. Once you have all of the files gathered, you simply need to create an Azure function. Log into your Azure Tenant. Search for <strong><code>Function App</code></strong> and browse to it.</p>
-<p><img src="/img/2019/11/image-2.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-2.png" target="_blank">
+  <img src="image-2.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Click <strong>Add</strong> to create a new Function App</p>
-<p><img src="/img/2019/11/image-3.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-3.png" target="_blank">
+  <img src="image-3.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This wizard change significantly since I began working on this, so if you are viewing this in the future and it&rsquo;s different than shown, just follow the wizard. The main considerations are:</p>
 <ul>
 <li>Resource Group - Create a new resource group or re-use an existing one</li>
 <li>Function App name - Since you can use this app to run many functions, this should be a relatively generic name that covers the purpose of your web API. Also, this will be a public facing name, so it will need to be unique and may be unavailable if you try using something too general.</li>
 <li>Runtime stack - Be sure to select <strong>PowerShell Core</strong> as your Runtime stack. I tried using the C# stuff but couldn&rsquo;t get the DLL to load on .NET Core, though I&rsquo;ll admit, I didn&rsquo;t spend a ton of time on it.</li>
 </ul>
-<p><img src="/img/2019/11/image-4.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-4.png" target="_blank">
+  <img src="image-4.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>For Hosting I just accepted the defaults.</p>
-<p><img src="/img/2019/11/image-5.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-5.png" target="_blank">
+  <img src="image-5.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>I chose to enable Application Insights. This will likely add cost to your functions (I don&rsquo;t know for sure), but it will allow you to have visibility into your functions.</p>
-<p><img src="/img/2019/11/image-6.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-6.png" target="_blank">
+  <img src="image-6.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>On Tags, I didn&rsquo;t enter any.</p>
-<p><img src="/img/2019/11/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-7.png" target="_blank">
+  <img src="image-7.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>On the summary page, review everything then click <strong>Create</strong>.</p>
-<p><img src="/img/2019/11/image-8.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-8.png" target="_blank">
+  <img src="image-8.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once it has been created, you can navigate to your new Azure Function App where you can configure it and begin creating your functions.</p>
-<p><img src="/img/2019/11/image-9.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-9.png" target="_blank">
+  <img src="image-9.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="creating-an-azure-function">Creating An Azure Function</h2>
 <p>To create a new Azure Function. Click Functions then click New function. I found that clicking the <strong><code>+</code></strong> next to Functions doesn&rsquo;t allow you to change the function name. It&rsquo;s great if you want to create a sample function to test with though.</p>
-<p><img src="/img/2019/11/image-10.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-10.png" target="_blank">
+  <img src="image-10.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Select HTTP Trigger as the function type.</p>
-<p><img src="/img/2019/11/image-11.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-11.png" target="_blank">
+  <img src="image-11.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Give the new function a name and configure the Authorization Level. I chose Function. This will case the API to pass a <strong>Code</strong> query string parameter for authorization. During testing, I was just using Anonymous which excludes the <strong>Code</strong> string. Choose an option that fits your security needs.</p>
-<p><img src="/img/2019/11/image-12.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-12.png" target="_blank">
+  <img src="image-12.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once the new function has been created, you will have a fully functioning &lsquo;Hello World&rsquo; Azure Function. You can test it if you&rsquo;d like by clicking Save and run. I used this template as the basis for my function.</p>
-<p><img src="/img/2019/11/image-13.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-13.png" target="_blank">
+  <img src="image-13.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>In the web console editor, replace the default function code with the following code. This code is similar to what I used in Part 1 of this series, but it has been modified to work as a web API function.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>using namespace System.Net
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
@@ -334,19 +406,55 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>    Body = <span style="color:#008080">$body</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>})
 </code></pre></div><p>It should look like this whenever you are done.</p>
-<p><img src="/img/2019/11/image-14.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-14.png" target="_blank">
+  <img src="image-14.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>For this test case, the function requires extra files. If you don&rsquo;t have the same need, you can skip the next section.</p>
 <h2 id="adding-files-to-the-azure-function">Adding Files to the Azure Function</h2>
 <p>Once you&rsquo;ve updated the <code>run.ps1</code> file. navigate to the main Function App node. Click <strong>Platform features</strong> then <strong>Advanced Tools (Kudu)</strong>.</p>
-<p><img src="/img/2019/11/image-15.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-15.png" target="_blank">
+  <img src="image-15.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Select The Debug console drop down and select PowerShell</p>
-<p><img src="/img/2019/11/image-16.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-16.png" target="_blank">
+  <img src="image-16.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Navigate using the upper pane to get to the folder for your new Azure Function website. My path is <code>D:\home\site\wwwroot\GetErrorMessage</code></p>
-<p><img src="https://i1.wp.com/www.systemcenterdudes.com/img/2019/09/image-43.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-43.png" target="_blank">
+  <img src="image-43.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Drag the <strong><code>Bin</code></strong> folder and it&rsquo;s contents into the root of your site&rsquo;s folder. You can watch the progress indicator to see when the upload has been completed.</p>
-<p><img src="/img/2019/11/image-17.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-17.png" target="_blank">
+  <img src="image-17.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Verify that the folder and contents are present.</p>
-<p><img src="https://i1.wp.com/www.systemcenterdudes.com/img/2019/09/image-48.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-48.png" target="_blank">
+  <img src="image-48.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="testing-the-azure-function">Testing the Azure Function</h2>
 <ol>
 <li>Return to your Azure Function.</li>
@@ -358,16 +466,34 @@ if (!doNotTrack) {
 <li>Click Run</li>
 <li>The output box should show the result.</li>
 </ol>
-<p><img src="/img/2019/11/image-20.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-20.png" target="_blank">
+  <img src="image-20.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>You can also click on <strong><code>Get function URL</code></strong> to run the function directly in a web browser or anything else.</p>
-<p><img src="/img/2019/11/2019-11-25_10-52-46.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2019-11-25_10-52-46.png" target="_blank">
+  <img src="2019-11-25_10-52-46.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Your URL will be the base URL including your function authentication code (unless you chose anonymous when you set up the function.</p>
 <p><code>https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=fasweAWDAWDFAWF/ADwdawdafASEFSE==</code></p>
 <p>Then you will append your parameters to the URL like with <code>&amp;</code></p>
 <p><code>&amp;ExitCode=0x87D00664</code><br>
 <code>&amp;Language=en-US</code></p>
 <p>With the final URL being  <code>[https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=fasweAWDAWDFAWF/ADwdawdafASEFSE==&amp;ExitCode=0x87D00664&amp;Language=en-US](https://asdconfigmgrfn.azurewebsites.net/api/GetErrorMessage?code=jcctioioyOCFDr584iP0F/nUyGHCkPldlRJvM8xxajm9pGUoToLq4A==&amp;ExitCode=0x87D00664&amp;Language=en-US)</code></p>
-<p><img src="/img/2019/11/image-25.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-25.png" target="_blank">
+  <img src="image-25.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>As you can see, you can basically take &lsquo;any&rsquo; PowerShell code and stick it into an Azure Function with a little bit of modification. For my use-case I just wanted to get error codes for reporting, but you could easily move PowerShell utility scripts to Azure Functions and leverage them in ConfigMgr task sequences or just about anywhere else. I love the idea of being able to build an API in a matter of minutes with almost no real dev work involved. Hopefully this will inspire you to check out Azure Functions!</p>
 <p>Check out <a href="/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/">Part 1</a> and <a href="/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/">Part 3</a></p>

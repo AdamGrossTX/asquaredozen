@@ -247,7 +247,13 @@ if (!doNotTrack) {
 			<div class="post-entry">
 				<p>Our Windows 7 Reference Image was originally built in 2011. At the time, we had some consultants in helping us migrate from Windows XP to Windows 7. At the time, the consultant who was building the image edited the Local Group Polices on the Windows 7 machine prior to capturing it. Since then, we&rsquo;ve continued to service the WIM and use it as our production image. Some years later, we were trying to change our Windows Update settings and found these nice Local Group Policies just sitting there screwing everything up!</p>
 <p>You can check if you have any Local Group Policies enabled by opening gpedit.msc as an Admin then expanding to the All Settings tab. Sort by State Descending and you should see if you have any Local Group Policies. <em>Note: Other products may add local group policies, so review what you find before just assuming the settings should be removed.</em>. You can also use GPRESULT -H to get an HTML report of ALL Group Policies being applied. Click <strong>Show All</strong> then search for <em>Local Group Policy</em> to find any settings that are applied from the local policies.</p>
-<p><img src="/img/2018/07/2018-07-13_22-14-11.jpg" alt="Local Group Policy"></p>
+<p><div class="image">
+
+<a href="2018-07-13_22-14-11.jpg" target="_blank">
+  <img src="2018-07-13_22-14-11.jpg" alt="Local Group Policy">
+</a>
+
+</div></p>
 <p>Fast forward to this week. We are in the process of rolling out Windows 10 and we hope to do a large portion of our clients as In-Place Upgrades. As I was comparing a completed In-Place Upgrade to a Bare Metal build, I noticed that the machines behaved differently when accessing Windows Update (Yep, again). I had wondered previously if local GPO&rsquo;s would be carried forward during an In-Place Upgrade and the answer is &lsquo;Yes&rsquo; - My &lsquo;Just Upgraded&rsquo; machine had over 20 local machine policies listed, compared to a bare metal build, which only had 3.</p>
 <p>One option to handle this would be to create new domain GPOs that counteract the local GPOs and let the domain GPOs win, but that just seemed like it would suck to maintain and potentially not work for some of the policies where <strong>Not Configured</strong> isn&rsquo;t the same is <strong>Enabled</strong> or <strong>Disabled</strong>. After a bit of Googling, I found some options, most of which were manual steps. The &lsquo;<em>IF Nothing Else Works</em>&rsquo; option was to just delete the GPO folders from the machine, so of course that&rsquo;s the option I chose.</p>
 <p>First I built a Windows 7 machine using our production build. Then I performed an In-Place Upgrade on it to Windows 10 1709. During the upgrade, just after the OS is upgraded then reboots, I delete any group policy files that exist. The imaging process completes and the Local Group Policies are <em>mostly</em> empty.</p>

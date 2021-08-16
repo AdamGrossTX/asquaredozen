@@ -250,13 +250,31 @@ if (!doNotTrack) {
 <p>If you haven&rsquo;t already, check out <a href="http://www.asquaredozen.com/2018/07/18/enabling-dynamic-updates-and-servicing-drivers-from-microsoft-update-during-a-windows-10-in-place-upgrade-task-sequence-in-configmgr/">Part 1 Here</a>, otherwise this won&rsquo;t make as much sense.</p>
 <p>In all of the haze of my attempts to get out to Windows Update, I lost sight of my ultimate goal, which was to be able to go out to Windows Update AND ignore dismissible compatibility warnings when using the <strong>Upgrade Operating System</strong> step in a ConfigMgr Task Sequence. While I was researching this issue, I had run across the Task Sequence option <strong>OSDSetupAdditionalUpgradeOptions</strong> as documented <a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-action-variables">here</a>. Johan (<a href="https://twitter.com/jarwidmark">@jarwidmark</a>) has a good write-up on that <a href="https://deploymentresearch.com/Research/Post/565/Specify-additional-command-line-options-to-Setup-during-a-Windows-10-upgrade-when-using-ConfigMgr">here</a>. It was late as I was finishing up testing, so I just made a note to look into it because I wanted to use the <strong>/DiagnosticPrompt enable</strong> <a href="https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-command-line-options">Windows Setup command line option</a> for testing in my Task Sequence.</p>
 <p>As I got back into the office and started testing, I realized that I wasn&rsquo;t done. If you have ever checked all 3 boxes,</p>
-<p><img src="/img/2018/07/2018-07-18_8-21-11.jpg" alt="All 3 Boxes"></p>
+<p><div class="image">
+
+<a href="2018-07-18_8-21-11.jpg" target="_blank">
+  <img src="2018-07-18_8-21-11.jpg" alt="All 3 Boxes">
+</a>
+
+</div></p>
 <p>you will have seen the message in the smsts.log stating that the <strong>Ignore</strong> flag was being <em>Ignored</em>:</p>
 <p><code>When dynamic update is enabled, ignore warnings is not allowed, ignoring the switch /compat.</code></p>
-<p><img src="/img/2018/07/2018-07-18_8-37-24.jpg" alt="Ignoring the Ignore"></p>
+<p><div class="image">
+
+<a href="2018-07-18_8-37-24.jpg" target="_blank">
+  <img src="2018-07-18_8-37-24.jpg" alt="Ignoring the Ignore">
+</a>
+
+</div></p>
 <p>Now that we know the secret behind getting past ConfigMgr and out to Windows Update, we don&rsquo;t need to check the boxes. In fact, we can bypass MOST of the checkboxes (Time-Out is a ConfigMgr option, so if you need it, check the box). We can just use <strong>OSDSetupAdditionalUpgradeOptions</strong> to add any command line options that we want. Technically, you could just run it all from a <strong>Run Command Line</strong> step instead of using the <strong>Upgrade Operating System</strong> step, however, there is some behind-the-scenes integration that makes it worth keeping around.</p>
 <p>Quick Tangent about the <strong>Upgrade Operating System</strong> step. Open <strong>Task Manager</strong> and you will see <strong>OSDUpgradeOS.exe</strong> running during the Upgrade Operating System step.</p>
-<p><img src="/img/2018/07/2018-07-18_8-32-16.jpg" alt="osdupgradeos"></p>
+<p><div class="image">
+
+<a href="2018-07-18_8-32-16.jpg" target="_blank">
+  <img src="2018-07-18_8-32-16.jpg" alt="osdupgradeos">
+</a>
+
+</div></p>
 <p>This step manages the Task Sequence and Windows Setup integration. It adds the SetupComplete.cmd and SetupRollBack.cmd files and manages the Task Sequence UI between reboots. So, don&rsquo;t dismiss this step, maybe just don&rsquo;t use the check boxes.</p>
 <p>Speaking of check boxes, the Task Sequence knows what boxes you checked, but doesn&rsquo;t check the <strong>OSDSetupAdditionalUpgradeOptions</strong> variable to see what you added there. Can you guess where I&rsquo;m headed with this?? Just move the items from the check box to the <strong>OSDSetupAdditionalUpgradeOptions</strong> variable and you the Task Sequence ignores the ignore but in a good way this time!</p>
 <h1 id="the-hack-v20">The Hack v2.0</h1>
@@ -286,7 +304,13 @@ if (!doNotTrack) {
 <strong>Name:</strong> Upgrade Operating System<br>
 Select your Upgrade media and Don&rsquo;t Check ANYTHING!!<br>
 See <a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#BKMK_UpgradeOS">The bottom of this post for more info</a></p>
-<p><img src="/img/2018/07/2018-07-18_8-47-21.jpg" alt="Upgrade Operating System"></p>
+<p><div class="image">
+
+<a href="2018-07-18_8-47-21.jpg" target="_blank">
+  <img src="2018-07-18_8-47-21.jpg" alt="Upgrade Operating System">
+</a>
+
+</div></p>
 <p><strong>Type:</strong> Group<br>
 <strong>Name:</strong> Cleanup</p>
 <p><strong>Type:</strong> Run Command Line Step<br>
@@ -295,7 +319,13 @@ See <a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#
 <p><code>cmd /c &quot;ren c:\Windows\System32\groupPolicy\Machine\Registry.bkp Registry.pol&quot;</code></p>
 <p>*Note: At this point, your machine is still pointed to Windows Update, so you will need to <code>gpupdate /force</code> to have it regenerated. I haven&rsquo;t tested this far yet, but I would assume by the end of the Task Sequence, the machine will have updated policies and rebuilt the key.</p>
 <p>The end result should look something like this if you started with my previous Task Sequence and just commented out the steps:</p>
-<p><img src="/img/2018/07/2018-07-18_8-14-43.jpg" alt="Updated Hacked TS!!"></p>
+<p><div class="image">
+
+<a href="2018-07-18_8-14-43.jpg" target="_blank">
+  <img src="2018-07-18_8-14-43.jpg" alt="Updated Hacked TS!!">
+</a>
+
+</div></p>
 
 			</div>
 			

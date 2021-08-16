@@ -256,7 +256,13 @@ Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.
 <h1 id="osdinjectionxml">OSDInjection.XML</h1>
 <p>You can find your <strong>OSDInjection.XML</strong> on your ConfigMgr primary server under <strong>[SCCM Install directory]\bin\x64\OSDInjection.XML</strong>. This file is a manifest that SCCM uses to inject specific files into your boot image. There are several sections in the XML, so be sure to make your entries in the correct location.</p>
 <p>Create a new folder named <strong>Custom</strong> under <strong>[SCCM Install directory]\OSD</strong>. Add your 802.1x script, profile XML, and certificates to this new folder. Add new lines to your <strong>OSDInjection.XML</strong> file that correspond to each of your new files. Each entry should include the source folder <strong>Custom</strong> and a destination folder on the OS. The destination paths are based on the root drive that PE is working from (generally X:).</p>
-<p><img src="/img/2018/07/2018-07-28_21-27-20.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-07-28_21-27-20.jpg" target="_blank">
+  <img src="2018-07-28_21-27-20.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;File</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;ImportComputerAuthProfile.bat&#34;</span><span style="color:#000080">&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>  <span style="color:#000080">&lt;LocaleNeeded&gt;</span>false<span style="color:#000080">&lt;/LocaleNeeded&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>  <span style="color:#000080">&lt;Source&gt;</span>Custom<span style="color:#000080">&lt;/Source&gt;</span>

@@ -304,9 +304,27 @@ if (!doNotTrack) {
 </ul>
 </li>
 </ul>
-<p><img src="/img/2020/02/image.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2020/02/image-3.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2020/02/image-2.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-3.png" target="_blank">
+  <img src="image-3.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-2.png" target="_blank">
+  <img src="image-2.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="serial-number-gotchas">Serial Number Gotcha&rsquo;s</h2>
 <p>The only downside that I&rsquo;ve found so far with this approach is that hardware manufacturers don&rsquo;t care about how we use serial numbers.<br>
 Dell, Lenovo and HP seem to have reasonable formats, but VMWare and Microsoft make you work for it.</p>
@@ -337,20 +355,58 @@ to<br>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>}
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#000;font-weight:bold">Return</span> <span style="color:#008080">$SerialNumber</span>
 </code></pre></div><p>Simply drop the script into a Run PowerShell Script step in your task Sequence and set the output to a new variable name. Now, you could remove all of the lookups and just pass <code>_SMSTSMake</code> and <code>_SMSTSModel</code> to the script or use them as Options on the steps, but keeping it all in one simple script makes it easy to re-use later.</p>
-<p><img src="/img/2020/02/image-4.png" alt="A Square Dozen Image">]</p>
+<p><div class="image">
+
+<a href="image-4.png" target="_blank">
+  <img src="image-4.png" alt="A Square Dozen Image">
+</a>
+
+</div>]</p>
 <h2 id="diy-gather-in-the-task-sequence">DIY Gather in the Task Sequence</h2>
 <hr>
 <p>Update 02/21/2020 - Ok, so I thought about this some more and decided that I would see if I could just make a Task Sequence as a module to perform all of the gather steps directly in the Task Sequence instead of using external scripts. At this point, we&rsquo;ve moved from one custom solution to another and kind of missing the point of &lsquo;going native&rsquo; but in any case, conceptually, you could make a stand-alone child task sequence that performs all of your Gather steps then just call it from any other Task Sequence as needed.</p>
 <hr>
 <p>There&rsquo;s a link at the end where you can download Gather Task Sequence content from GitHub. Here are some pretty pictures and scripts</p>
-<p>Main Folder for Gather to make it &lsquo;portable&rsquo;. Just copy the folder where you want or put in a child TS.
-<img src="/img/2020/02/image-6.png" alt="A Square Dozen Image"></p>
-<p>Setup the variables with default values just to keep things clean.
-<img src="/img/2020/02/image-7.png" alt="A Square Dozen Image"></p>
-<p>Run a script using the %_SMSTSMake% variable as a parameter to get the serial number
-<img src="/img/2020/02/image-8.png" alt="A Square Dozen Image"></p>
-<p>Get the serial number
-<img src="/img/2020/02/image-12.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="Main Folder for Gather to make it &amp;lsquo;portable&amp;rsquo;. Just copy the folder where you want or put in a child TS.">
+    </a>
+    <figcaption>Main Folder for Gather to make it &#39;portable&#39;. Just copy the folder where you want or put in a child TS.</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="Setup the variables with default values just to keep things clean.">
+    </a>
+    <figcaption>Setup the variables with default values just to keep things clean.</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="Run a script using the %_SMSTSMake% variable as a parameter to get the serial number">
+    </a>
+    <figcaption>Run a script using the %_SMSTSMake% variable as a parameter to get the serial number</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-12.png" target="_blank">
+      <img src="image-12.png" alt="Get the serial number">
+    </a>
+    <figcaption>Get the serial number</figcaption>
+  </figure>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">Param</span> (
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#008080">[String]</span><span style="color:#008080">$Make</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>)
@@ -367,10 +423,26 @@ to<br>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>    <span style="color:#008080">$SerialNumber</span> = <span style="color:#008080">$SerialNumber</span>.remove(0,<span style="color:#008080">$CharsToTrim</span>)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>}
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#000;font-weight:bold">Return</span> <span style="color:#008080">$SerialNumber</span>.ToUpper()
-</code></pre></div><p>Script to look up chassis types from WMI and output a clean name to use.
-<img src="/img/2020/02/image-9.png" alt="A Square Dozen Image"></p>
-<p>Default is NoChassisTypeDetected. You&rsquo;ll see this for VMware and likely other VMs.
-<img src="/img/2020/02/image-13.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="Script to look up chassis types from WMI and output a clean name to use.">
+    </a>
+    <figcaption>Script to look up chassis types from WMI and output a clean name to use.</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-13.png" target="_blank">
+      <img src="image-13.png" alt="Default is NoChassisTypeDetected. You&amp;rsquo;ll see this for VMware and likely other VMs.">
+    </a>
+    <figcaption>Default is NoChassisTypeDetected. You&#39;ll see this for VMware and likely other VMs.</figcaption>
+  </figure>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">$Laptop</span> = @(8, 9, 10, 11, 12, 14, 18, 21, 30, 31, 32)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">$Desktop</span> = @(3, 4, 5, 6, 7, 13, 15, 16, 35, 36)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">$Server</span> = @(23, 28)
@@ -384,20 +456,60 @@ to<br>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>}
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#000;font-weight:bold">Return</span> <span style="color:#008080">$ChassisType</span>
-</code></pre></div><p>Setting the Gather variables based on the values we found.
-<img src="/img/2020/02/image-10.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="Setting the Gather variables based on the values we found.">
+    </a>
+    <figcaption>Setting the Gather variables based on the values we found.</figcaption>
+  </figure>
+
+</div></p>
 <hr>
 <p><strong>UPDATE 02/24/2021 - If you use Surface Pro 7+, you will need to update your Gather step to look for Surface Pro 7+ and set IsLaptop = True. This is due to the ChassisType being set to 1 instead of 9 on these devices. This is expected to be fixed at some point, but if you have an immediate need, here&rsquo;s the fix.</strong></p>
 <hr>
-<p>Fix for Surface Pro 7+
-<img src="/img/2021/02/image.png" alt="A Square Dozen Image"></p>
-<p>Echo out the values to the command line so that they show up in smsts.log.
-<img src="/img/2020/02/image-11.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="Fix for Surface Pro 7&#43;">
+    </a>
+    <figcaption>Fix for Surface Pro 7&#43;</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-11.png" target="_blank">
+      <img src="image-11.png" alt="Echo out the values to the command line so that they show up in smsts.log.">
+    </a>
+    <figcaption>Echo out the values to the command line so that they show up in smsts.log.</figcaption>
+  </figure>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>cmd /c <span style="color:#0086b3">echo </span><span style="color:#d14">&#34;ChassisType: %ChassisType%&#34;</span> &amp;&amp; <span style="color:#0086b3">echo </span><span style="color:#d14">&#34;IsVM: %IsVM%&#34;</span> &amp;&amp;  <span style="color:#0086b3">echo </span><span style="color:#d14">&#34;IsLaptop: %IsLaptop%&#34;</span> &amp;&amp; <span style="color:#0086b3">echo </span><span style="color:#d14">&#34;IsDesktop: %IsDesktop%&#34;</span> &amp;&amp; <span style="color:#0086b3">echo </span><span style="color:#d14">&#34;IsServer: %IsServer%&#34;</span>
-</code></pre></div><p>A gif using Task Sequence Debugger to show how the variables get set!
-<img src="/img/2020/02/2020-02-21_15-56-38.gif" alt="A Square Dozen Image"></p>
-<p>SMSTS.log output showing the variables that got set by Gather
-<img src="/img/2020/02/image-5.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="2020-02-21_15-56-38.gif" target="_blank">
+      <img src="2020-02-21_15-56-38.gif" alt="A gif using Task Sequence Debugger to show how the variables get set!">
+    </a>
+    <figcaption>A gif using Task Sequence Debugger to show how the variables get set!</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-5.png" target="_blank">
+      <img src="image-5.png" alt="SMSTS.log output showing the variables that got set by Gather">
+    </a>
+    <figcaption>SMSTS.log output showing the variables that got set by Gather</figcaption>
+  </figure>
+
+</div></p>
 <p>As you can see, it takes a few steps, but it&rsquo;s not that hard to add other variables to this and use it as a master variable setting Task Sequence that you reference in other Task Sequences. Is this the most efficient? Not likely? Does it reduce the need for custom code? Maybe? Does it require any extra contents/scripts? Nope. Anyway, I feel like this completes the picture just a bit more.</p>
 <p>Click <a href="https://github.com/AdamGrossTX/BlogFiles/raw/master/GatherTS.zip">HERE</a> to download the complete Gather Task Sequence from my GitHub repo. Or Download it directly from the console in the Community Hub <a href="https://communityhub.microsoft.com/item/7812">https://communityhub.microsoft.com/item/7812</a>.</p>
 <h2 id="thats-all-folks">That&rsquo;s all Folks</h2>

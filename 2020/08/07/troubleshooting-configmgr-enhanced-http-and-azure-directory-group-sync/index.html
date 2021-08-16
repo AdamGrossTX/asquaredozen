@@ -250,7 +250,13 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 <p>Over a Teams meeting we double checked everything and walked through <a href="https://ronnydejong.com/2020/02/27/troubleshooting-device-collection-membership-azure-ad-group-sync/">Ronny Dejong&rsquo;s</a> (He covers pretty much all of troubleshooting steps needed for this!), <a href="https://msendpointmgr.com/2019/07/27/synchronize-device-collection-memberships-to-an-azure-ad-group-with-configmgr/">Nickolaj Andersen&rsquo;s</a>, and <a href="https://triplesixseven.com/syncing-device-collections-to-azure-ad/">Jake Stoker&rsquo;s</a> blogs on configuring and troubleshooting the sync, which helped put us on the right track to the issue.</p>
 <h2 id="finding-the-issue">Finding the Issue</h2>
 <p>HTTPS or <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/enhanced-http">Enhanced HTTP</a> is required for Azure Directory Group Sync - Adam confirmed that he had EHTTP enabled. According to Ronny&rsquo;s blog, EHTTP is responsible for updating the <strong>AADTenantID</strong> value in the <strong>ClientDataKeys</strong> table in the ConfigMgr SQL database. We were confused because in the ConfigMgr console, you can turn on the <strong>Azure Active Directory Tenant ID</strong> column in any Device view and it was populated for all of the devices in the collection to be synced.</p>
-<p><img src="/img/2020/08/image-26.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-26.png" target="_blank">
+  <img src="image-26.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>However when we queried the <strong>ClientDataKeys</strong> table (Query from Nickolaj&rsquo;s blog) we found that the <strong>AADTenantID</strong> column was <strong>NULL</strong> while the <strong>AADTenantID</strong> column in <strong>System_DISC</strong> (Used by the console views) was populated.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb">	</span>System_DISC.Name0,<span style="color:#bbb">
@@ -263,10 +269,24 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#bbb">	</span>System_DISC<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">ON</span><span style="color:#bbb"> </span>ClientKeyData.SMSID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>System_DISC.SMS_Unique_Identifier0<span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">BY</span><span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#bbb">	</span>ClientKeyData.AADTenantID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">DESC</span><span style="color:#bbb">
-</span></code></pre></div><p><img src="/img/2020/08/2020-08-07_11-25-05.jpg" alt="A Square Dozen Image"></p>
+</span></code></pre></div><p><div class="image">
+
+<a href="2020-08-07_11-25-05.jpg" target="_blank">
+  <img src="2020-08-07_11-25-05.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Thanks to Ronny for a great description of the difference between the <strong>AADTenantID</strong> values between <strong>System_Disc</strong> and <strong>ClientDataKeys</strong>:</p>
-<p><a href="https://ronnydejong.com/2020/02/27/troubleshooting-device-collection-membership-azure-ad-group-sync/">https://ronnydejong.com/2020/02/27/troubleshooting-device-collection-membership-azure-ad-group-sync/</a>
-<img src="/img/2020/08/image-24.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-24.png" target="_blank">
+      <img src="image-24.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>https://ronnydejong.com/2020/02/27/troubleshooting-device-collection-membership-azure-ad-group-sync/</figcaption>
+  </figure>
+
+</div></p>
 <p>Ronny&rsquo;s blog section titled <strong>Validate SSL Communication</strong> would have helped with this next part if I had scrolled down a bit more, but instead we went about it the hard way and got to the same result - Enhanced HTTP wasn&rsquo;t configured even though everything looked correct from the console.</p>
 <h2 id="rolling-back-enhanced-http">Rolling back Enhanced HTTP</h2>
 <p>When we took a look IIS, we found that HTTPS was enabled but the binding was what Adam described as &lsquo;An Ancient PKI Certificate&rsquo;. I thought this was the fix, just swap the cert to the SMS Role SSL Certificate and we&rsquo;d be good. However, that certificate wasn&rsquo;t in the list. We checked the local certificate store and it wasn&rsquo;t there either. This was a good clue. I verified in my lab that the cert should have been issued. We checked the docs and didn&rsquo;t see anything listed about the new cert until we checked the docs for the <a href="https://docs.microsoft.com/mem/configmgr/core/clients/manage/cmg/certificates-for-cloud-management-gateway#enhanced-http-certificate-for-management-points">Cloud Management Gateway</a> where there&rsquo;s this note, confirming our suspicion:</p>
@@ -277,20 +297,60 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 <p>Our fix was to disable EHTTP (just uncheck the box shown in the next section and wait for the change to process (watch sitecomp.log and mpcontrol.log). We also removed the HTTPS binding from IIS. Then we re-enabled EHTTP following the steps below.</p>
 <h2 id="enable-and-verify-enhanced-http-configuration-in-iis">Enable and Verify Enhanced HTTP Configuration in IIS</h2>
 <p>Follow the steps from the Docs to <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/enhanced-http">enable Enhanced HTTP</a>.</p>
-<p>Enable Enhanced HTTP
-<img src="/img/2020/08/image-25.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-25.png" target="_blank">
+      <img src="image-25.png" alt="Enable Enhanced HTTP">
+    </a>
+    <figcaption>Enable Enhanced HTTP</figcaption>
+  </figure>
+
+</div></p>
 <p>Check <code>sitecomp.log</code> to see the change get processed.</p>
-<p>Detected change in SSLState for client settings.
-<img src="/img/2020/08/2020-08-07_11-38-31.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2020-08-07_11-38-31.png" target="_blank">
+      <img src="2020-08-07_11-38-31.png" alt="Detected change in SSLState for client settings.">
+    </a>
+    <figcaption>Detected change in SSLState for client settings.</figcaption>
+  </figure>
+
+</div></p>
 <p>This will trigger a change that you can watch in mpcontrol.log (partial log shown here. There will be quite a few log entries here.)</p>
-<p>Detected token auth flag is changed. Currently enbled.
-<img src="/img/2020/08/2020-08-07_11-40-22.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2020-08-07_11-40-22.png" target="_blank">
+      <img src="2020-08-07_11-40-22.png" alt="Detected token auth flag is changed. Currently enabled.">
+    </a>
+    <figcaption>Detected token auth flag is changed. Currently enabled.</figcaption>
+  </figure>
+
+</div></p>
 <p>A new cert will be generated on the MP. The Friendly Name will be SMS Role SSL Certificate issued by SMS Issuing.</p>
-<p>Newly issued Cert Issued By SMS Signing
-<img src="/img/2020/08/2020-08-07_11-40-48.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2020-08-07_11-40-48.png" target="_blank">
+      <img src="2020-08-07_11-40-48.png" alt="Newly issued Cert Issued By SMS Signing">
+    </a>
+    <figcaption>Newly issued Cert Issued By SMS Signing</figcaption>
+  </figure>
+
+</div></p>
 <p>In IIS on the Default Web Site, HTTPS will be added to the site bindings and the SMS Role SSL Certificate will be attached.</p>
-<p>HTTPS enabled and new Cert attached
-<img src="/img/2020/08/2020-08-07_11-41-50.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2020-08-07_11-41-50.png" target="_blank">
+      <img src="2020-08-07_11-41-50.png" alt="HTTPS enabled and new Cert attached">
+    </a>
+    <figcaption>HTTPS enabled and new Cert attached</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="test-collection-sync">Test Collection Sync</h2>
 <p>Once you&rsquo;ve verified that EHTTPS has been enabled successfully, you can clients will begin updating the ClientDataKeys table. Re-run the query above. Once you see the AADTenantID begin populating, any devices with a value in that column will be eligible to sync if they are in a collection you&rsquo;ve configured for sync. Once you&rsquo;ve verified the data, follow the steps in any of the blogs linked to set up collection sync. <a href="https://triplesixseven.com/syncing-device-collections-to-azure-ad/">Jake has the simplest writeup on the steps</a>. CollectionAADGroupSyncWorker.log and SMS_AZUREAD_DISCOVERY_AGENT.log are good logs to watch when working with Collection Sync. - <a href="https://docs.microsoft.com/mem/configmgr/core/plan-design/hierarchy/log-files">See notes here on log file changes after 1910</a>.</p>
 <h2 id="root-cause">Root Cause</h2>

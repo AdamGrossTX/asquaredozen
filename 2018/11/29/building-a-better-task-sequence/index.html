@@ -265,9 +265,21 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>}
 </code></pre></div><h2 id="basic-framework">Basic Framework</h2>
 <p>Inside your Task Sequence, always create a top level group. I like doing this so it&rsquo;s easier to copy and paste the entire task sequence. Inside this group, create 4 groups at the same level. Main, Failure, Success, Cleanup.</p>
-<p><img src="/img/2018/11/2018-11-28_23-39-14.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-28_23-39-14.jpg" target="_blank">
+  <img src="2018-11-28_23-39-14.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>On the Main, Failure and Success groups, check the <strong>Continue on error</strong> box.</p>
-<p><img src="/img/2018/11/2018-11-28_23-41-46.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-28_23-41-46.jpg" target="_blank">
+  <img src="2018-11-28_23-41-46.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="main">Main</h2>
 <p>All of your task sequence logic will go into the Main section. If you already have an existing task sequence, you can just add a Run Task Sequence step and reference it! The biggest thing to keep in mind is that you should never enable <strong>Continue on error</strong> for any step that is critical or required for a deployment to be considered a success. In fact, if you have a step that occasionally fails, try to add logic to detect whether you need to run the step, before attempting it, just to eliminate any unnecessary errors from always showing up in the logs. Additionally, failures fail up the the parent group, so you could have steps fail inside a group, but have the group continue using <strong>Continue on error</strong>.
 As the last step in Main, add:</p>
@@ -278,7 +290,13 @@ As the last step in Main, add:</p>
 <p>By setting this variable, we will know whether we made it to the end without any fatal errors.</p>
 <h2 id="failure">Failure</h2>
 <p>Next, select the <strong>Failure</strong> group and select <strong>Options</strong> and add the following Condition: <strong>Task Sequence Variable _SMSTSLastActionSucceeded equals False</strong></p>
-<p><img src="/img/2018/11/2018-11-28_23-55-49.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-28_23-55-49.jpg" target="_blank">
+  <img src="2018-11-28_23-55-49.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This will ensure that the Failure group only gets processed if the previous action failed.</p>
 <p>Add a Set Dynamic Variables step and set the following:</p>
 <p><strong>Variable:</strong> <code>FailedStepName</code><br>
@@ -289,7 +307,13 @@ As the last step in Main, add:</p>
 <strong>Value:</strong> <code>False</code></p>
 <p><strong>Variable:</strong> <code>SMSTSErrorDialogTimeout</code><br>
 <strong>Value:</strong> <code>86400</code></p>
-<p><img src="/img/2018/11/2018-11-29_0-19-16.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-29_0-19-16.jpg" target="_blank">
+  <img src="2018-11-29_0-19-16.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>It&rsquo;s important that this is the first step that you run after a failed step or else you will lose the values. Now that you&rsquo;ve captured them, you can process any additional steps that you need to inside the Failure group.</p>
 <h2 id="success">Success</h2>
 <p>Next, select the <strong>Success</strong> group and select <strong>Options</strong> and add the following Condition: <strong>Task Sequence Variable AllStepsSucceeded equals True</strong>. This will ensure that Success will only run if the task sequence made it to the end without failure. You can add any steps inside here that you would only want to run if the Task Sequence was successful.</p>
@@ -301,11 +325,29 @@ As the last step in Main, add:</p>
 <strong>Command line:</strong> <code>cmd.exe /c exit %FailedStepReturnCode%</code></p>
 <p>Options
 <strong>Task Sequence Variable:</strong> <code>AllStepsSucceeded equals False</code></p>
-<p><img src="/img/2018/11/2018-11-29_0-09-35.jpg" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/11/2018-11-29_0-13-29.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-29_0-09-35.jpg" target="_blank">
+  <img src="2018-11-29_0-09-35.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-11-29_0-13-29.jpg" target="_blank">
+  <img src="2018-11-29_0-13-29.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This last step is the one made possible with ConfigMgr 1810. Now, when my Task Sequence fails and the error dialog is still on the screen, it will display the name of the last step that ran before the error occurred using the <code>_SMSTSLastActionName</code> build-in variable.</p>
 <p>The result that a user will see (and likely send you a screenshot of) will show the name of the step that caused the failure now, even though you have already processed all of your cleanup steps, like copying logs. At least at my site, this is a HUGE feature that will make triage much simpler.</p>
-<p><img src="/img/2018/11/2018-11-29_0-52-38.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-11-29_0-52-38.jpg" target="_blank">
+  <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>If you build a better task sequence, you will build a better deployment experience for your users and your first line workers who have to troubleshoot issues. Next steps to consider would be adding things like splash screens or login blocking policies (lots of great community blogs about these concepts). You could even get fancy and hide the progress dialog box and show a custom one, including the error dialog. There are so many great ways to customize your Task Sequences, I am just really excited about the <strong><code>_SMSTSLastActionName</code></strong> variable!</p>
 <h2 id="download">Download!</h2>

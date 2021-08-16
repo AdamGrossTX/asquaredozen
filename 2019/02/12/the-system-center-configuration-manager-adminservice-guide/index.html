@@ -344,7 +344,13 @@ if (!doNotTrack) {
 <p><strong>Create a new Package</strong></p>
 <p>POST - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package</code><br>
 BODY - <code>{&quot;Name&quot;: &quot;Test Package&quot;, &quot;Manufacturer&quot;: &quot;ASD&quot;}</code></p>
-<p><img src="/img/2019/02/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-7.png" target="_blank">
+  <img src="image-7.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>You should be able to see your new package in the console or you can use the AdminService to query SMS_Package to find it.</p>
 <p>GET - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package?$filter=Name eq 'Test Package'</code></p>
 <p><strong>Editing A Package</strong></p>
@@ -424,10 +430,22 @@ GET - <code>https://&lt;ServerName&gt;/AdminService/wmi/SMS_Package?$filter=Name
 </code></pre></div><p><strong>Edit the Package object</strong></p>
 <p>POST - <code>https://&lt;SERVERNAME&gt;/AdminService/wmi/SMS_Package</code><br>
 Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &quot;Test Package #1&quot;, &quot;Manufacturer&quot;: &quot;A Square Dozen&quot;}</code></p>
-<p><img src="/img/2019/02/image-8.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-8.png" target="_blank">
+  <img src="image-8.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>You can also return just the properties that you want, however in 1906 the $select operator doesn&rsquo;t work - but it does on 1910 TP and previous builds.</p>
 <p>GET - <code>https://&lt;SERVERNAME&gt;/AdminService/wmi/SMS_Package?$filter=Name eq 'Test Package %231'&amp;$select=PackageID,Name,Manufacturer</code></p>
-<p><img src="/img/2019/02/image-10.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-10.png" target="_blank">
+  <img src="image-10.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>{
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&#34;@odata.context&#34;</span>: <span style="color:#d14">&#34;https://cmtp1-cm1.asd.lab/AdminService/wmi/$metadata#SMS_Package&#34;</span>,
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>    <span style="color:#000080">&#34;value&#34;</span>: [
@@ -458,10 +476,26 @@ Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &qu
 <p>Look for the Console Heartbeat feature coming soon.</p>
 <h2 id="application-approvals">Application Approvals</h2>
 <p>Depending on whether you&rsquo;ve enabled the AdminService to communicate through the CMG or not, the email approvals will include a URL to approve an application request. The URL can only be used once since the email GUID is removed from the database once the URL is clicked.</p>
-<p>Check this box to allow the AdminService to use the Cloud Management Gateway
-<img src="/img/2019/11/image-1.png" alt="Check this box to allow the AdminService to use the Cloud Management Gateway"></p>
-<p>Application Approval Request Email
-<img src="/img/2019/11/image.png" alt="Application Approval Request Email"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-1.png" target="_blank">
+      <img src="image-1.png" alt="Check this box to allow the AdminService to use the Cloud Management Gateway">
+    </a>
+    <figcaption>Check this box to allow the AdminService to use the Cloud Management Gateway</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="Application Approval Request Email">
+    </a>
+    <figcaption>Application Approval Request Email</figcaption>
+  </figure>
+
+</div></p>
 <p>Internal URL<br>
 <code>https://&lt;SERVERNAME&gt;/v1.0/UserApplicationRequest/AdminService.ApproveRequest(Guid=%27&lt;GUID&gt;%27)</code></p>
 <p>CMG URL<br>
@@ -474,7 +508,13 @@ Body - <code>{&quot;PackageID&quot;: &quot;TP100009&quot;, &quot;Name&quot;: &qu
 <p><a href="https://docs.microsoft.com/sccm/core/plan-design/changes/whats-new-in-version-1810#sms-provider-api">Read more about it here.</a></p>
 <h2 id="odata">OData</h2>
 <p>I&rsquo;m having trouble getting this to work in 1906 and 1910 TP at the moment. Since the AdminService uses OData, it can be integrated directly into PowerBI with no need to understand the database or SQL queries.</p>
-<p><img src="/img/2019/02/image-12.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-12.png" target="_blank">
+  <img src="image-12.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>I plan to update this page as new AdminService features are released. Please check back for more info. Also, I&rsquo;d love to hear what things you&rsquo;ve tested out. Check out my <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/ConfigMgr/AdminService">ConfigMgrAdminService GitHub Repo</a> for more sample files in the future.</p>
 

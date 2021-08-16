@@ -330,7 +330,13 @@ See <a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#
 <strong>Command Line:</strong></p>
 <p><code>REG ADD &quot;HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate&quot; /v DisableWindowsUpdateAccess /t REG_DWORD /d 1 /f</code></p>
 <p>The end result should be something like this:</p>
-<p><img src="/img/2018/07/2018-07-18_1-01-46.jpg" alt="Hack The TS!"></p>
+<p><div class="image">
+
+<a href="2018-07-18_1-01-46.jpg" target="_blank">
+  <img src="2018-07-18_1-01-46.jpg" alt="Hack The TS!">
+</a>
+
+</div></p>
 <p>Obviously you will have more in your TS, but if you check the <strong>Perform Windows Setup compatibility scan without starting upgrade</strong> option on the Upgrade Operating System step, you can test quickly without upgrading</p>
 <h1 id="what-the-hack-does">What the Hack does</h1>
 <p>I don&rsquo;t have any idea, I just work here!! Also, this is what I have deduced by watching logs and such. It could be completely wrong, but the Hack works whether I&rsquo;m wrong or right 🙂</p>

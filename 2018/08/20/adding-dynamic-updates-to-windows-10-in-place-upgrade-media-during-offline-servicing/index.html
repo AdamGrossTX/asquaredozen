@@ -299,12 +299,30 @@ if (!doNotTrack) {
 <h1 id="dynamic-update-types">Dynamic Update Types</h1>
 <p>I the absence of official Microsoft documentation, I&rsquo;m going to make some stuff up.</p>
 <p>If you search in your ConfigMgr console and turn on a few extra columns, you will see that the Dynamic Updates have 2 categories <strong>Setup Updates</strong> and <strong>Component Updates</strong>. Also, only the <strong>Setup Updates</strong> ever seem to get superseded, while the <strong>Component Updates</strong> are all still current.<br>
-<img src="/img/2018/08/2018-08-19_23-30-45.jpg" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="2018-08-19_23-30-45.jpg" target="_blank">
+  <img src="2018-08-19_23-30-45.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>When you extract them, you find that the <strong>Setup Updates</strong> are replacement files for items in the <strong>Sources</strong> directory of your Windows 10 In-Place Upgrade media. If you extract the <strong>Component Updates</strong>, you will see that they contain various drivers and such. These items all have older, corresponding items in your <strong>install.wim</strong>. As you can see in this screenshot, I mounted my install.wim then applied one of the Dynamic Update Component Update CABs and you can see the old and new files side by side.</p>
-<p><img src="/img/2018/08/2018-08-18_13-01-52.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-08-18_13-01-52.jpg" target="_blank">
+  <img src="2018-08-18_13-01-52.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>So, you need to get the latest Setup Update and any other Component Updates and apply them to your WIM.</p>
 <p><strong>Side Note</strong>: If you launch Windows Setup.exe and begin the wizard, you have the option the download the latest updates - this gets the latest Dynamic Updates AND the latest Cumulative Update for the OS you are installing. So if you are installing an un-serviced image and enable Dynamic Updates, your client will go out to the internet and download an ~800 MB payload. If you check your <strong>C:$Windows.~BT</strong> folder before you complete the wizard and begin your install, you will find the following new folders. If you expand them, you will find that their contents match the contents of the Dynamic Updates that you are going to use for servicing here (What an amazing coincidence!)!!</p>
-<p><img src="/img/2018/08/2018-08-18_11-17-08.jpg" alt="A Square Dozen Image">]</p>
+<p><div class="image">
+
+<a href="2018-08-18_11-17-08.jpg" target="_blank">
+  <img src="2018-08-18_11-17-08.jpg" alt="A Square Dozen Image">
+</a>
+
+</div>]</p>
 <p>Also, you can watch your c:\Windows\WindowsUpdate.log (On Windows 7) live in CMTrace and watch Windows Update go out and get the Dynamic Updates. On Windows 10 you have to run Get-WindowsUpdateLog or something silly to get a log. (Sorry, don&rsquo;t have a screenshot yet)</p>
 <h1 id="getting-dynamic-updates">Getting Dynamic Updates</h1>
 <p>I&rsquo;ve reached out to Microsoft to see if they can help with a publicly available URL for Dynamic Update downloads, and if you have any info, please let me know - the only way to get the download links for Dynamic Updates is by enabling them in SCCM or in WSUS. See Gary&rsquo;s post above for more details on how to enable and download the updates. If you have Dynamic Updates enabled and can see them in your SCCM console, then you can either manually download them or use this handy script that I wrote cause I&rsquo;m too lazy! Get the scripts and save them somewhere. You will want to separate them by OS Version and Architecture.</p>

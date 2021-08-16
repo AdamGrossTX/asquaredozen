@@ -387,7 +387,13 @@ Windows setup looks at the existing OS, install media and the command line image
 </code></pre></div><p>After digging through this for a bit, I learned some things that I didn&rsquo;t know. The PidGenX and Digital Marker lines are where I found the root of the problem. I honestly could not find any real useful information about PidGenX, but I believe that it&rsquo;s a product ID checking utility. For some reason it fails. As I mentioned before, we are using a KMS key, so it&rsquo;s possible that it has issues communicating to my KMS server, but I&rsquo;m just not sure.</p>
 <p>The Digital Marker on the other hand refers to the OEM SLP in the MSDM ACPI table in UEFI, or the System Locked Preinstallation (SLP) key in the Microsoft Digital Marker (MSDM) in the Advanced Configuration and Power Interface (ACPI) table embedded in the Unified Extensive Firmware Interface (UEFI).</p>
 <p>Once I started looking in the right place, I was able to find the Digital Marker on my devices using a tool called <a href="http://rweverything.com/">RWEvertything</a> with the assistance of <a href="http://dellwindowsreinstallationguide.com/the-oem-product-key-and-oem-system-locked-preinstallation/">this post</a>. I confirmed that my machines all had OEM Professional SLP keys instead of Enterprise (also, it said it on the sticker on the outside of the machine!!).</p>
-<p><a href="/2018/01/16/windows-7-windows-10-fall-creators-update-1709-place-upgrade-fails-error-0xc1900204-invalid-sku/kmskey/"><img src="/img/2018/01/KMSKey.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/windows-7-windows-10-fall-creators-update-1709-place-upgrade-fails-error-0xc1900204-invalid-sku/kmskey/"><div class="image">
+
+<a href="KMSKey.jpg" target="_blank">
+  <img src="KMSKey.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>From there, I contacted Microsoft Premier Support and they suggested adding the KMS key to the Product key field in my TS using the correct KMS key from Microsoft <a href="https://docs.microsoft.com/windows-server/get-started/kmsclientkeys">here</a>.</p>
 <p>Once I added the KMS key in, the upgrades started working again. While the workaround fixed the issue, I&rsquo;m just not sure if this is a bug, underlying issue with my environment or just Gremlins. It would be great to know someday.</p>
 

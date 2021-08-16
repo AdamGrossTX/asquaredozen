@@ -29,7 +29,7 @@ if (!doNotTrack) {
 
 <meta name="twitter:title" content="Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust"/>
 <meta name="twitter:description" content="We got some new hardware models in this week and added drivers to our ConfigMgr OSD Task Sequence (with Windows 10 1909 serviced with November 2020 updates) to test. One of the devices kept ending up with a broken domain trust relationship when you attempt to log in immediately following build completion.
-The security database on the server does not have a computer account for this workstation trust relationship One clue that we had was that something was renaming the device."/>
+The security database on the server does not have a computer account for this workstation trust relationship"/>
 
 
         <link rel="canonical" href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/">
@@ -247,11 +247,27 @@ The security database on the server does not have a computer account for this wo
 			</div>
 			<div class="post-entry">
 				<p>We got some new hardware models in this week and added drivers to our ConfigMgr OSD Task Sequence (with Windows 10 1909 serviced with November 2020 updates) to test. One of the devices kept ending up with a broken domain trust relationship when you attempt to log in immediately following build completion.</p>
-<p>The security database on the server does not have a computer account for this workstation trust relationship
-<img src="/img/2020/12/image-6.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="The security database on the server does not have a computer account for this workstation trust relationship">
+    </a>
+    <figcaption>The security database on the server does not have a computer account for this workstation trust relationship</figcaption>
+  </figure>
+
+</div></p>
 <p>One clue that we had was that something was renaming the device. We have a very basic naming convention SITE-SERIAL where SITE is 2-5 character code for the AD site/OU a device will be assigned to. The device was be in Active Directory in the right OU and properly domain joined, but at the logon screen in the username field if we typed .\ to show the device name instead of the domain name, the device name was only the SERIAL, no SITE- prefix. The smsts.log, setupact.log, unattend.xml all showed the correct device name through the entire process. Here&rsquo;s the rest of the story&hellip;</p>
-<p>Note - the serial in the screenshots doesn&rsquo;t match the logs due to obfuscation of prod data
-<img src="/img/2020/12/image.png" alt="A Square Dozen Image">]</p>
+<p><div class="image">
+
+  <figure>
+    <a href="image.png" target="_blank">
+      <img src="image.png" alt="Note - the serial in the screenshots doesn&amp;rsquo;t match the logs due to obfuscation of prod data">
+    </a>
+    <figcaption>Note - the serial in the screenshots doesn&#39;t match the logs due to obfuscation of prod data</figcaption>
+  </figure>
+
+</div>]</p>
 <h2 id="trudging-through-logs">Trudging Through Logs</h2>
 <p>Like most people, I love (or is is loathe) digging through logs looking for a needle in a haystack. In this case, I needed to find evidence that showed that the device was properly named, but then was changed sometime later. I knew that it was named correctly at least until the domain join step and after digging through smsts.log, it was clear that it wasn&rsquo;t being changed during or by the Task Sequence at all. It was coming afterwards. I moved to the Event Viewer and started looking for <code>Event ID 6011</code> which would show that the device name had been changed and the device had been rebooted.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>Information	12/1/2020 2:22:35 PM	EventLog	6011	None
@@ -359,7 +375,13 @@ The security database on the server does not have a computer account for this wo
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>2020-12-01 14:22:42, Error                        [CloudExperienceHostBroker.exe] Disabling default account failed [hr=0xD00000E5]
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>2020-12-01 14:25:40, FatalError [0x090001] PANTHR Exception (code 0xC0000005: ACCESS_VIOLATION) occurred at 0x00007FFDDADD2236 in C:\Windows\System32\oobe\UserOOBE.dll (+0000000000022236).  Minidump attached (47855 bytes) to diagerr.xml and C:\WINDOWS\Panther\UnattendGC\mndF37E.diagerr.mdmp.
 </code></pre></div><p>For no real reason, I decided to check if the machine was getting an Autopilot profile. The Event Viewer showed that the device had gotten an Autopilot json file, which seemed odd since this device shouldn&rsquo;t have had a profile assigned yet. I opened <code>C:\Windows\ServiceState\Autopilot</code> and found <code>AutopilotDDSZTDFile.json</code>. In here, I found the smoking gun!</p>
-<p><img src="/img/2020/12/image-1.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-1.png" target="_blank">
+  <img src="image-1.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>{
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&#34;AutopilotServiceCorrelationId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>    <span style="color:#000080">&#34;ZtdRegistrationId&#34;</span>: <span style="color:#d14">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>,
@@ -385,10 +407,26 @@ The security database on the server does not have a computer account for this wo
 <p>As you may know, you can only assign custom naming to Azure AD Joined devices, not Hybrid, during Autopilot. How could this be happening during OSD?</p>
 <p>During OSD, the device is installing Windows then apps and settings and is locked out until it&rsquo;s done. Once it is finished, it will reboot and is supposed to skip OOBE and go to the logon screen.
 We recently removed our custom Unattend.XML file from our TS since we were specifically using it to suppress OOBE post OSD using some now deprecated settings (<strong>SkipUserOOBE</strong> &amp; <strong>SkipMachineOOBE</strong>) that still work.</p>
-<p><a href="https://docs.microsoft.com/windows/deployment/deploy-windows-mdt/create-a-windows-10-reference-image#edit-the-unattendxml-file-for-windows10-enterprise">https://docs.microsoft.com/windows/deployment/deploy-windows-mdt/create-a-windows-10-reference-image#edit-the-unattendxml-file-for-windows10-enterprise</a>
-<img src="/img/2020/12/image-2.png" alt="A Square Dozen Image"></p>
-<p>Network OOBE Screen
-<img src="/img/2020/12/image-4.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>https://docs.microsoft.com/windows/deployment/deploy-windows-mdt/create-a-windows-10-reference-image#edit-the-unattendxml-file-for-windows10-enterprise</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Network OOBE Screen</figcaption>
+  </figure>
+
+</div></p>
 <p>So it appears in the brief moment where OOBE is being shown, the device is contacting the Autopilot service and pulling down an assigned Autopilot profile.</p>
 <h2 id="finding-a-workaround">Finding a Workaround</h2>
 <p>This next section describes the troubleshooting process that I used to validate the source of the issue.</p>
@@ -424,8 +462,16 @@ We recently removed our custom Unattend.XML file from our TS since we were speci
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#000080">&lt;/settings&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>    <span style="color:#000080">&lt;cpi:offlineImage</span> <span style="color:#008080">cpi:source=</span><span style="color:#d14">&#34;wim:c:/temp/install.wim#Windows 10 Enterprise&#34;</span> <span style="color:#008080">xmlns:cpi=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:cpi&#34;</span> <span style="color:#000080">/&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span><span style="color:#000080">&lt;/unattend&gt;</span>
-</code></pre></div><p>Apply Operating System with unattend.xml
-<img src="/img/2020/12/image-3-1024x726.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="Apply Operating System with unattend.xml">
+    </a>
+    <figcaption>Apply Operating System with unattend.xml</figcaption>
+  </figure>
+
+</div></p>
 <p>Here&rsquo;s the unattend.xml after the Task Sequence Apply steps have completed just before the Setup Windows and ConfigMgr step.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34;?&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#000080">&lt;unattend</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style="color:#000080">&gt;</span>

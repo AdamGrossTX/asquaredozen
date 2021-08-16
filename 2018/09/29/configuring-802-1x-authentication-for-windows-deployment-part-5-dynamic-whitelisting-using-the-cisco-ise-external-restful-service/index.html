@@ -288,9 +288,21 @@ Note 1: The ISEServerList.txt file is used to map Gateways to ISE Servers for lo
 <strong>Note</strong>: I tested adding the script to a new boot image and kept getting SSL errors from the script. I added my root cert to the media boot image (just like in the machine auth setup) and it resolved the issue. Plus it adds an extra level of security.</p>
 <h2 id="updating-your-upgrade-task-sequence">Updating your Upgrade Task Sequence</h2>
 <p>Simply add a Run PowerShell Script step to the beginning of your Task Sequence to launch the script.
-<img src="/img/2018/10/2018-09-30_23-33-40.png" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="2018-09-30_23-33-40.png" target="_blank">
+  <img src="2018-09-30_23-33-40.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Add a second Run PowerShell Script step to the end of your Task Sequence to remove the MAC endpoint from ISE.</p>
-<p><img src="/img/2018/10/2018-09-30_23-34-29.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-09-30_23-34-29.png" target="_blank">
+  <img src="2018-09-30_23-34-29.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>You may also consider importing your 802.1x GPO settings at this point, but once you&rsquo;ve joined your machine to the domain and the machine cert is created (assuming you use machine certs for auth), it should automatically get configured in ISE.
 You should be able to remove the custom Unattend.XML, SetupComplete and SetupRollback entries that you added in the previous steps in the series and just rely on the ERS whitelist to handle auth.</p>
 <h2 id="summary">Summary</h2>

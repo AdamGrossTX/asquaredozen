@@ -335,7 +335,13 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
 </code></pre></div><p>These files are used by the <strong>OSDUpgrade.exe</strong> process during the Task Sequence to manage reboots and resume the Task Sequence as needed during the upgrade process. They run with every reboot AFTER Windows Setup completes, so they are the perfect place for us to add our service restart. If you look at the <strong>Upgrade Operating System</strong> step in the <strong>SMSTS.log</strong>, you will see an entry like this:</p>
-<p><img src="/img/2018/07/2018-07-29_22-22-46.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-07-29_22-22-46.jpg" target="_blank">
+  <img src="2018-07-29_22-22-46.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>These files are appended to your Windows setup command line like this:</p>
 <p><code>&quot;C:\_SMSTaskSequence\Packages\XXXXXXXXXX\SETUP.EXE&quot; /ImageIndex 1 /auto Upgrade /quiet /noreboot /postoobe &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&quot; /postrollback &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&quot;</code></p>
 <h1 id="modifications-for-8021x">Modifications for 802.1x</h1>
@@ -441,12 +447,30 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 <p>Add Run Command Line steps before and after your Upgrade Task Sequence step using the following command lines:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-</code></pre></div><p><img src="/img/2018/07/2018-07-29_23-00-24.jpg" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="2018-07-29_23-00-24.jpg" target="_blank">
+  <img src="2018-07-29_23-00-24.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-</code></pre></div><p><img src="/img/2018/07/2018-07-29_23-00-45.jpg" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="2018-07-29_23-00-45.jpg" target="_blank">
+  <img src="2018-07-29_23-00-45.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>It should look something like this:<br>
-<img src="/img/2018/07/2018-07-29_22-59-51.jpg" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="2018-07-29_22-59-51.jpg" target="_blank">
+  <img src="2018-07-29_22-59-51.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>That&rsquo;s it! If you went through all 4 parts with me, you should be able to image machines anywhere that has 802.1x network authentication in place.</p>
 <p>Check out <a href="http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5</a> for how to skip all of this and just use a web service to whitelist!!</p>
 

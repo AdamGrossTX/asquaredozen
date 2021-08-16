@@ -249,14 +249,38 @@ if (!doNotTrack) {
 <p>This post is a supplement to the video, so if you haven&rsquo;t watched it yet, you may want to <a href="https://youtu.be/x-RMjhzGXxA">start here</a>.</p>
 <h2 id="win32-app-installation-failure">Win32 App Installation Failure</h2>
 <p>In the video downloaded and extracted <a href="https://www.microsoft.com/download/details.aspx?id=15702">Microsoft Mathematics</a> then packaged it up as a Win32 Intune app.
-<img src="/img/2019/08/image-2.png" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="image-2.png" target="_blank">
+  <img src="image-2.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>When Steve entered the command line in Intune, he entered <code>msiexec /i &quot;MSMath_x64.msi&quot; /q</code> as the install commandline. Whenever we attempted to install from the company portal, we got this less-than-helpful error message:</p>
-<p><img src="/img/2019/08/image.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="0070643---fatal-error-during-installation"><strong>0070643 - Fatal error during installation</strong></h2>
 <p>Whenever I went back to the Intune portal, I navigated to Device install status Home &gt; Microsoft Intune &gt; Client apps - Apps &gt; Microsoft Maths &gt; Device install status</p>
-<p><img src="/img/2019/08/image-28.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-28.png" target="_blank">
+  <img src="image-28.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once there, I was able to see the error for the device we were attempting to install on. It was listed as <strong>0x80070643 - Fatal error during installation</strong>.</p>
-<p><img src="/img/2019/08/image-1.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-1.png" target="_blank">
+  <img src="image-1.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>A quick internet search led me to a Tech Community post where I found this helpful message:</p>
 <blockquote>
 <p>**0x80070643 **- <strong>Fatal error during installation</strong>

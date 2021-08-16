@@ -29,8 +29,8 @@ if (!doNotTrack) {
 
 <meta name="twitter:title" content="How to find Settings Preventing Application Deletion in ConfigMgr"/>
 <meta name="twitter:description" content="Today my co-worker was attempting to delete an old application and got blocked with the following message message and I wanted to document it for future reference.
-Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
-1Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment. 2 3Details: 4Number of dependent applications: 0 5Number of active deployments: 1 6Number of dependent task sequences: 9 7Number of virtual environments:0 8Number of settings:1 9 10To view the dependent applications, open the application properties, and then click the References tab."/>
+Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
+1Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment."/>
 
 
         <link rel="canonical" href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/">
@@ -248,8 +248,16 @@ Configuration Manager cannot delete this application because other applications 
 			</div>
 			<div class="post-entry">
 				<p>Today my co-worker was attempting to delete an old application and got blocked with the following message message and I wanted to document it for future reference.</p>
-<p>Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.</p>
-<p><img src="/img/2021/01/image-8.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.</figcaption>
+  </figure>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span>Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>Details:
@@ -267,7 +275,13 @@ Configuration Manager cannot delete this application because other applications 
 </code></pre></div><h2 id="number-of-settings--number-of-configuration-items">Number of Settings = Number of Configuration Items</h2>
 <p>The first items listed are easy to find and the dialog even provides instructions for finding the blocking references to the application. The last item in the list was the confusing one. <strong><code>Number of settings: 1</code></strong>. There is no information in the dialog to help find out what <strong><code>Settings</code></strong> refers to. To find the answer I opened up <strong><code>smsprov.log</code></strong> from the site server logs to see which query was being run. This is a great technique for finding out where data is coming from within the ConfigMgr console. As you can see in the screenshot, I found the WMI class being queried - <strong><code>SMS_ApplicationLatest</code></strong>.</p>
 <p>SMS_ApplicationLatest
-<img src="/img/2021/01/image-1.png" alt="A Square Dozen Image"></p>
+<div class="image">
+
+<a href="image-1.png" target="_blank">
+  <img src="image-1.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>To query this in WMI the query would be:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>SMS_ApplicationLatest<span style="color:#bbb"> 
@@ -277,18 +291,44 @@ Configuration Manager cannot delete this application because other applications 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>fn_ListLatestApplicationCIs(<span style="color:#099">1033</span>)<span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>modelname<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;ScopeId_FC07EA7F-55AD-47CC-90AA-2A3E907188DF/Application_dda94e21-8237-4403-ba24-0f36ce2f9213&#39;</span><span style="color:#bbb">
 </span></code></pre></div><p>The result of this query includes the <strong><code>NumberOfSettings</code></strong> column which populates the count for <strong><code>Number of settings:</code></strong> in the error message.</p>
-<p>fn_ListLatestApplicationCIs - NumberOfSettings
-<img src="/img/2021/01/image-2.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>fn_ListLatestApplicationCIs - NumberOfSettings</figcaption>
+  </figure>
+
+</div></p>
 <p>Unfortunately, this function only provides the summarized count for this column, we need the underlying table(s) in order to determine the source of this count.</p>
 <blockquote>
 <p><strong>STOP!</strong>
 The following should only be done in your test/lab environment. I do not recommend doing this in production since you could unintentionally break things. I take no responsibility for your actions.</p>
 </blockquote>
 <p>In SSMS, you can right click on the function and open it in the editor to see what queries are being used to generate the output for the function. This was my next step.</p>
-<p><img src="/img/2021/01/image-4.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-4.png" target="_blank">
+  <img src="image-4.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This function is quite complex but searching for <strong><code>NumberOfSettings</code></strong> made it easy to find the source tables in the queries.</p>
-<p><img src="/img/2021/01/image-6.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2021/01/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-6.png" target="_blank">
+  <img src="image-6.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-7.png" target="_blank">
+  <img src="image-7.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Within the console there are Configuration Items that go with Configuration Baselines, but within the ConfigMgr backend, Configuration Items can be any object within the database. My next step was to determine what a <strong><code>RelationType</code></strong> of 21 mapped to. I quickly found another view that gave me a full list.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>v_CIRelationTypes<span style="color:#bbb">

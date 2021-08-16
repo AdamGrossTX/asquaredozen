@@ -253,62 +253,172 @@ if (!doNotTrack) {
 <hr>
 <p>Note: You must be running ConfigMgr/SCCM 1810 or higher to use the <strong>_SMSTSLastActionName</strong> variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go <a href="%22https://configurationmanager.uservoice.com/forums/300492-ideas/suggestions/13880781-task-sequence-error-dialog-box-needs-to-show-step">upvote the UserVoice item</a> to have the product do this natively. (Thanks <a href="https://twitter.com/kidmystic">Nash</a>!).</p>
 <p>In my <a href="/2018/11/29/building-a-better-task-sequence/">Building A Better Task Sequence</a> post, I discussed how to use the new <strong>_SMSTSLastActionName</strong> Task Sequence variable to capture the name of a failed step and still gracefully exit the Task Sequence. At MMS Desert Edition last week, <a href="https://twitter.com/miketerrill">Mike Terrill</a> used some of my concepts for his <a href="https://mmsde2018.sched.com/event/F9fm/osd-mvp-showcase">MVP Showcase</a>. After the session, <a href="https://twitter.com/AndHammarskjold">Andreas Hammarskjöld</a> from <a href="https://2pintsoftware.com/">2 Pint Software</a> suggested that we should be able to customize the error message that is displayed after a failure. I saw him the next morning at the <a href="https://www.eventbrite.com/e/azsmug-a-taste-of-mms-tickets-52446108723#%22">AZSMUG</a> meeting and we quickly chatted about the dialog again. I had about 1.5 hrs before I was scheduled to speak so I figured, why not try to build, test and demo a custom error dialog in that time. Somehow, it worked, so thanks Mike and Andreas for the inspiration. Here&rsquo;s yet another take on this idea (I have a few more I think. Maybe I need to just number my posts now&hellip;).</p>
-<p>This post also relies on concepts from my previous<br>
-<a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a> post, so if you get lost, go check it out. My goal here isn&rsquo;t to create some beautiful error dialog, but to give you another option to use to build your solution out.</p>
+<p>This post also relies on concepts from my previous <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a> post, so if you get lost, go check it out. My goal here isn&rsquo;t to create some beautiful error dialog, but to give you another option to use to build your solution out.</p>
 <h2 id="picking-up-where-we-left-off">Picking Up Where We Left Off</h2>
 <p>The problem we want to solve is this ugly mess of dialog boxes when the Task Sequence fails. One problem is that the error dialog is mostly generic and it hides the ProgressUI, so users may never see our cool modified dialog and we will end up back at the same problem - not getting good info at the time of failure since most users will just screenshot the error dialog and send it in for support.</p>
-<p>Example of both dialogs, with the error dialog moved to reveal the Progress UI where the real info is.
-<img src="/img/2018/11/2018-11-29_0-52-38.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-11-29_0-52-38.jpg" target="_blank">
+      <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Example of both dialogs, with the error dialog moved to reveal the Progress UI where the real info is.</figcaption>
+  </figure>
+
+</div></p>
 <p>In the last post, I showed how to customize the ProgressUI. Now we will hide the ProgressUI and show a custom dialog with the same information that we need from the failed step.</p>
 <h2 id="showhide-progressui">Show/Hide ProgressUI</h2>
 <p>You may be aware that when you deploy a Task Sequence, you have the option to deploy it silently by unchecking the Show Task Sequence progress on the User Experience tab of your Task Sequence Deployment. The problem with this option is that it hides ALL of the dialogs, which may not be something you want to do — I know my users don&rsquo;t like to find out they have a new OS installing by having their machine randomly reboot with no warnings! However, if you want to display one of the many custom dialogs available from the ConfigMgr community, unchecking the box may be beneficial. Full list at the end.</p>
-<p>Uncheck Show Task Sequence Progress to hide all progress and error dialogs
-<img src="/img/2018/12/image-6.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Uncheck Show Task Sequence Progress to hide all progress and error dialogs</figcaption>
+  </figure>
+
+</div></p>
 <p>Another option to consider is the <strong>TSDisableProgressUI</strong> variable. You can use it anywhere in your Task Sequence to toggle the dialog on or off. Simply add a Set Task Sequence Variable step before or after any step you want to change the dialog display for, then set the value to True or False depending on the desired display mode. Once the variable is set, <strong>ProgressUI</strong> will stay on or off until you toggle it again.</p>
-<p>Toggle ProgressUI <strong>On</strong> by setting <strong>TSDisableProgressUI=False</strong>
-<img src="/img/2018/12/image-1.png" alt="Toggle ProgressUI On by setting TSDisableProgressUI=False"></p>
-<p>Toggle ProgressUI <strong>Off</strong> by setting <strong>TSDisableProgressUI=True</strong>
-<img src="/img/2018/12/image-2.png" alt="Toggle ProgressUI Off by setting TSDisableProgressUI=True"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-1.png" target="_blank">
+      <img src="image-1.png" alt="Toggle ProgressUI On by setting TSDisableProgressUI=False">
+    </a>
+    <figcaption>Toggle ProgressUI On by setting TSDisableProgressUI=False</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="Toggle ProgressUI Off by setting TSDisableProgressUI=True">
+    </a>
+    <figcaption>Toggle ProgressUI Off by setting TSDisableProgressUI=True</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="custom-error-dialog">Custom Error Dialog</h2>
 <p>Disabling ProgressUI, allows us to fully control the Task Sequence dialogs. For example, if you wanted to suppress the default dialog and put up a splash screen or simply customize the ProgressUI itself - though that would require adding a step to update the dialog in between each step, which isn&rsquo;t really the best. I have worked on a script to monitor the TS progress and update the dialog, but it&rsquo;s quite unstable and unreliable. All that to say, you CAN do it, you just may not want to.</p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/5d58e1d7e7438aef00314e16ef5b34e0.js"></script>
 
-<p>The final result.
-<img src="/img/2018/12/image-4.png" alt="The final result."></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="The final result.">
+    </a>
+    <figcaption>The final result.</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="putting-it-all-together">Putting it All Together</h2>
 <p>For my sample Task Sequence, I&rsquo;m reusing the one from the previous post and just modifying a few steps to give us the desired result. Full TS is is available for download at the end.</p>
 <hr>
 <p>03/12/2019 - These steps have been updated for SCCM 1902 CB functionality. The WMI Condition and additional &lsquo;Set Custom Dialog&rsquo; should only be needed if you are running this TS in an environment with 1810 AND newer clients. The change to TSProgressUI.exe is an additional argument has been added to the ShowErrorDialog Method.</p>
 <hr>
-<p>The basic TS structure<br>
-<img src="/img/2019/03/image-4.png" alt="The basic TS structure"></p>
-<p>Sample step that will case the TS to fail with exit code <strong>12345</strong><br>
-<img src="/img/2018/12/image-7.png" alt="Sample step that will case the TS to fail with exit code 12345"></p>
-<p>Condition on the Custom Error Dialog group to only run if there was a failure.
-<img src="/img/2019/03/image-5.png" alt="Condition on the Custom Error Dialog group to only run if there was a failure."></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="The basic TS structure">
+    </a>
+    <figcaption>The basic TS structure</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="Sample step that will case the TS to fail with exit code 12345">
+    </a>
+    <figcaption>Sample step that will case the TS to fail with exit code 12345</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-5.png" target="_blank">
+      <img src="image-5.png" alt="Condition on the Custom Error Dialog group to only run if there was a failure.">
+    </a>
+    <figcaption>Condition on the Custom Error Dialog group to only run if there was a failure.</figcaption>
+  </figure>
+
+</div></p>
 <h4 id="1810-clients-only">1810 Clients Only</h4>
-<p><img src="/img/2019/03/image-8.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2019/03/image-9.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-8.png" target="_blank">
+  <img src="image-8.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-9.png" target="_blank">
+  <img src="image-9.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
 <strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &lt; '5.00.8772.1000'</code></p>
-<p>1810 Clients Only - Setting the CustomDialog variable to our new PowerShell code block.
-<img src="/img/2019/03/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>1810 Clients Only - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+  </figure>
+
+</div></p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/f9b1de89ad7a981ab5b5844bd9210cd1.js"></script>
 
 <h4 id="1901-tp-or-1902-cb-clients-and-newer">1901 TP or 1902 CB Clients and Newer</h4>
-<p><img src="/img/2019/03/image-10.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2019/03/image-11.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-10.png" target="_blank">
+  <img src="image-10.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-11.png" target="_blank">
+  <img src="image-11.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
 <strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &gt;= '5.00.8772.1000'</code></p>
-<p>1901 Clients and Newer - Setting the CustomDialog variable to our new PowerShell code block.
-<img src="/img/2019/03/image-6.png" alt="A Square Dozen Image">]</p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>1901 Clients and Newer - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+  </figure>
+
+</div></p>
 <script type="application/javascript" src="https://gist.github.com/AdamGrossTX/1292134b0eb2d1a9f822bbd304289980.js"></script>
 
 <h4 id="remaining-shared-steps">Remaining Shared Steps</h4>
-<p>Disable the progress dialog to suppress the default dialogs.
-<img src="/img/2018/12/image-10.png" alt="A Square Dozen Image">]</p>
-<p>Run Command Line step to run the code block that we stored into the <strong>CustomDialog</strong> variable.
-<a href="/img/2018/12/image-11.png">A Square Dozen Image</a></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Disable the progress dialog to suppress the default dialogs.</figcaption>
+  </figure>
+
+</div></p>
+<p><a href="image-11.png" title="Run Command Line step to run the code block that we stored into the CustomDialog variable.">A Square Dozen Image</a></p>
 <p>As you can see, the main changes from the previous post are that we are now toggling ProgressUI off and instead of using a variablized step name as the final step and we are going to call the PowerShell to show the custom dialog, but only <strong>AllStepsSucceeded = False</strong>.</p>
 <p>One more note on this - Instead of customizing the built-in error dialog, you could make your own custom message that provides the user with options to email IT or retry the TS, etc. You get the point.</p>
 <p>You can download the <a href="https://github.com/AdamGrossTX/BlogFiles/raw/master/Building%20An%20Even%20Better%20Task%20Sequence.zip">full sample Task Sequence from my GitHub</a>.</p>

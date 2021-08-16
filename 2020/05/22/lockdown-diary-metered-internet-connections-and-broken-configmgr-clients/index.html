@@ -257,13 +257,25 @@ Unfortunately, when you go looking into client logs, you can end up chasing lots
 The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo; steps to achieve the intended results and is provided for informational purposes only.</p>
 <hr>
 <p>Without further ado, here&rsquo;s the brain dump firehose&hellip;</p>
-<p><img src="/img/2020/05/200.gif" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="200.gif" target="_blank">
+  <img src="200.gif" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="see-what-had-happened-was">See, what had happened was&hellip;</h2>
 <p>I used Recast Right Click tools (free community edition) <em>not a sponsored post :-)</em> to trigger a client repair on around 500 devices. About 60 of the machines were online even though they were showing no client in the console. I waited to see if they would check in and they never did. Started looking at client logs and noticed that the repairs seemed to be working and the clients appeared to be fine, but when I checked CcmMessaging.log, it was full of these errors:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Request to http://CM01.ASD.net/ccm_system/request cannot be fulfilled since use of metered network is not allowed.</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">Post to https://CM01.ASD.net/ccm_system_windowsauth/request failed with 0x87d00231.</span>
-</code></pre></div><p><img src="/img/2020/05/image-13.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="image-13.png" target="_blank">
+  <img src="image-13.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>I opened a remote PowerShell console to some of the machines and I started checking to see if metering had been enabled on the wireless adapters by the end user. I ran some NETSH commands to find the profiles where metering was enabled and the clients began working. I was excited until I got to my next machine and discovered that it was on the LAN at the office and we don&rsquo;t enable metering on any of our adapters by default.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$ProfileList</span> = <span style="color:#0086b3">Get-NetConnectionProfile</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#000;font-weight:bold">ForEach</span> (<span style="color:#008080">$Profile</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$ProfileList</span>.Name) {
@@ -273,10 +285,28 @@ The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo;
 <p>Also, I&rsquo;m just making most of this up based on what I have been able to piece together. I have spent WAY too much time digging and just need to move on. I could be REALLY wrong, but it&rsquo;s the best I&rsquo;ve got. If you know more, send me a note and I&rsquo;ll delete it, I mean, I&rsquo;ll update the post.</p>
 <h2 id="network-adapter-metering">Network Adapter Metering</h2>
 <p>When setting up your network adapters in Windows 10, I&rsquo;m sure you&rsquo;ve seen this section under the properties for your network adapters. By enabling metering, you tell Windows to limit the amount of data that it and other applications can put through the adapter. This is a way to reduce consumption of pay-per-use internet plans and or wifi hotspots, etc.</p>
-<p><img src="/img/2020/05/image-18.png" alt="A Square Dozen Image">
-<img src="/img/2020/05/image-17.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-18.png" target="_blank">
+  <img src="image-18.png" alt="A Square Dozen Image">
+</a>
+
+</div>
+<div class="image">
+
+<a href="image-17.png" target="_blank">
+  <img src="image-17.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>One problem with this setting is that it will actually disable Windows updates (there&rsquo;s an option to override this as well) AND more importantly, it will prevent the installation of the ConfigMgr client. Also, if you haven&rsquo;t changed your Client Settings policy from the default &lsquo;Block&rsquo;, devices with the client installed won&rsquo;t communicate with your MP - as shown in the error log above.</p>
-<p><img src="/img/2020/05/image-20.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-20.png" target="_blank">
+  <img src="image-20.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Another problem is that there appear to be Group Policies for disabling the ability for users to change this setting for wireless adapters or cellular cards, but I wasn&rsquo;t able to find one that prevented users from setting metering on their wired LAN adapters.</p>
 <p>It also appears that there have been changes to where/how you manage metering in the registry/Group Policy in later versions of Windows (1709 and later).</p>
 <p><code>Computer Configuration \ Administrative Templates \ Network \ WLAN Service \ WLAN Media Cost</code></p>
@@ -284,7 +314,13 @@ The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo;
 <p>Basically, there are some options that are somewhat difficult to lock down that users can change and break things.</p>
 <h2 id="configmgr-client-event-handling">ConfigMgr Client Event Handling</h2>
 <p>The ConfigMgr client has lots of event handlers that it uses to monitor system processes and trigger processes in response to the events. One of the items it monitors is network connectivity and adapter events. Whenever you enable metering on your adapter, you can watch the CcmNotificationAgent.log to see that the network cost was changed to 2 (Enabled/Fixed/Metered) or if you disable, it will show 1 (Disabled/Unlimited/Not Metered). If you enable Debug logging on your ConfigMgr client, you will see even more info (not shown). <a href="https://www.imab.dk/enabling-and-disabling-configmgr-client-debug-logging-in-a-jiffy-using-powershell-and-run-script/">Martin has a great script to enable debug logging here</a>.</p>
-<p><img src="/img/2020/05/image-15.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-15.png" target="_blank">
+  <img src="image-15.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Cost Network state has been updated to 2, trigger client endpoint reset connection according to the change.</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Cancel the active connector here, tcp connection will be disconnected immediately while http connection will be timeout evetually.</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">Connection is reset</span>
@@ -299,7 +335,13 @@ The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo;
 </code></pre></div><p>You can even run a PowerShell command to check the ConfigMgr client for it&rsquo;s current Network Cost - it will return 1 or 2. From what I can tell, ConfigMgr monitors for a State Change event on the network adapter, then updates it&rsquo;s network cost value and caches it. As far as I could determine, there doesn&rsquo;t appear to be a way to force the client to check for the network cost again nor is there a way to trigger a network state change that it would see.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#0086b3">Invoke-CimMethod</span> -Namespace <span style="color:#d14">&#34;root\ccm\ClientSDK&#34;</span> -ClassName <span style="color:#d14">&#34;CCM_ClientUtilities&#34;</span> -MethodName GetNetworkCost
 </code></pre></div><p>You can watch the NetworkProfile event log and see the State Change event when you enable/disable metering on the adapter.</p>
-<p><img src="/img/2020/05/image-19.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-19.png" target="_blank">
+  <img src="image-19.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Log Name:      Microsoft-Windows-NetworkProfile/Operational</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Source:        Microsoft-Windows-NetworkProfile</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">Date:          5/22/2020 2:15:58 PM</span>
@@ -350,7 +392,13 @@ The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo;
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span><span style="color:#008080">&lt;/Event&gt;</span>
 </code></pre></div><p>You can see the <code>ConnectionCostChanged</code> entry. This is what ConfigMgr is looking for.</p>
 <p>Here&rsquo;s what ccmsetup.log looks like if you have metering enabled and try to install the ConfigMgr client. It&rsquo;s a hardcoded check too, so no overriding it.</p>
-<p><img src="/img/2020/05/image-14.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-14.png" target="_blank">
+  <img src="image-14.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Failed to connect to machine policy namespace. 0x8004100e</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Client deployment cannot be fulfilled since use of metered network is not allowed.</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">Failed to parse &#39;&#34;C:\WINDOWS\ccmsetup\ccmsetup.exe&#34; /runservice /ForceInstall /ignoreskipupgrade /config:MobileClient.tcf&#39; with error 0x87d00227</span>

@@ -248,7 +248,13 @@ if (!doNotTrack) {
 				<p>In my post <a href="/2018/11/02/removing-the-application-catalog-role-after-upgrading-to-configmgr-1806/">Removing the Application Catalog Role after Upgrading to ConfigMgr 1806</a> I mentioned the error <strong><code>Failed to compile rule &quot;{Rule_WRC10000}&quot;: 0x8000ffff</code></strong> and that we were unsure of it&rsquo;s impact on the client. The product group assured us that the error was nothing to worry about and they were right - I have seen no ill effects on my clients, even though I continually see this error whenever the clients process machine policies. However, it has continued to bother me so I decided to get to the bottom of the issue. Here&rsquo;s what I found.</p>
 <h2 id="wrc10000">WRC10000</h2>
 <p>Most of my research up to this point was done on my production environment AFTER uninstalling the Application Catalog role. As such, I found it difficult to track the error to it&rsquo;s source. Today I tested in my lab where I had never install the Application Catalog role and came up empty as well, sort of. I discovered that the Policy <strong><code>WRC10000</code></strong> doesn&rsquo;t even exist in the Policy table in the SCCM Database until AFTER you install the Application Catalog role. I then spun up a second lab instance where I installed the Application Catalog role and immediately saw the <strong><code>WRC10000</code></strong> policy/rule being processed on the client in <strong><code>PolicyAgent.log</code></strong>.</p>
-<p><img src="/img/2019/07/image.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Compiling policy &#39;WRC10000&#39; version &#39;1.00&#39; hash &#39;SHA256:0C11C0B2C324A0D760B768D33475CE5F2B1493CF7AE43390035E2D4A33BE47BB&#39; from &#39;SMS:CB1&#39; (2019-07-10 02:40:06.663)</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">Raising event:</span>
@@ -301,11 +307,23 @@ if (!doNotTrack) {
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Namespace:ROOT<span style="color:#a61717;background-color:#e3d2d2">\</span>ccm<span style="color:#a61717;background-color:#e3d2d2">\</span>Policy<span style="color:#a61717;background-color:#e3d2d2">\</span>Machine<span style="color:#a61717;background-color:#e3d2d2">\</span>RequestedConfig<span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>CCM_Policy_Policy5<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PolicyID<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;WRC10000&#39;</span><span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>CCM_Policy_Rules<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PolicyID<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;WRC10000&#39;</span><span style="color:#bbb">
-</span></code></pre></div><p><img src="/img/2019/07/image-1.png" alt="A Square Dozen Image"></p>
+</span></code></pre></div><p><div class="image">
+
+<a href="image-1.png" target="_blank">
+  <img src="image-1.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Up until now, I had been unable to link the <strong><code>WRC10000</code></strong> policy to the Application Catalog role. The <code>WebServiceSettingsConfig</code> ****category is tied to the Application Catalog role and includes a few additional WMI classes that get created when the requested config becomes the actual config.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Namespace:<span style="color:#bbb"> </span>ROOT<span style="color:#a61717;background-color:#e3d2d2">\</span>ccm<span style="color:#a61717;background-color:#e3d2d2">\</span>Policy<span style="color:#a61717;background-color:#e3d2d2">\</span>Machine<span style="color:#a61717;background-color:#e3d2d2">\</span>ActualConfig<span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>CCM_WebService_Settings<span style="color:#bbb">
-</span></code></pre></div><p><img src="/img/2019/07/image-2.png" alt="A Square Dozen Image"></p>
+</span></code></pre></div><p><div class="image">
+
+<a href="image-2.png" target="_blank">
+  <img src="image-2.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>I put together some quick SQL queries to find the newly created policy values in the SCCM Database. <em>*Note - some screenshots may show different versions for the policy due to multiple iterations of testing.</em></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">DECLARE</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>PolicyID<span style="color:#bbb"> </span>nvarchar(<span style="color:#099">10</span>)<span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SET</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>PolicyID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;WRC10000&#39;</span><span style="color:#bbb">
@@ -315,7 +333,13 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>PolicyAssignment<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PolicyID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>PolicyID<span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span><span style="color:#bbb">
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">*</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>ResPolicyMap<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PADBID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span>(<span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>PADBID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#bbb"> </span>PolicyAssignment<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PolicyID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">@</span>PolicyID)<span style="color:#bbb">
-</span></code></pre></div><p><img src="/img/2019/07/image-3.png" alt="A Square Dozen Image"></p>
+</span></code></pre></div><p><div class="image">
+
+<a href="image-3.png" target="_blank">
+  <img src="image-3.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <ol>
 <li>Each time the Application Catalog role is uninstalled/reinstalled, the <strong><code>Version</code></strong> ****is incremented. In my testing, an odd Version indicates that the role is installed and an even number indicates that the role has been uninstalled.</li>
 <li>The <strong><code>MachineID</code></strong> column from the <strong><code>ResPolicyMap</code></strong> table seems to indicate that this policy is applied to all devices without requiring deployment to a collection.</li>
@@ -342,11 +366,35 @@ if (!doNotTrack) {
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#d14">	Win32ErrorCode = 2147549183;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#008080">};</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#008080">Policy state for CCM_Policy_Policy5.PolicyID</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;WRC10000&#34;,PolicySource=&#34;SMS:CB1&#34;,PolicyVersion=&#34;2.00&#34; was successfully reset. Policy download will be retried at next evaluation cycle.</span>
-</code></pre></div><p><img src="/img/2019/07/image-8.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="image-8.png" target="_blank">
+  <img src="image-8.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Additionally, a partial record will be created in WMI for the newly created version of the policy, however the old version(s) will not be purged, as they should whenever the version is incremented. Since the client sees the new policy as corrupt instead of tombstoned, it never gets notified that the old versions need to be deleted as well. As you can see below, version 5.00 is still listed as Active, while 6 hasn&rsquo;t been processed and is missing the <strong>PolicyState</strong> field.</p>
-<p><img src="/img/2019/07/image-5.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2019/07/image-7.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2019/07/image-6.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-5.png" target="_blank">
+  <img src="image-5.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-7.png" target="_blank">
+  <img src="image-7.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-6.png" target="_blank">
+  <img src="image-6.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Additionally, the <strong><code>CCM_WebService_Settings</code></strong> Class stays behind with the original settings.</p>
 <h2 id="the-fix">The &lsquo;Fix&rsquo;</h2>
 <hr>
@@ -355,14 +403,26 @@ if (!doNotTrack) {
 <p><strong>07/10/2019 - UPDATE - I have updated the section below to reflect a less destructive approach using UPDATE instead of DELETE as previously posted.</strong></p>
 <hr>
 <p>After digging through countless stored procedures and functions, I finally checked the <strong><code>PolicyAssignment</code></strong> table for triggers and was excited to find that it has just what we need, an <strong><code>INSERT/UPDATE/DELETE</code></strong> trigger!</p>
-<p><img src="/img/2019/07/image-12.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-12.png" target="_blank">
+  <img src="image-12.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>If you aren&rsquo;t familiar with table triggers, join the club! 🙂<br>
 Actually, a table trigger is function that is attached to a database table that is launched (triggered) whenever a specific type of action (<strong><code>INSERT/UPDATE/DELETE</code></strong> - etc) is taken on that table. In this case, the <strong><code>PolicyAssignment</code></strong> table has a trigger that captures the ID of the affected record(s) then updates related records in other tables as needed.</p>
 <p>The <strong><code>PolicyAssignment</code></strong> table also has triggers for <strong><code>DELETE</code></strong> as well. I tested deleting the record from this table then letting the triggers clean up everything else, however I found that the clients don&rsquo;t get notified of a change since the policy is completely gone, so the local policies would get orphaned. <em>*Fun note, if you delete from <strong><code>PolicyAssignment</code></strong>, then reinstall the Application Catalog role, the policy version resets to 1.00. It also loses the tombstoned versions of the policy which prevent the client from removing old entries as well. Just don&rsquo;t do this!!</em> If you do, the only workaround is to reset client policies.</p>
 <p>So, to &lsquo;<strong>Fix</strong>&rsquo; the problem in a way that allows the client to clean off old references (be sure that you&rsquo;ve already uninstalled the Application Catalog role from your site), run this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">UPDATE</span><span style="color:#bbb"> </span>PolicyAssignment<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">SET</span><span style="color:#bbb"> </span>IsTombstoned<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#099">1</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>PolicyID<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">=</span><span style="color:#bbb"> </span><span style="color:#d14">&#39;WRC10000&#39;</span><span style="color:#bbb">
 </span></code></pre></div><p>Once updated, you should be able to re-run the previous queries and see that the policy is tombstoned.</p>
-<p><img src="/img/2019/07/image-13.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-13.png" target="_blank">
+  <img src="image-13.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Now download and evaluate client policies and you should see all <strong><code>WRC10000</code></strong> policies get removed.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Deleting policy assignment &#39;{cedd84fc-ad71-40af-abc9-9426424ecb7e}&#39;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Revoking policy &#39;WRC10000&#39; version &#39;1.00&#39;</span>
@@ -381,7 +441,13 @@ Actually, a table trigger is function that is attached to a database table that 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#d14">	ThreadID = 13012;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#008080">};</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#008080">Deleting policy &#39;WRC10000&#39; version &#39;1.00&#39;</span>
-</code></pre></div><p><img src="/img/2019/07/image-11.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="image-11.png" target="_blank">
+  <img src="image-11.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>After you tombstone the policy, if your clients continue to see the error or have issues with seeing software in Software Center, you can reset client policies to purge any orphaned policies as well.</p>
 <h2 id="summary">Summary</h2>
 <p>I haven&rsquo;t worked with support on this issue and the fix above may be completely incorrect, so please call someone before attempting this. I really wrote this for myself so that I don&rsquo;t have to remember what all I did. I&rsquo;d love to hear from anyone else who&rsquo;s &lsquo;fixed&rsquo; this error some other way. Also, this may be completely unnecessary, since I&rsquo;ve never seen any adverse affects for clients, however I have seen posts from others who have. Your mileage may vary. Proceed with caution!</p>

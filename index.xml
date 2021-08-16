@@ -23,8 +23,8 @@
       
       <guid>https://blog.asquaredozen.com/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/</guid>
       <description>Today my co-worker was attempting to delete an old application and got blocked with the following message message and I wanted to document it for future reference.
-Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
-1Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment. 2 3Details: 4Number of dependent applications: 0 5Number of active deployments: 1 6Number of dependent task sequences: 9 7Number of virtual environments:0 8Number of settings:1 9 10To view the dependent applications, open the application properties, and then click the References tab.</description>
+Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.
+1Configuration Manager cannot delete this application because other applications or task sequences reference it or it is configured as a deployment.</description>
     </item>
     
     <item>
@@ -34,7 +34,7 @@ Configuration Manager cannot delete this application because other applications 
       
       <guid>https://blog.asquaredozen.com/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/</guid>
       <description>We got some new hardware models in this week and added drivers to our ConfigMgr OSD Task Sequence (with Windows 10 1909 serviced with November 2020 updates) to test. One of the devices kept ending up with a broken domain trust relationship when you attempt to log in immediately following build completion.
-The security database on the server does not have a computer account for this workstation trust relationship One clue that we had was that something was renaming the device.</description>
+The security database on the server does not have a computer account for this workstation trust relationship</description>
     </item>
     
     <item>

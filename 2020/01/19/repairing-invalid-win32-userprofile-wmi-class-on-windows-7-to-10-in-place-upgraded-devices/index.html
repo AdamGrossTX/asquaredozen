@@ -246,12 +246,26 @@ if (!doNotTrack) {
 			</div>
 			<div class="post-entry">
 				<p>I recently needed to query the <a href="https://docs.microsoft.com/previous-versions/windows/desktop/legacy/ee886409(v%3Dvs.85)">Win32_UserProfile</a> class in WMI for some reporting I was working on. This class is a default Hardware Inventory class in ConfigMgr. I noticed that we had a large number of devices were reporting NULL values for several properties in this class when I queried them in SQL so I decided to investigate. From the ConfigMgr console, I used <a href="https://docs.microsoft.com/configmgr/core/servers/manage/cmpivot">CMPivot</a> (only one of the best tools ever!!) to query the class (Listed as USMUserProfile in CMPivot). As CMPivot returned results, I noticed that about half of my devices were returning with a failure message and as I dug into the errors, I made a few discoveries and may have found a bug with the In-Place upgrade process for Windows 7 to Windows 10.</p>
-<p>Win32_UserProfile Class in ConfigMgr Client Hardware Inventory
-<img src="/img/2020/01/image-2.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="Win32_UserProfile Class in ConfigMgr Client Hardware Inventory">
+    </a>
+    <figcaption>Win32_UserProfile Class in ConfigMgr Client Hardware Inventory</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="cmpivot-results">CMPivot Results</h2>
 <p>If you&rsquo;ve ever worked with SQL or WMI/WQL queries, you&rsquo;ve likely heard the advice that you shouldn&rsquo;t use <code>SELECT * FROM table</code> but should specifically list the columns that you want to query like <code>SELECT ColA, ColB, ColC FROM table</code> to have better query performance and only return the data needed for your specific query. Without going into too much detail on how CMPivot works, the bit that&rsquo;s relevant to this post is that whenever you query a class in CMPivot, it explicitly lists out the columns in the query that it sends down to the client.
 In this case, I selected the USMUserProfile entity from CMPivot and clicked Run Query.</p>
-<p><img src="/img/2020/01/image.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>The WMI query that CMPivot attempts to run on the client is:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#0086b3">SELECT </span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>  HealthStatus,
@@ -273,10 +287,26 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>FROM 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>	Win32_UserProfile
 </code></pre></div><p>In CMPivot, click on <strong>Query Summary</strong> to view Success, Failed and Offline totals and click through to see details for each category.</p>
-<p>Summary of CMPivot Query Results
-<img src="/img/2020/01/image-3.png" alt="A Square Dozen Image"></p>
-<p>Failed Device details in CMPivot
-<img src="/img/2020/01/image-4.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="Summary of CMPivot Query Results">
+    </a>
+    <figcaption>Summary of CMPivot Query Results</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-4.png" target="_blank">
+      <img src="image-4.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Failed Device details in CMPivot</figcaption>
+  </figure>
+
+</div></p>
 <p>As you can see, my Failed Devices details show &lsquo;<strong>Invalid query&hellip;</strong>&rsquo;.</p>
 <h2 id="manually-validating-the-query">Manually Validating the Query</h2>
 <p>I exported the list of failures from CMPivot and was able to get the full query posted above. I connected to a failed machine directly and ran the query in PowerShell:</p>

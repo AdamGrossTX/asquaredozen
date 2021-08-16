@@ -252,7 +252,13 @@ if (!doNotTrack) {
 <li>The 2 areas that I had issues with were the new &lsquo;Download Driver Packages&rsquo; step and the <em>DISM /Add-Driver</em> command referred to in the blogs below.</li>
 <li>I use the &lsquo;Access content directly from the distribution point when needed by the running task sequence&rsquo; setting on my OSD deployments</li>
 </ul>
-<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/accesscontentdirectly/"><img src="/img/2018/01/AccessContentDirectly.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/accesscontentdirectly/"><div class="image">
+
+<a href="AccessContentDirectly.jpg" target="_blank">
+  <img src="AccessContentDirectly.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <h2 id="the-setup"><strong>The Setup</strong></h2>
 <p>To start, you should follow one of these blogs to get set up - others have written great blogs about this technique so why not just refer to them? Fair warning, some are more automated than others and some go into more detail than others. I would suggest reading all of them to get familiar with the concepts then build and test the basic setup before trying to use the automated versions.</p>
 <ul>
@@ -273,7 +279,13 @@ if (!doNotTrack) {
 <li>Enter this command line: <code>xcopy.exe &quot;.\*.*&quot; %_SMSTSMDataPath%\Drivers\ /E /C /I /Q /H /R /Y /S</code></li>
 <li>Change <code>%_SMSTSMDataPath%</code> to any pre-defined path you choose. This is the default location that SCCM uses. Whatever you specify here will be used in the DISM step later.</li>
 </ul>
-<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/runcommandline/"><img src="/img/2018/01/RunCommandLine.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/runcommandline/"><div class="image">
+
+<a href="RunCommandLine.jpg" target="_blank">
+  <img src="RunCommandLine.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <h3 id="apply-driver-packagehttpsdocsmicrosoftcomsccmosdunderstandtask-sequence-stepsbkmk_applydriverpackage"><a href="https://docs.microsoft.com/sccm/osd/understand/task-sequence-steps#BKMK_ApplyDriverPackage">Apply Driver Package</a></h3>
 <p>As I mentioned, I had issues with the custom DISM commands that everyone was using, so I was using Apply Driver Package along with my xcopy command line to &lsquo;install&rsquo; a dummy package to create the entry in the unattend.xml file that setup uses to find drivers.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000080">&lt;settings</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;urn:schemas-microsoft-com:unattend&#34;</span> <span style="color:#008080">pass=</span><span style="color:#d14">&#34;windowsPE&#34;</span><span style="color:#000080">&gt;</span>
@@ -295,11 +307,29 @@ Installs an operating system image that has previously been captured. Click Brow
 Installs an operating system using an original installation source. Click Browse to open the Select and Operating System Install Package dialog box, and then select the existing operating system installation package you want to use. You can view basic information about each existing image source by clicking on the image source. The associated image source properties are displayed in the results pane at the bottom of the dialog box. If there are multiple editions associated with the specified package, use the drop-down list to specify the associated Edition that is used.</p>
 </blockquote>
 <p>Here&rsquo;s the dialog box:</p>
-<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/applyoperatingsystem/"><img src="/img/2018/01/ApplyOperatingSystem.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/applyoperatingsystem/"><div class="image">
+
+<a href="ApplyOperatingSystem.jpg" target="_blank">
+  <img src="ApplyOperatingSystem.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>Logically, I selected door #2 <strong>Apply operating system image from an original installation source</strong> since it perfectly describes what I was doing. What I failed to notice was that when you click <strong>Browse</strong> to select your image, you are presented with all of your <strong>Upgrade Operating System Packages</strong>, not your <strong>Operating System Images</strong>. (Note: I initially didn&rsquo;t include &lsquo;Upgrade&rsquo; in the name of the Image, which only compounded this issue).</p>
-<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/upgradepackage/"><img src="/img/2018/01/UpgradePackage.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/upgradepackage/"><div class="image">
+
+<a href="UpgradePackage.jpg" target="_blank">
+  <img src="UpgradePackage.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>As you may know, the media is different for these two OS types. <strong>Operating System Images</strong> uses the Install.wim from the source media while <strong>Upgrade Packages</strong> uses the full source folder for the OS.</p>
-<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/oslistmenu/"><img src="/img/2018/01/OSLIstMenu.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/oslistmenu/"><div class="image">
+
+<a href="OSLIstMenu.jpg" target="_blank">
+  <img src="OSLIstMenu.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>When <strong>Apply Operating System Image</strong> would run, with my Original Installation Source (Upgrade Package), it would apply in a different way than the Captured Image option causing the <strong>Apply Driver Package</strong> step (which uses DISM) as well as the <strong>Run Command Line</strong> step from the Modern Driver Management blogs to fail. I switched to using the captured media option, and selected my original Windows 10 1709 media and the Apply Driver Package and the DISM command line began working as expected. I am now well on the road to completing the automation of Modern Driver Management for our environment.</p>
 <p><em>Note: At the time of this posting, I have a case open with Microsoft Premier Support to determine if this is a bug or by design (with really poor documentation/verbiage). I will update once I hear back.</em></p>
 

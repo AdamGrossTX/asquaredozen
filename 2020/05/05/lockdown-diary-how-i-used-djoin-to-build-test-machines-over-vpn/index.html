@@ -268,8 +268,16 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 <h2 id="djoin">DJOIN</h2>
 <h4 id="provision">Provision</h4>
 <p>If you&rsquo;ve ever looked at logs during OSD, you&rsquo;ve likely seen references to DJOIN - that&rsquo;s pretty much where my experience with DJOIN ends.</p>
-<p>SetupAct.Log from the Panther folder
-<img src="/img/2020/05/image-3.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-3.png" target="_blank">
+      <img src="image-3.png" alt="SetupAct.Log from the Panther folder">
+    </a>
+    <figcaption>SetupAct.Log from the Panther folder</figcaption>
+  </figure>
+
+</div></p>
 <p>As I started playing with it I discovered that it is a very powerful tool capable of not only creating an offline domain joined object, but you can specify the OU, certificate template and more. It was like finding a Swiss Army Knife while on a desert island. You can read more about DJOIN here <a href="https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)">https://docs.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/ff793312(v=ws.11)</a></p>
 <hr>
 <p><strong>NOTE:</strong> DJOIN /PROVISION must be run from a domain joined device connected to the domain (over VPN works) since it has to talk to AD to create the new device.</p>
@@ -284,7 +292,13 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 <li>/REUSE - Reuse the device name if it exists</li>
 </ul>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">DJOIN /PROVISION /DOMAIN &#34;asd.net&#34; /MACHINE &#34;ASD-MyVM1&#34; /MACHINEOU &#34;CN</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">Computers,DC=asd,DC=net&#34; /SAVEFILE &#34;C:\Temp\ASD-MyVM1_ODJ.txt&#34; /CERTTEMPLATE &#34;ASD-DomainComputerTemplate&#34; /REUSE</span>
-</code></pre></div><p><img src="/img/2020/05/image-1.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="image-1.png" target="_blank">
+  <img src="image-1.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once you run this command, you can check Active Directory and you should see your new computer in the OU that you specified and you&rsquo;ll have a text file in the /SAVEFILE location.</p>
 <hr>
 <p><strong>NOTE:</strong> During this process I discovered that you can rename a computer AND get a new domain computer cert using DJOIN. In the past, if we renamed a computer, Cisco ISE would block the device since it didn&rsquo;t have a valid computer auth cert. This would be an easy way to deal with that.</p>
@@ -301,11 +315,29 @@ I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work
 <li>/LOCALOS - targets the local OS</li>
 </ul>
 <p><code>DJOIN /REQUESTODJ /LOADFILE c:\Temp\ASD-MyVM1_OSJ.txt /WINDOWSPATH %SystemRoot% /LOCALOS</code></p>
-<p><img src="/img/2020/05/image-2.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-2.png" target="_blank">
+  <img src="image-2.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once you run the command, reboot the device and you&rsquo;ll be prompted to log in with your domain credentials. Since you won&rsquo;t be on the domain yet, log back in with your local admin credentials.</p>
 <p>To verify that this all worked, you can check Computer Management to see that you&rsquo;re on the domain and check your Local Computer personal certificate store and see that you have a domain CA cert issued to the device name that you specified and the root and intermediate certs should be there as well.</p>
-<p><img src="/img/2020/05/image-6.png" alt="A Square Dozen Image">
-<img src="/img/2020/05/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-6.png" target="_blank">
+  <img src="image-6.png" alt="A Square Dozen Image">
+</a>
+
+</div>
+<div class="image">
+
+<a href="image-7.png" target="_blank">
+  <img src="image-7.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="vpn">VPN</h2>
 <p>This is the part that may be a show stopper for you, depending on the type of VPN you use and the auth requirements for it. I got lucky with the device cert and user domain creds. At this point, you simply want to install your company VPN client and configure it properly. Since everyone will have something different, I&rsquo;m not going to go into details.</p>
 <p>In my case, once the client was installed from an MSI, I was able to connect to the VPN portal and sign in with my domain credentials, using the device certificate in the background as well. Once I establish the tunnel successfully the first time, the VPN client is ready to go. I can reboot the machine, then log in with my domain credentials and I&rsquo;m on!</p>

@@ -247,7 +247,13 @@ if (!doNotTrack) {
 			<div class="post-entry">
 				<p><a href="https://docs.microsoft.com/sccm/core/get-started/2019/technical-preview-1906">ConfigMgr 1906 Technical Preview</a> was released last week and I immediately upgraded one of my tech preview labs I have running in Hyper-V on my laptop. As you may know, I&rsquo;m a huge fan of the new <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">AdminService </a>functionality which will allow you to interact with the <a href="https://docs.microsoft.com/sccm/core/plan-design/hierarchy/plan-for-the-sms-provider#bkmk_admin-service">SMS Provider over HTTPS</a>. With each release, it has had more features added. With Tech preview 1906, I noticed that you can run CMPivot using the AdminService. In 1905 you could use RunScript, though the functionality for that has been disabled in the frontend for 1906. With both of these tools, you can extend your reach to all of your devices, no matter where they are, or how they are connected (within reason I suppose).</p>
 <p>As I was experimenting with CMPivot over AdminService, I wrote a quick PowerShell to test it and ended up <a href="https://twitter.com/AdamGrossTX/status/1139420372606914560">Tweeting about it</a>. David James <a href="https://twitter.com/djammmer/status/1139749713110953984">responded with a challenge</a> that I couldn&rsquo;t pass up:</p>
-<p><a href="https://twitter.com/djammmer/status/1139749713110953984"><img src="/img/2019/06/image.png" alt="A Square Dozen Image"></a></p>
+<p><a href="https://twitter.com/djammmer/status/1139749713110953984"><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>Since I was working in my disposable Technical Preview lab, I&rsquo;ve never set up any cloud services for it. I have to say, the process (and documentation) to configure Azure Active Directory, Intune, AutoPilot, Co-Management, Cloud Management Gateway, etc has gotten much better. I think that I spent more time waiting for NameCheap to replicate my DNS entries than I did for anything else.</p>
 <h2 id="the-setup">The Setup</h2>
 <p>Each of these bullets represents quite a few steps that are required to configure the features required to access and manage devices over the internet. For the sake of this blog, I&rsquo;m just listing them, otherwise I doubt I&rsquo;d ever get this post out the door!</p>
@@ -281,7 +287,16 @@ if (!doNotTrack) {
 <p>The first step was to confirm that everything was communicating properly by checking CcmNotificationAgent.log on my internet client. See the logs section below for more info on what to look for. In the console, I verified that BGB was working by looking for the green check on the device&rsquo;s icon on the console. So, I knew right away that the client was communicating with the console just fine.</p>
 <h4 id="cmpivot-in-the-console">CMPivot in the Console</h4>
 <p>My first test was just opening the ConfigMgr console and launching CMPivot from my All Systems collection (I only have 3 devices in my lab, you may want to use a different collection). Inside CMPivot, I submitted a few queries and got results back from the client.
-<img src="/img/2019/06/image-2.png" alt="A Square Dozen Image"></p>
+<div class="image">
+
+  <figure>
+    <a href="image-2.png" target="_blank">
+      <img src="image-2.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Inside CMPivot, I submitted a few queries and got results back from the client.</figcaption>
+  </figure>
+
+</div></p>
 <h4 id="postman-chrome-extension">Postman Chrome Extension</h4>
 <p>Next I used the Google Chrome Postman extension to test using the AdminService.</p>
 <hr>
@@ -292,7 +307,13 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>Request Body
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>{<span style="color:#d14">&#34;InputQuery&#34;</span><span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#d14">&#34;OperatingSystem&#34;</span>}
-</code></pre></div><p><img src="/img/2019/06/image-3.png" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="image-3.png" target="_blank">
+  <img src="image-3.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h4 id="powershell">PowerShell</h4>
 <p>After Postman, I tested with Powershell and had similar results. Each time I ran CMPivot using AdminService, I would see the the CMPivot script payload on the client then I could view the results in the database OR with AdminService using the <code>SMS_CMPivotStatus</code> method. (You can obviously run these in Postman as well).</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>https<span style="color:#a61717;background-color:#e3d2d2">:</span>//&lt;YourServerName&gt;/AdminService/v1.0/SMS_CMPivotStatus
@@ -754,41 +775,40 @@ Anyway, here&rsquo;s the Powershell that I wrote. It will output the results to 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>    <span style="color:#008080">$Result</span> = <span style="color:#0086b3">Invoke-RestMethod</span> <span style="color:#008080">@Params</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>    <span style="color:#008080">$OperationID</span> = <span style="color:#008080">$Result</span>.OperationId
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>    <span style="color:#000;font-weight:bold">Function</span> <span style="color:#0086b3">Get-Status</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>    {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>        <span style="color:#000;font-weight:bold">If</span> (<span style="color:#008080">$OperationID</span>) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>            <span style="color:#998;font-style:italic">#start-sleep -seconds 30</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>            <span style="color:#008080">$uri</span> = <span style="color:#d14">&#39;{0}SMS_CMPivotStatus?$filter=ClientOperationId eq {1}&#39;</span> <span style="color:#000;font-weight:bold">-f</span> <span style="color:#008080">$BaseUri</span>, <span style="color:#008080">$OperationID</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>            <span style="color:#008080">$Params</span> = @{
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>                Method = <span style="color:#d14">&#34;Get&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>                Uri = <span style="color:#008080">[System.Web.HTTPUtility]</span>::UrlEncode(<span style="color:#008080">$uri</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>                ContentType = <span style="color:#d14">&#34;application/json&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>                UseDefaultCredentials = <span style="color:#008080">$true</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>            <span style="color:#008080">$agentsquery</span> = <span style="color:#0086b3">New-Object</span> System.Net.WebClient
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span>            <span style="color:#008080">$agentsquery</span>.UseDefaultCredentials =<span style="color:#008080">$true</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span>            <span style="color:#008080">[System.Net.ServicePointManager]</span>::ServerCertificateValidationCallback = { <span style="color:#008080">$true</span> }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span>            <span style="color:#008080">$Result</span> = <span style="color:#008080">$agentsquery</span>.DownloadString(<span style="color:#008080">$uri</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span>        }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>        <span style="color:#008080">$obj</span> = @()
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a></span>        <span style="color:#008080">$XML</span> = (<span style="color:#008080">$Result</span> | <span style="color:#0086b3">ConvertFrom-Json</span>).value.ScriptOutput
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a></span>        <span style="color:#000;font-weight:bold">ForEach</span>(<span style="color:#008080">$ResultObj</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$XML</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a></span>        {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a></span>            <span style="color:#008080">$Obj</span> += @((<span style="color:#008080">[XML]</span><span style="color:#008080">$ResultObj</span>).ChildNodes.e)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a></span>        }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a></span>        <span style="color:#008080">$ClickResult</span> = <span style="color:#008080">$Obj</span> | <span style="color:#0086b3">Out-GridView</span> -OutputMode Single
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a></span>        <span style="color:#008080">$GetResults</span> = <span style="color:#0086b3">Read-Host</span> -Prompt <span style="color:#d14">&#34;Do you want to check for results? [y]es or [n]o&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a></span>        <span style="color:#000;font-weight:bold">If</span> (<span style="color:#008080">$GetResults</span> = <span style="color:#d14">&#39;Y&#39;</span>) {<span style="color:#0086b3">Get-Status</span>}
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a></span>    }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="63"><a style="outline: none; text-decoration:none; color:inherit" href="#63">63</a></span>    <span style="color:#0086b3">Get-Status</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>    <span style="color:#000;font-weight:bold">Function</span> <span style="color:#0086b3">Get-Status</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>    {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>        <span style="color:#000;font-weight:bold">If</span> (<span style="color:#008080">$OperationID</span>) {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>            <span style="color:#998;font-style:italic">#start-sleep -seconds 30</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>            <span style="color:#008080">$uri</span> = <span style="color:#d14">&#39;{0}SMS_CMPivotStatus?$filter=ClientOperationId eq {1}&#39;</span> <span style="color:#000;font-weight:bold">-f</span> <span style="color:#008080">$BaseUri</span>, <span style="color:#008080">$OperationID</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>            <span style="color:#008080">$Params</span> = @{
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>                Method = <span style="color:#d14">&#34;Get&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>                Uri = <span style="color:#008080">[System.Web.HTTPUtility]</span>::UrlEncode(<span style="color:#008080">$uri</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>                ContentType = <span style="color:#d14">&#34;application/json&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>                UseDefaultCredentials = <span style="color:#008080">$true</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>            }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>            <span style="color:#008080">$agentsquery</span> = <span style="color:#0086b3">New-Object</span> System.Net.WebClient
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>            <span style="color:#008080">$agentsquery</span>.UseDefaultCredentials =<span style="color:#008080">$true</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span>            <span style="color:#008080">[System.Net.ServicePointManager]</span>::ServerCertificateValidationCallback = { <span style="color:#008080">$true</span> }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span>            <span style="color:#008080">$Result</span> = <span style="color:#008080">$agentsquery</span>.DownloadString(<span style="color:#008080">$uri</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>        <span style="color:#008080">$obj</span> = @()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>        <span style="color:#008080">$XML</span> = (<span style="color:#008080">$Result</span> | <span style="color:#0086b3">ConvertFrom-Json</span>).value.ScriptOutput
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a></span>        <span style="color:#000;font-weight:bold">ForEach</span>(<span style="color:#008080">$ResultObj</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$XML</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a></span>        {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a></span>            <span style="color:#008080">$Obj</span> += @((<span style="color:#008080">[XML]</span><span style="color:#008080">$ResultObj</span>).ChildNodes.e)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a></span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a></span>        <span style="color:#008080">$ClickResult</span> = <span style="color:#008080">$Obj</span> | <span style="color:#0086b3">Out-GridView</span> -OutputMode Single
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a></span>        <span style="color:#008080">$GetResults</span> = <span style="color:#0086b3">Read-Host</span> -Prompt <span style="color:#d14">&#34;Do you want to check for results? [y]es or [n]o&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a></span>        <span style="color:#000;font-weight:bold">If</span> (<span style="color:#008080">$GetResults</span> = <span style="color:#d14">&#39;Y&#39;</span>) {<span style="color:#0086b3">Get-Status</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a></span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a></span>    <span style="color:#0086b3">Get-Status</span>
 </code></pre></div><h2 id="logs-and-such">Logs And Such</h2>
 <p>As is the case with ConfigMgr, logs are the first stop for most troubleshooting. Here are a few that had useful bits.</p>
 <h4 id="adminservicelog-server-side">AdminService.log (server-side)</h4>
@@ -830,8 +850,16 @@ Anyway, here&rsquo;s the Powershell that I wrote. It will output the results to 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>
 </code></pre></div><h2 id="run-scripts-over-cmg">Run Scripts over CMG</h2>
 <p>I didn&rsquo;t cover using Scripts in this post, but I did test the over the Cloud Management Gateway as well and they worked the same way as CMPivot, in fact, if you look at the Scripts table in the database, you will see the CMPivot master script listed along with any of your other scripts. While the AdminService can&rsquo;t run scripts in 1906 (as far as I can tell), it can in 1905 and I believe the guts are still in the AdminService just not exposed this time. So in a real world situation, you would be able to run CMPivot then use Scripts to take immediate action - all through the Cloud Managemen Gateway on internet connected clients.</p>
-<p>This is a terrible screenshot. Just go query your DB <code>SELECT * FROM Scripts</code>
-<img src="/img/2019/06/image-1.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-1.png" target="_blank">
+      <img src="image-1.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>This is a terrible screenshot. Just go query your DB `SELECT * FROM Scripts`</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="a-note-about-cmg">A note about CMG</h2>
 <p>I feel like CMG may need it&rsquo;s own post. Just a quick note about it. When an internet-only client checks in, it uses an internet facing proxy address that points to the CMG server in your Azure tenant. Here&rsquo;s a snippet from <code>StatusAgent.log</code> showing the internet-facing CMG address <code>ASDCMTP1906CMG.ASDCMTP1906.SITE</code>. This is the same way that Email Approvals work when you click the approval link while connected to the internet.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Raising event (#1 of 1):</span>
@@ -847,7 +875,13 @@ Anyway, here&rsquo;s the Powershell that I wrote. It will output the results to 
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">};</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>
 </code></pre></div><p>Here&rsquo;s where that address is configured in the console on your Cloud Management Gateway. Additionally, you have to set up a CName record to point the url to the cloudapp.net address listed below it.</p>
-<p><img src="/img/2019/06/image-4.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-4.png" target="_blank">
+  <img src="image-4.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>So, thanks for the challenge David! The scenario you described is not only a common scenario to encounter, but can easily be accomplished using ConfigMgr integrated with Intune using Co-Management and a Cloud Management Gateway.
 Quick Scenario - A user with an internet-only, Azure AD joined, co-managed device calls in because they need to get on VPN for something but the VPN client isn&rsquo;t working. Use CMPivot to query the offending registry setting. Run a script to remediate - all from the ConfigMgr console, all through the Cloud Management Gateway, just like you would do for any other device you manage. Truly <strong>#ITWithoutBorders</strong>.</p>

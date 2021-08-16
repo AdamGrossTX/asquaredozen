@@ -246,11 +246,23 @@ if (!doNotTrack) {
 			</div>
 			<div class="post-entry">
 				<p>As soon as I read the release notes for <a href="https://docs.microsoft.com/mem/configmgr/core/get-started/2020/technical-preview-2008">ConfigMgr 2008 Technical Preview</a> I knew I would be doing some digging. This release introduced the first iteration of a feature that will hopefully help make Windows 10 Feature Update servicing a little easier to manage. Listed as <strong><a href="https://docs.microsoft.com/mem/configmgr/core/get-started/2020/technical-preview-2008#bkmk_setupdiag">Analyze SetupDiag errors for feature updates</a></strong> this feature has been added to the Windows 10 Servicing dashboard. When I initially read the release notes and looked at the included graph, I was disappointed. I&rsquo;ve seen these number before. They appear in the Monitoring node for any Feature Update deployment using servicing. But I did some digging and have now renewed faith that future Updates of this Feature (see what I did there? Feature Update&hellip; ah forget it). Read on for all the juicy details.</p>
-<p><img src="https://i0.wp.com/docs.microsoft.com/mem/configmgr/core/get-started/2020/media/4385028-collection-errors-tile.jpg?w=1080%EF%BF%BDssl=1" alt="Screenshot of Collection Errors tile in Windows 10 Servicing dashboard"></p>
+<p><div class="image">
+
+<a href="https://i0.wp.com/docs.microsoft.com/mem/configmgr/core/get-started/2020/media/4385028-collection-errors-tile.jpg?w=1080&amp;#038;ssl=1" target="_blank">
+  <img src="https://i0.wp.com/docs.microsoft.com/mem/configmgr/core/get-started/2020/media/4385028-collection-errors-tile.jpg?w=1080&amp;#038;ssl=1" alt="Screenshot of Collection Errors tile in Windows 10 Servicing dashboard">
+</a>
+
+</div></p>
 <p>It&rsquo;s VERY important to note that this is the first iteration of this feature and it should be treated as &lsquo;In Progress&rsquo;. As is the case with Technical Previews, features can change and possibly not even get released. So this blog only serves as a place to keep some notes on this feature as it stands today.</p>
 <h2 id="whats-the-big-deal">What&rsquo;s the Big Deal?</h2>
 <p>If you have done any work with <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates</a>, you&rsquo;ll know that gathering logs and information about failures can be difficult and often, the error code alone isn&rsquo;t enough to help diagnose the failure. With the introduction of Windows 10 2004, the Windows Setup team enabled <a href="https://docs.microsoft.com/windows/deployment/upgrade/setupdiag">SetupDiag</a> to run automatically when a Feature Update fails. SetupDiag writes a registry key to <strong><code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\setupdiag\results</code></strong> that looks like this:</p>
-<p><img src="/img/2020/08/image-27.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-27.png" target="_blank">
+  <img src="image-27.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <hr>
 <p><strong>Side note:</strong>
 The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\MoSetup\Volatile\SetupDiag</code>. However when it is triggered as part of a failure in Windows 10 2004 and later, the registry path is <code>HKEY_LOCAL_MACHINE\SYSTEM\Setup\setupdiag\results</code>. More details <a href="https://docs.microsoft.com/windows/deployment/upgrade/setupdiag#setupdiag-in-windows-10-version-2004-and-later">here</a>.</p>
@@ -259,16 +271,46 @@ The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\
 <p>Currently, this feature can only be triggered by a FAILED Windows 10 2004 Feature Update, delivered as an update using servicing (not a Task Sequence). There&rsquo;s no way to manually run SetupDiag and trigger the data collection used by the Windows 10 Dashboard.</p>
 <h2 id="testing-it-out">Testing it Out</h2>
 <p>To test this, I built a new domain-joined Hyper-V VM with Windows 10 1909 and installed the ConfigMgr client. Then I added a registry key that I found in the Appraiser Database that would cause setup to fail (<a href="/2020/07/26/demystifying-windows-10-feature-update-blocks/">more on my research into blocks here</a>).</p>
-<p><img src="/img/2020/08/image-28.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-28.png" target="_blank">
+  <img src="image-28.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Then I created a deployment to my workstation collection (In my lab that&rsquo;s All Systems 😃) for <strong><code>Feature update to Windows 10 (business editions), version 2004, en-us x64</code></strong> from <strong><code>\Software Library\Overview\Windows 10 Servicing\All Windows 10 Updates</code></strong></p>
-<p><img src="/img/2020/08/image-29.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-29.png" target="_blank">
+  <img src="image-29.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>On the client, I triggered a Software Update deployment cycle and the update showed up in Software Center. I started the install then went to have dinner. When I returned I was greeted by this amazing screen!</p>
-<p><img src="/img/2020/08/image-30.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-30.png" target="_blank">
+  <img src="image-30.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>This was exactly what I was hoping for. Next I refreshed the Windows 10 Servicing dashboard in the ConfigMgr console and there it was, my beautiful graph!!</p>
-<p><img src="/img/2020/08/image-32.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-32.png" target="_blank">
+  <img src="image-32.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>As far as I can tell, there&rsquo;s no drill-through option just yet, but I think it will be added in time.</p>
 <p>On the client, I was able to use <a href="https://github.com/vinaypamnani/wmie2">WMIExplorer</a> (bless you <a href="https://twitter.com/vinay_pamnani">Vinay</a>) to find the message in the <code>ROOT\CCM\StateMsg CCM_StateMsg</code> under <code>TopicType &lt;strong&gt;402</code>**. I didn&rsquo;t know which <code>TopicType</code> to look for, so I just clicked through the entries to find SetupDiag in the <code>StateDetails</code> property.</p>
-<p><img src="/img/2020/08/image-33.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-33.png" target="_blank">
+  <img src="image-33.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>The contents of StateDetails is a snippet of the SetupDiag registry entry shown above.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-XML" data-lang="XML"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000080">&lt;SetupDiag&gt;</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>    <span style="color:#000080">&lt;ProfileName&gt;</span>FindAbruptDownlevelFailure<span style="color:#000080">&lt;/ProfileName&gt;</span>
@@ -313,7 +355,13 @@ The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\
 </code></pre></div><p>You can also see the 402 messages get generated in <strong><code>StateMessage.log</code></strong> on the client.<br>
 <code>Adding message with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 to WMI</code><br>
 <code>State message(State ID : 3) with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 has been recorded for SYSTEM</code></p>
-<p><img src="/img/2020/08/image-34.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-34.png" target="_blank">
+  <img src="image-34.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>If we check SQL, we will find that the XML data is stored in the <code>Update_ComplianceStatus</code> table. Notice that the <code>LastErrorCode</code> is the same as the error in our chart in the dashboard <code>-1047526904</code>.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-SQL" data-lang="SQL"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#000;font-weight:bold">SELECT</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#bbb">	</span>CI_ID,<span style="color:#bbb">
@@ -324,7 +372,13 @@ The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span><span style="color:#bbb">	</span>Update_ComplianceStatus<span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">WHERE</span><span style="color:#bbb"> 
 </span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9">9</a></span><span style="color:#bbb">	</span>LastErrorDetail<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">IS</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">NULL</span><span style="color:#bbb">
-</span></code></pre></div><p><img src="/img/2020/08/image-35.png" alt="A Square Dozen Image"></p>
+</span></code></pre></div><p><div class="image">
+
+<a href="image-35.png" target="_blank">
+  <img src="image-35.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>I know what the code is going to translate to but was going to use an online converter to convert it when I stumbled upon the <strong><a href="https://docs.microsoft.com/windows/win32/debug/system-error-code-lookup-tool">Microsoft Error Lookup Tool</a></strong>. It couldn&rsquo;t translate the NTSTATUS code for me, but it at least converted from decimal to NTSTAUS<br>
 <code>No results found for hex 0xc1900208 / decimal -1047526904</code></p>
 <p>As you can see the error <code>0xc1900208</code> is the same listed in the XML above that SetupDiag harvested. Plus now we have the error text to go with it instead of having to go dig it out of the <a href="https://docs.microsoft.com/windows/deployment/upgrade/upgrade-error-codes">Upgrade Error Codes</a> page (raise your hand if you&rsquo;ve been there before and questioned your where you went wrong in life that led you there!).</p>

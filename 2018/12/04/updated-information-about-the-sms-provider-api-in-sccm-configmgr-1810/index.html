@@ -248,8 +248,20 @@ if (!doNotTrack) {
 				<p>I began testing the ConfigMgr <strong>SMS Provider API</strong> (or AdminService as it will be called) in the 1810 Technical Preview and wrote 2 posts about it <a href="/2018/10/14/the-configmgr-odata-web-service-v2/">(1)</a> &amp; <a href="/2018/10/23/the-configmgr-adminservice/">(2)</a>. With the release of the AdminService  in Current Branch 1810, a few things have changed and I wanted to provide an update. Additonally, I&rsquo;ve had the opportunity to chat with the ConfigMgr Product Group at <a href="https://mmsmoa.com/desertedition">#MMSDE</a> this week and they&rsquo;ve provided some roadmap information about the API and what to expect in the future.</p>
 <h2 id="getting-started">Getting Started</h2>
 <p>To enable the <strong>SMS Provider AI</strong>, you need to enable Pre-Release Features in the console, then enable the feature.</p>
-<p><img src="/img/2018/12/2018-12-04_9-40-52.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/2018-12-04_9-40-13.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-12-04_9-40-52.png" target="_blank">
+  <img src="2018-12-04_9-40-52.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-12-04_9-40-13.png" target="_blank">
+  <img src="2018-12-04_9-40-13.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="adminservice-controllers">AdminService Controllers</h2>
 <h4 id="wmi">WMI</h4>
 <p>The WMI controller will query ~900 ConfigMgr WMI classes in read-only mode but isn&rsquo;t configured to perform any WMI methods at his time (it&rsquo;s coming).</p>
@@ -270,15 +282,45 @@ https://&lt;ServerName/AdminService/v1.0/$metadata<br>
 WMI Controller**<br>
 https://&lt;ServerName/AdminService/wmi<br>
 https://&lt;ServerName/AdminService/wmi/$metadata</p>
-<p><img src="/img/2018/12/2018-12-04_10-02-21.jpg" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/2018-12-04_10-02-46.jpg" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/2018-12-04_10-01-55.jpg" alt="A Square Dozen Image"></p>
-<p><img src="/img/2018/12/2018-12-04_10-01-26.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-12-04_10-02-21.jpg" target="_blank">
+  <img src="2018-12-04_10-02-21.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-12-04_10-02-46.jpg" target="_blank">
+  <img src="2018-12-04_10-02-46.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-12-04_10-01-55.jpg" target="_blank">
+  <img src="2018-12-04_10-01-55.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="2018-12-04_10-01-26.jpg" target="_blank">
+  <img src="2018-12-04_10-01-26.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>If you use the /$metadata parameter, you will see the OData markup for the controllers and it will list the properties of each controller object as well as functions available.</p>
 <p>Refer to my <a href="/2018/10/23/the-configmgr-adminservice/">previous post</a> for more details on how to use the URLs to access data.</p>
 <h2 id="odata--power-bi">OData / Power BI</h2>
 <p>In the Technical Preview,. there was an issue with the $metadata tag for the WMI controller that prevented Power BI from processing AdminService OData information. This issue has been resolved and works great in 1810, though many of the classes/relationships are still being built out, so there are still more work required before this is ready, but it&rsquo;s a great start!</p>
-<p><img src="/img/2018/12/2018-12-04_10-45-45.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-12-04_10-45-45.jpg" target="_blank">
+  <img src="2018-12-04_10-45-45.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="future-plans">Future Plans</h2>
 <p>One of the most common questions about the new AdminService has been &lsquo;Is this going to replace WMI?&rsquo; The answer is&hellip;complicated. The<br>
 AdminService is just a web service layer sitting on top of the existing ConfigMgr WMI infrastructure. The product group has started working to change backend Admin Console components to use the</p>

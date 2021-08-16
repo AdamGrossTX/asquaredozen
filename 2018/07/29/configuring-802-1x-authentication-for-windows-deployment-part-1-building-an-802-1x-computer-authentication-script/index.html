@@ -302,11 +302,35 @@ The Anatomy of an 802.1x Configuration Script These are the basic steps need to 
 <h3 id="manually-creating-a-profile">Manually Creating A Profile</h3>
 <p>Start this process on a clean machine that doesn&rsquo;t have IEEE 802.1x Policies applied, otherwise you will have trouble. You can configure 802.1x Authentication on your LAN adapter in Windows by going to the Network Connections pane in the Control Panel. From there, right click on the adapter and click on the Authentication tab. If you don&rsquo;t see it, you will need to go enable and start the <strong>Wired Autoconfig</strong> service. Now you can configure authentication to match what is expected by your 802.1x service.</p>
 <p>**Note:**When I exported my config then tested in Windows on another machine, it all worked fine, but when I tested in WinPE, I found that authentication would fail. I talked with my Security guy and he suggested removing the <strong>Verify server&rsquo;s identity&hellip;</strong> checkboxes from the profile. Once we did that WinPE authentication began working.</p>
-<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_1/"><img src="/img/2018/07/8021x_1.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_1/"><div class="image">
+
+<a href="8021x_1.jpg" target="_blank">
+  <img src="8021x_1.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>To create your own profile, follow the screen shots below (Note:GPO is applied in these, so everything is greyed out).</p>
-<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_2/"><img src="/img/2018/07/8021x_2.jpg" alt="A Square Dozen Image"></a></p>
-<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_3/"><img src="/img/2018/07/8021x_3.jpg" alt="A Square Dozen Image"></a></p>
-<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_4/"><img src="/img/2018/07/8021x_4.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_2/"><div class="image">
+
+<a href="8021x_2.jpg" target="_blank">
+  <img src="8021x_2.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
+<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_3/"><div class="image">
+
+<a href="8021x_3.jpg" target="_blank">
+  <img src="8021x_3.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
+<p><a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/8021x_4/"><div class="image">
+
+<a href="8021x_4.jpg" target="_blank">
+  <img src="8021x_4.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <h1 id="exporting-your-profile">Exporting Your Profile</h1>
 <p>Follow these steps to export your profile into an XML file.<br>
 Show the interfaces on the system.</p>

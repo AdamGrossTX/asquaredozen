@@ -248,7 +248,13 @@ if (!doNotTrack) {
 				<p>Over the past few weeks I&rsquo;ve been testing re-writing my Windows 10 Feature Update repo to make it easier to implement - if you haven&rsquo;t tried it, go check it out. Just follow the readme in the repo <a href="https://github.com/AdamGrossTX/Windows10FeatureUpdates">https://github.com/AdamGrossTX/Windows10FeatureUpdates</a>.
 During the re-write I was reminded that there were a few command line parameters that I hadn&rsquo;t experimented with. One of them is <strong><code>/MigNEO</code></strong> which only has a <strong><code>Disable</code></strong> option. According to the product group, NEO stands for <strong>non-event objective</strong> which, doesn&rsquo;t help it make more sense to me. Anyway, MigNEO is designed to give IT Admins more control over how Feature Updates are applied. <a href="https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-command-line-options#migneo">Windows Setup Command-Line Options | Microsoft Docs</a></p>
 <p>The default behavior of Feature Updates since 1803 is to perform MOST of the upgrade operations while the device is still in use. You may see this referred to as Downlevel/Online Time/Online Phase, etc. It means that the Feature Update can be processing the upgrade while the user is still working with a shorter Offline time where the device is applying the update and unusable. <strong><code>/MigNEO Disable</code></strong> removes this optimization and performs more actions during the Offline phases with a much shorter Downlevel/Online time. See the troubleshooting docs for info on each phase <a href="https://docs.microsoft.com/windows/deployment/upgrade/troubleshoot-upgrade-errors">Troubleshoot Windows 10 upgrade errors - Windows IT Pro - Windows Deployment | Microsoft Docs</a>.</p>
-<p><img src="https://i0.wp.com/docs.microsoft.com/windows/deployment/images/upgrade-process.png" alt="Upgrade process"></p>
+<p><div class="image">
+
+<a href="upgrade-process.png" target="_blank">
+  <img src="upgrade-process.png" alt="Upgrade process">
+</a>
+
+</div></p>
 <h2 id="comparison-tests">Comparison Tests</h2>
 <hr>
 <p><strong>Note:</strong> All tests were done on clean VMs with no apps or data to migrate. Real-world results may vary.</p>
@@ -266,7 +272,13 @@ During the re-write I was reminded that there were a few command line parameters
 
 <p>The results were interesting. All of the machines with /MigNEO Disable rebooted around the 8 minute mark. while the default machines rebooted between 29-34 minutes. That means that the users would have been able to work for ~25 minutes longer before the first reboot than with /MigNEO Disable.</p>
 <p>The key takeaway for me here was that using the default setting, the devices were offline for under 7 minutes, compared to up to 30 minutes when disabled!</p>
-<p><img src="/img/2020/09/image-1024x404.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image.png" target="_blank">
+  <img src="image.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="so-which-is-better">So which is better?</h2>
 <p>As I was testing, I kept wondering why anyone would want to disable the optimizations and cause users to be offline for so long. I got some feedback on Twitter as well as from the product team on why this option is useful. <a href="https://twitter.com/AdamGrossTX/status/1303079790921080833?s=20">https://twitter.com/AdamGrossTX/status/1303079790921080833?s=20</a></p>
 <p>According to the product team:<br>

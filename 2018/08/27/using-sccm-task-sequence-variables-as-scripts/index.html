@@ -291,23 +291,41 @@ if (!doNotTrack) {
 <h2 id="option-1---run-command-line">Option 1 - Run Command Line</h2>
 <p>Your first option for running in-line code would be to simply take a working script block, then remove all line breaks and replace them with semicolons. Then make sure you don&rsquo;t have any double quotes in the script. Then add it to a Run Command Line step and run it. Using the script above, your command line would look like this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command <span style="color:#d14">&#34;&amp; { $OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;) }&#34;</span>
-</code></pre></div><p><img src="/img/2018/08/2018-08-26_23-47-29.jpg" alt="A Square Dozen Image"></p>
+</code></pre></div><p><div class="image">
+
+<a href="2018-08-26_23-47-29.jpg" target="_blank">
+  <img src="2018-08-26_23-47-29.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="option-2---output-to-script">Option 2 - Output to Script</h2>
 <p><strong>NOTE:</strong> <em>The code below doesn&rsquo;t work (other code I tested with did work) as written when run from a TS, but just fine in a cmd prompt. I don&rsquo;t feel like working it out since this is just sample code anyway. The concept/technique still stands, just not this particular code. Sorry.</em></p>
 <p>If you wanted to export a block of code into a local file then call it using a Run Powershell Script, you could use the ECHO function in the Command Prompt.</p>
 <p>You could use ECHO and &raquo; but if your script has any special characters like &gt; or | you will need to escape the characters with ^ or you can use | Set /p='' to add quoted text like this:</p>
 <p><code>cmd.exe /c ECHO | Set /p=&quot;Your Text&quot; &gt;&gt; C:\Temp\YourFile.PS1</code></p>
 <p>So your completed code would look like this and would output a file called GetOSInfo.ps1 that can now be run inside your Task Sequence or be left on the computer for later use.</p>
-<p><strong>Type:</strong> Run Command Line
-<strong>Name:</strong> Export Script
+<p><strong>Type:</strong> Run Command Line<br>
+<strong>Name:</strong> Export Script<br>
 <strong>Command Line:</strong></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>cmd.exe /c <span style="color:#0086b3">ECHO </span>| <span style="color:#0086b3">Set </span>/p =<span style="color:#d14">&#34;$OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;)&#34;</span> &gt;&gt; c:\Temp\GetOSInfo.PS1
-</code></pre></div><p><img src="/img/2018/08/2018-08-26_23-47-35-2.jpg" alt="A Square Dozen Image"></p>
-<p><strong>Type:</strong> Run Command Line
-<strong>Name:</strong> Launch Local Script
-<strong>Command Line:</strong>
+</code></pre></div><p><div class="image">
+
+<a href="2018-08-26_23-47-35-2.jpg" target="_blank">
+  <img src="2018-08-26_23-47-35-2.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><strong>Type:</strong> Run Command Line<br>
+<strong>Name:</strong> Launch Local Script<br>
+<strong>Command Line:</strong><br>
 <code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command c:\Temp\GetOSInfo.PS1</code></p>
-<p><img src="/img/2018/08/2018-08-26_23-47-40-3.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-08-26_23-47-40-3.jpg" target="_blank">
+  <img src="2018-08-26_23-47-40-3.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="option-3---storing-scripts-in-task-sequence-variables">Option 3 - Storing scripts in Task Sequence Variables</h2>
 <p>Here&rsquo;s the approach that I was hoping would work when I began down this road. I have tested several different ways and was surprised that they each worked pretty well. I&rsquo;m honestly not sure to what extent you&rsquo;d even use this, but I think it&rsquo;s cool and at least worth experimenting with. I plan to use it so I can re-use the same embedded script, without having to update content AND so that I can change a value 1 time in a Task Sequence and know that all references to it were changed.</p>
 <p><strong>Type:</strong> Set Task Sequence Variable<br>
@@ -315,15 +333,30 @@ if (!doNotTrack) {
 <strong>Task Sequence Variable:</strong> PowerShellCommandOpen<br>
 <strong>Value:</strong>
 <code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; {</code></p>
-<p><img src="/img/2018/08/2018-08-26_23-47-46.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-08-26_23-47-46.jpg" target="_blank">
+  <img src="2018-08-26_23-47-46.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p><strong>Type:</strong> Set Task Sequence Variable<br>
 <strong>Name:</strong> Set Variable - PowerShellCommandClose<br>
 <strong>Task Sequence Variable:</strong> PowerShellCommandClose<br>
 <strong>Value:</strong> <code>}&quot;</code></p>
-<p><img src="/img/2018/08/2018-08-26_23-47-50.jpg" alt="Not a typo. Just use }">' This is the closing tag for the PowerShell script block.</p>
-<p><strong>Type:</strong> Set Task Sequence Variable
-<strong>Name:</strong> Set Variable - GetOSInfo
-<strong>Task Sequence Variable:</strong> GetOSInfo
+<p><div class="image">
+
+  <figure>
+    <a href="2018-08-26_23-47-50.jpg" target="_blank">
+      <img src="2018-08-26_23-47-50.jpg" alt="Not a typo. Just use }">
+    </a>
+    <figcaption>Not a typo. Just use } This is the closing tag for the PowerShell script block.</figcaption>
+  </figure>
+
+</div></p>
+<p><strong>Type:</strong> Set Task Sequence Variable<br>
+<strong>Name:</strong> Set Variable - GetOSInfo<br>
+<strong>Task Sequence Variable:</strong> GetOSInfo<br>
 <strong>Value:</strong></p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">$OS</span> = <span style="color:#0086b3">Get-CimInstance</span> Win32_OperatingSystem
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">$OSCaption</span> = <span style="color:#008080">$OS</span>.Caption
@@ -342,26 +375,60 @@ if (!doNotTrack) {
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#0086b3">Write-Host</span> OSVersion<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">$tsenv</span>.Value(<span style="color:#d14">&#39;OSVersion&#39;</span>)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#0086b3">Write-Host</span> OSBuild<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">$tsenv</span>.Value(<span style="color:#d14">&#39;OSBuild&#39;</span>)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">Write-Host</span> OSArchitecture<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">$tsenv</span>.Value(<span style="color:#d14">&#39;OSArchitecture&#39;</span>)
-</code></pre></div><p>Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break.
-<img src="/img/2018/08/2018-08-26_23-48-30.jpg" alt="Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break."></p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="2018-08-26_23-48-30.jpg" target="_blank">
+      <img src="2018-08-26_23-48-30.jpg" alt="Paste in the whole script. No need to remove line breaks or ; but DO remove &#39; or the script will break.">
+    </a>
+    <figcaption>Paste in the whole script. No need to remove line breaks or ; but DO remove &#39; or the script will break.</figcaption>
+  </figure>
+
+</div></p>
 <p><strong>Type:</strong> Run Command Line<br>
 <strong>Name:</strong> Get OS Info<br>
 <strong>Command Line:</strong> <code>%PowerShellCommandOpen%%%GetOSInfo%%%PowerShellCommandClose%</code></p>
-<p>Consecutive % must include an extra % around the variable in the middle
-<img src="/img/2018/08/2018-08-26_23-48-00.jpg" alt="Consecutive % must include an extra % around the variable in the middle"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="2018-08-26_23-48-00.jpg" target="_blank">
+      <img src="2018-08-26_23-48-00.jpg" alt="Consecutive % must include an extra % around the variable in the middle">
+    </a>
+    <figcaption>Consecutive % must include an extra % around the variable in the middle</figcaption>
+  </figure>
+
+</div></p>
 <p>When you launch the TS, you can check the logs and see that the script ran and see the results.</p>
-<p><img src="/img/2018/08/2018-08-27_0-56-10.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-08-27_0-56-10.jpg" target="_blank">
+  <img src="2018-08-27_0-56-10.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="debugging">Debugging</h2>
 <p>This information has been posted many times. If you want to write scripts that depend on information from your Task Sequence, you should build a Task Sequence that has a Debug step in it. The Debug step simply opens a command prompt in the user&rsquo;s context then allows you to launch anything as Local System. I generally launch PowerShell_ISE.exe to open PowerShell. From there, you can interact with the Task Sequence. You also need to include ServiceUI.exe in your Task Sequence as a reference to make this work. Using Option 3, here&rsquo;s how I added a Debug step to my Task Sequence.</p>
-<p><strong>Type:</strong> Set Task Sequence Variable
-<strong>Name:</strong> Set Variable - TSDebug
-<strong>Task Sequence Variable:</strong> GetOSInfo
+<p><strong>Type:</strong> Set Task Sequence Variable<br>
+<strong>Name:</strong> Set Variable - TSDebug<br>
+<strong>Task Sequence Variable:</strong> GetOSInfo<br>
 <strong>Value:</strong> <code>ServiceUI.exe -process:TSProgressUI.exe C:\Windows\System32\cmd.exe</code></p>
-<p><img src="/img/2018/08/2018-08-27_0-13-17.jpg" alt="A Square Dozen Image"></p>
-<p><strong>Type:</strong> Run Command Line
-<strong>Name:</strong> Debug
+<p><div class="image">
+
+<a href="2018-08-27_0-13-17.jpg" target="_blank">
+  <img src="2018-08-27_0-13-17.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><strong>Type:</strong> Run Command Line<br>
+<strong>Name:</strong> Debug<br>
 <strong>Command Line:</strong> <code>%TSDebug%</code></p>
-<p><img src="/img/2018/08/2018-08-27_0-13-53.jpg" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2018-08-27_0-13-53.jpg" target="_blank">
+  <img src="2018-08-27_0-13-53.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>After going down this path, I feel like I know more about what we can do with ConfigMgr Task Sequence Variables and scripts. I really wanted Option 3 to be far superior to the alternatives. If you have a script that you use all the time, this could make it easier to update it and use it on the fly without updating content. I think it just depends on your use case. If you want to easily edit long scripts in the Task Sequence, you can use variables to break it into pieces them string them all back together when you want to run them. Or you can take the values of existing variable and embed them into your script variables and have an even more dynamic experience. I&rsquo;d love to know what you thought. Send me a <a href="http://www.twitter.com/AdamGrossTX">tweet</a> or post a comment here and let me know how you would use this, or if it&rsquo;s just a dumb idea.</p>
 

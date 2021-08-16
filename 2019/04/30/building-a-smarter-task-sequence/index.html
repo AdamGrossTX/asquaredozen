@@ -261,31 +261,95 @@ We use a small wizard to gather info about the build type and primary user, then
 <p>The last steps in my task sequence write build and task sequence version numbers. I set these values as variables at the beginning of the task sequence and I update them any time I update anything in the task sequence. You can (should) <a href="https://www.systemcenterdudes.com/sccm-windows-10-inventory-upgrade-fresh/">extend your hardware inventory</a> to pick up the registry keys for tracking your builds as well. It is a very quick indicator of a failed machine if I see workstation without these registry keys in inventory.</p>
 <h4 id="milestone-logging">Milestone Logging</h4>
 <p>One concept that I haven&rsquo;t implemented into production yet is milestone logging. The idea is that at the end of each main section of the task sequence, we set a variable or write a registry entry or local file that you can query to determine where to jump to in the task sequence. I haven&rsquo;t found a way to tell the task sequence go to a specific step when it starts, so you have to add criteria onto your groups to check for the name of the last run group. Here&rsquo;s an example of what I mean:</p>
-<p>A Smarter Task Sequence
-<img src="/img/2019/04/image-7.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-7.png" target="_blank">
+      <img src="image-7.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>A Smarter Task Sequence</figcaption>
+  </figure>
+
+</div></p>
 <p>We have a variable called <code>CustOSLastStepNum</code> that only gets set if a group succeeded. At the end of each group, add a <strong>Set Task Sequence Variable</strong> step to set <code>CustOSLastStepNum</code> to a number assigned to a variable with the same name as the group. If the task sequence fails, write the<br>
 <code>CustOSLastStepNum</code> variable to the registry or a file. Then add criteria to each main group to check if <code>CustOSLastStepNum</code> is less than the number and if so, skip the step.</p>
-<p>Variables for each main group
-<img src="/img/2019/04/image-6.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-6.png" target="_blank">
+      <img src="image-6.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Variables for each main group</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="putting-it-together">Putting it Together</h2>
 <p>Adding this logic will take some careful planning to ensure you aren&rsquo;t skipping over key parts of your task sequence when you restart. The sample task sequence includes a <code>CustDeploymentType</code> that gets set to <code>AlreadyInstalled</code> if the <code>CustBuildVersion</code> registry key exists or it gets set to Recovery if the <code>CustLastStepNum</code> registry key has a number greater than 0. Essentially, you can add a check to each group to skip if the <code>CustDeploymentType</code> is set to <code>Recovery</code> or <code>AlreadyInstalled</code> to have more global control over which steps run.</p>
-<p>Custom registry keys
-<img src="/img/2019/04/image-8.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-8.png" target="_blank">
+      <img src="image-8.png" alt="A Square Dozen Image">
+    </a>
+    <figcaption>Custom registry keys</figcaption>
+  </figure>
+
+</div></p>
 <p>When the task sequence runs any Install Application steps, the application detection method logic will run and automatically skip anything that has already been installed. In production, we have logic on any place that can&rsquo;t be re-run as well so we don&rsquo;t cause an error by re-running the step.</p>
 <h2 id="sample-task-sequence">Sample Task Sequence</h2>
 <p>Since the task sequence is self documenting, you should just download it and walk through the steps - be sure to check each step and group Options tab to follow the criteria - but I&rsquo;d like to highlight a few bits.</p>
 <p>Each RunPowerShell script has a simple registry read or write in it. If you import the sample task sequence below, the script content will import.</p>
-<p>1902 Run PowerShell Script Step
-<img src="/img/2019/04/image-9.png" alt="1902 Run PowerShell Script Step"></p>
-<p>Get Registry Value Script
-<img src="/img/2019/04/image-10.png" alt="Get Registry Value Script"></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-9.png" target="_blank">
+      <img src="image-9.png" alt="1902 Run PowerShell Script Step">
+    </a>
+    <figcaption>1902 Run PowerShell Script Step</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-10.png" target="_blank">
+      <img src="image-10.png" alt="Get Registry Value Script">
+    </a>
+    <figcaption>Get Registry Value Script</figcaption>
+  </figure>
+
+</div></p>
 <p>For the sake of clarity and centralized management, I&rsquo;m using variables for each group number, but you could just as easily use numbers for comparisons on the groups.</p>
-<p>Centralize variables for use in each group
-<img src="/img/2019/04/image-13.png" alt="Centralize variables for use in each group"></p>
-<p>Using Variables for comparison
-<img src="/img/2019/04/image-11.png" alt="Using Variables for comparison"></p>
-<p>Alternative approach - Numbers for comparison - No variables needed.
-<img src="/img/2019/04/image-12.png" alt="Alternative approach - Numbers for comparison - No variables needed."></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-13.png" target="_blank">
+      <img src="image-13.png" alt="Centralize variables for use in each group">
+    </a>
+    <figcaption>Centralize variables for use in each group</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-11.png" target="_blank">
+      <img src="image-11.png" alt="Using Variables for comparison">
+    </a>
+    <figcaption>Using Variables for comparison</figcaption>
+  </figure>
+
+</div></p>
+<p><div class="image">
+
+  <figure>
+    <a href="image-12.png" target="_blank">
+      <img src="image-12.png" alt="Alternative approach - Numbers for comparison - No variables needed.">
+    </a>
+    <figcaption>Alternative approach - Numbers for comparison - No variables needed.</figcaption>
+  </figure>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>If you are managing complex task sequences or in place upgrades, adding some simple steps to your task sequence can allow you to save time and troubleshooting effort and greatly improve your user experience. Import the sample <a href="https://github.com/AdamGrossTX/BlogFiles/raw/master/Building%20A%20Smarter%20Task%20Sequence.zip">Task Sequence from GitHub</a> and get started testing. I hope this methodology improves the success of your deployments as well as it has for my site.</p>
 

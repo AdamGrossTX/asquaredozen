@@ -246,24 +246,27 @@ if (!doNotTrack) {
 			</div>
 			<div class="post-entry">
 				<p>We have several generations of HP ProLiant servers in our environment. We recently upgraded SCCM to 1710 then applied ADK 1709. We have been imaging these servers using the ADK 1703 Boot Image without issue. After upgrading to ADK 1709 and creating new boot images, we are unable to boot to into WinPE on any of our Gen9 servers. After doing the standard diagnostics (testing old, testing new, updating drivers, updating firmware, etc) we found that these servers would still freeze after downloading the boot WIM and get stuck on this screen:</p>
-<p><a href="/2018/01/27/winpe-image-fails-load-hp-proliant-gen9-servers-using-adk-1709/hpbootscreen/"><img src="/img/2018/01/HPBootScreen.jpg" alt="A Square Dozen Image"></a></p>
+<p><a href="/2018/01/27/winpe-image-fails-load-hp-proliant-gen9-servers-using-adk-1709/hpbootscreen/"><div class="image">
+
+<a href="HPBootScreen.jpg" target="_blank">
+  <img src="HPBootScreen.jpg" alt="A Square Dozen Image">
+</a>
+
+</div></a></p>
 <p>We found a <a href="https://support.hpe.com/hpsc/doc/public/display?docId=emr_na-a00037880en_us">support article from HP</a> that referred to Microsoft KB4055537, which didn&rsquo;t exist at the time we were troubleshooting and our Microsoft contacts didn&rsquo;t have any information either.</p>
 <p>In the meantime, I <a href="https://social.technet.microsoft.com/Forums/windowsserver/36858bf9-b9ad-4eb9-9b46-7b457be85f42/hp-proliant-gen9-servers-unable-to-pxe-boot-with-adk-1709-boot-image-older-adk-version-work-other?forum=winserversetup&amp;prof=required">posted the issue on the TechNet forums</a> and didn&rsquo;t get much help until earlier this week when <a href="https://social.technet.microsoft.com/profile/michael_jakob/?ws=usercard-mini">Michael Jakob</a>, who has been a TechNet member since 2014, made his first ever post with the solution. I had given up on the issue and turned it over to our server team who where waiting to hear back from Microsoft. As soon as I got the email alert from Technet, I forwarded the info over to the server guys who tested and verified it was indeed the solution.</p>
 <p>HP&rsquo;s initial support article had the correct KB <a href="https://support.microsoft.com/help/4055537/config-initialization-failed-error-when-installing-windows-server">KB055537</a>, but they were about a week early on the release date. Even now, when I use Google or Bing to search for &lsquo;KB4055537&rsquo;, I only get the HP article referencing it and a handful of TechNet posts including my original and <a href="https://social.technet.microsoft.com/Forums/4e6e7937-7efa-45d7-aede-d64119cb75e4/winpe-boot-issue-proliant-gen9-server-with-winpe-1709-where-is-the-fix-kb4055537?forum=ConfigMgrCBOSD">this one</a> which led me to the right info. If you search for &lsquo;Microsoft 4055537&rsquo;, you can find it (KB4055537 isn&rsquo;t listed anywhere in the keywords or link, so it&rsquo;s not getting matched) - Lesson Learned.</p>
 <p>The fix for this issue is included in KB 4056892. Search for <a href="http://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4056892">2018-01 Cumulative Update for Windows Server 2016 (1709) for x64-based Systems (KB4056892)</a> from Microsoft Update Catalog website to download the rollup.</p>
 <p><strong>The Fix</strong></p>
 <ol>
-<li>
-<p>From the &lsquo;Deployment and Imaging Tools Environment&rsquo;, you will need too mount your boot WIM and apply the update using DISM.    dism /mount-image /imagefile:\sources\boot.wim /index:1 /mountdir:\offline<br>
-dism /image:\offline /add-package /packagepath:'\Windows10.0-KB4056892-x64.cab'<br>
-dism /unmount-image /mountdir:\offline /commit</p>
-</li>
-<li>
-<p>Go to your WIM source directory and check the date stamp to ensure that it was updated.</p>
-</li>
-<li>
-<p>Redistribute your boot WIM and test with a Gen9 server.</p>
-</li>
+<li>From the &lsquo;Deployment and Imaging Tools Environment&rsquo;, you will need too mount your boot WIM and apply the update using DISM.</li>
+</ol>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Batchfile" data-lang="Batchfile"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>dism /mount-image /imagefile:\sources\boot.wim /index:1 /mountdir:\offline  
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>dism /image:\offline /add-package /packagepath:&#39;\Windows10.0-KB4056892-x64.cab&#39;  
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>dism /unmount-image /mountdir:\offline /commit
+</code></pre></div><ol start="2">
+<li>Go to your WIM source directory and check the date stamp to ensure that it was updated.</li>
+<li>Redistribute your boot WIM and test with a Gen9 server.</li>
 </ol>
 <p>So, there you have it, a very long winded way to tell you to just use DISM to apply a hotfix. Enjoy.</p>
 

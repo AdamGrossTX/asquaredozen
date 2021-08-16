@@ -254,7 +254,13 @@ if (!doNotTrack) {
 <p>If you have ever checked the logs in ConfigMgr, you&rsquo;ve likely run across an error code in a format like <code>0x87D00664</code> or <code>-2016410012</code>. If use the <a href="https://docs.microsoft.com/sccm/core/support/cmtrace#error-lookup">error lookup feature in CMTrace</a>, you can generally convert the error to plain text. In the ConfigMgr console, if you are looking at deployment statuses or even SSRS reports, you will see the plain text listed, but that data doesn&rsquo;t exist in the database.</p>
 <p>When I started trying to build a Power BI report to provide detailed status messages for Windows 10 Feature Updates, I discovered that the plain text wasn&rsquo;t in the database as I expected. I decided to see where the existing SSRS reports got the data so I opened the <strong>Troubleshooting 2 - Deployment Errors</strong> report from the ConfigMgr Console. Using the queries from that report, I began to build my Power BI report. However, whenever I got to the <strong>Error Description</strong> field, I realized that the query used by the dataset doesn&rsquo;t actually include the text, just the error codes!</p>
 <p>I discovered that the Error Description column in the SSRS report references a DLL using this expression <code>=SrsResources.Localization.GetErrorMessage(Fields!ErrorCode.Value,User!Language)</code>.</p>
-<p><img src="/img/2019/11/image-23.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-23.png" target="_blank">
+  <img src="image-23.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>The DLL is <strong><code>SrsResources.dll</code></strong> and can be found in the <strong><code>bin</code></strong> folder of you ConfigMgr console installation directory. I was intrigued. As I began searching the web for this DLL, I found several posts which used it in PowerShell, so I started testing with it. It turns out, this file has a lot of power. Not only can it look up error codes, but it can look up a number of items including <strong>Status Messages</strong>.</p>
 <h2 id="using-powershell-to-return-error-messages">Using PowerShell to Return Error Messages</h2>
 <p>You can load the DLL into PowerShell and list the available methods. Some of them are for internal use of the DLL (or so it seems). Run this code block at the top of your script to load the dll into PowerShell.</p>
@@ -397,9 +403,27 @@ This folder and all contents<br>
 <code>C:\Temp\Bin\resources\36</code><br>
 <code>C:\Temp\Bin\resources\StatusMessages</code><br>
 <code>C:\Temp\Bin\resources\StatusMessages\00000409</code></p>
-<p><img src="https://i2.wp.com/www.systemcenterdudes.com/img/2019/09/image-52.png" alt="A Square Dozen Image">
-<img src="https://i2.wp.com/www.systemcenterdudes.com/img/2019/09/image-53.png" alt="A Square Dozen Image">
-<img src="https://i2.wp.com/www.systemcenterdudes.com/img/2019/09/image-54.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-52.png" target="_blank">
+  <img src="image-52.png" alt="A Square Dozen Image">
+</a>
+
+</div>
+<div class="image">
+
+<a href="image-53.png" target="_blank">
+  <img src="image-53.png" alt="A Square Dozen Image">
+</a>
+
+</div>
+<div class="image">
+
+<a href="image-54.png" target="_blank">
+  <img src="image-54.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="custom-error-lookup-script">Custom Error Lookup Script</h2>
 <p>Now that we have all of the files, we just need an easy to call script that will give us the error message text. This script will be the basis for the Azure Function in my next post.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#000;font-weight:bold">Param</span> (
@@ -437,7 +461,13 @@ This folder and all contents<br>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>}
 </code></pre></div><p>Save the file into the root of the directory where your source files are and call it from the PowerShell command line.</p>
 <p><code>.\Get-ErrorMessage.ps1 -ExitCode '0x87D00664' -Language 'en-US'</code></p>
-<p><img src="/img/2019/11/image-24.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-24.png" target="_blank">
+  <img src="image-24.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <h2 id="summary">Summary</h2>
 <p>This post has ended up much longer than I expected and has been &lsquo;in progress&rsquo; for a few months now. I&rsquo;m going to stop here on this one.</p>
 <p>Check out <a href="/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/">Part 2</a> and <a href="/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/">Part 3</a></p>

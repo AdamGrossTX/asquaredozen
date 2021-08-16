@@ -259,9 +259,16 @@ I know that we hide the client&rsquo;s credential provider from the logon screen
 I also found the client log files and discovered how to enable DUMP 💩 logging level, which includes all the crap in logs. (poop jokes - you&rsquo;re welcome). This helped greatly since I was able to follow along with the background processes and determine the root cause.</p>
 <h2 id="1337-hax0rz-ski11z">1337 hax0rz ski11z</h2>
 <p>I just stole that heading from the internet, just like I stole my &lsquo;solution&rsquo; from <a href="https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/">Johan</a> who apparently stole it from some other folks on the internet. This one&rsquo;s been around for a while. I&rsquo;ve used it several times and think it&rsquo;s a very useful tool, as long as you revert your changes and you don&rsquo;t bake this into every image you deploy!</p>
-<p><img src="https://i1.wp.com/imgs.xkcd.com/comics/ten_thousand.png" alt="Saying &lsquo;what kind of an idiot doesn&rsquo;t know about the Yellowstone supervolcano&rsquo; is so much more boring than telling someone about the Yellowstone supervolcano for the first time."></p>
-<p>Also stolen - <a href="https://xkcd.com/1053/">https://xkcd.com/1053/</a>
-Did you know that if you hover over xkcd comics they have alt-text that compliments the comic?</p>
+<p><a href="https://xkcd.com/1053/"><div class="image">
+
+  <figure>
+    <a href="ten_thousand.png" target="_blank">
+      <img src="ten_thousand.png" alt="Saying &amp;lsquo;what kind of an idiot doesn&amp;rsquo;t know about the Yellowstone supervolcano&amp;rsquo; is so much more boring than telling someone about the Yellowstone supervolcano for the first time.">
+    </a>
+    <figcaption>Also stolen - https://xkcd.com/1053/ Did you know that if you hover over xkcd comics they have alt-text that compliments the comic?</figcaption>
+  </figure>
+
+</div></a></p>
 <hr>
 <p>DISCLAIMER - This is a BIG security risk. Do not leave this in production.</p>
 <hr>
@@ -272,10 +279,28 @@ Did you know that if you hover over xkcd comics they have alt-text that complime
 <li>Find either sethc.exe or utilman.exe and take ownership</li>
 <li>Rename the file to sethc.exe.OLD or utilman.exe.old (This is important since you&rsquo;ll want to reverse this when you&rsquo;re done.)</li>
 </ol>
-<p><img src="/img/2020/05/image-8.png" alt="A Square Dozen Image"></p>
-<p><img src="/img/2020/05/image-9.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="image-8.png" target="_blank">
+  <img src="image-8.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
+<p><div class="image">
+
+<a href="image-9.png" target="_blank">
+  <img src="image-9.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Once you&rsquo;ve taken ownership, you can copy cmd.exe from the same location (c:\Windows\System32) then rename it to the file you just took ownership of. Double click the new file and a command window should open.</p>
-<p><img src="/img/2020/05/2020-05-12_22-14-46.png" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="2020-05-12_22-14-46.png" target="_blank">
+  <img src="2020-05-12_22-14-46.png" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Don&rsquo;t like reading? Just watch it.
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
@@ -285,7 +310,13 @@ Did you know that if you hover over xkcd comics they have alt-text that complime
 <h4 id="other-methods">Other Methods</h4>
 <p>I&rsquo;m sure someone has a script for this, I just haven&rsquo;t looked. If you want to do it within WinPE, just follow <a href="https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/">Johan&rsquo;s steps here</a>.</p>
 <h4 id="it-may-not-work">It May Not Work</h4>
-<p><img src="https://i0.wp.com/i.giphy.com/media/12eLSv8B5eN5sI/source.gif" alt="A Square Dozen Image"></p>
+<p><div class="image">
+
+<a href="source.gif" target="_blank">
+  <img src="source.gif" alt="A Square Dozen Image">
+</a>
+
+</div></p>
 <p>Apparently, this may not work if you have certain security tools - like Windows Defender - running on the machine, so go ahead and rip those things off while you&rsquo;re at it. I mean, you&rsquo;re already doing some bad stuff anyway, what&rsquo;s a little bit more insecurity?</p>
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Just spent an hour trying to hack my way into my old laptop because I forgot the password. Turns out Defender blocks sethc.exe and utilman.exe workarounds as AccessibilityEscalation attacks now!<br><br>Remembered the password in the end. <a href="https://twitter.com/hashtag/Fun?src=hash&amp;ref_src=twsrc%5Etfw">#Fun</a></p>&mdash; Brett Miller (@BrettMiller_IT) <a href="https://twitter.com/BrettMiller_IT/status/1085329542921797632?ref_src=twsrc%5Etfw">January 16, 2019</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

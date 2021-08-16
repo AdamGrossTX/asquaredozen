@@ -249,18 +249,26 @@ This approach is great if you planned ahead and you are in a test Task Sequence.
 			<div class="post-entry">
 				<p>If you have worked with SCCM/ConfigMgr Task Sequences for any length of time, you&rsquo;ve likely needed to debug them. Many times, you need to check the value of a Task Sequence variable. The generally accepted approach is to add a Run Command Line step to your Task Sequence and run ServiceUI.exe like this:</p>
 <p><code>ServiceUI.exe -process:TSProgressUI.exe cmd.exe</code></p>
-<p>This approach is great if you planned ahead and you are in a test Task Sequence. It will pause the Task Sequence until you close the commnand prompt which allows you time to do any testing you need to do and even write scripts and test them live within your Task Sequence. It is a really handy tool to use. But what if you are trying to debug a production Task Sequence and can&rsquo;t add the debug step?</p>
+<p>This approach is great if you planned ahead and you are in a test Task Sequence. It will pause the Task Sequence until you close the command prompt which allows you time to do any testing you need to do and even write scripts and test them live within your Task Sequence. It is a really handy tool to use. But what if you are trying to debug a production Task Sequence and can&rsquo;t add the debug step?</p>
 <p>I was trying to track down an issue with my Task Sequence where a variable wasn&rsquo;t being set, but I didn&rsquo;t want to add the debug step. The Task Sequence was still in WinPE so I opened a command prompt using F8. Then I launched powershell. From there, I ran the following 2 commands to get the value of my OSDComputerName variable.</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$TSEnv</span> = <span style="color:#0086b3">New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">$TSEnv</span>.Value(<span style="color:#d14">&#34;OSDComputerName&#34;</span>)
-</code></pre></div><p>Launching PowerShell and accessing the TSEnvironment from the command prompt.
-<img src="/img/2018/10/2018-10-03_9-59-28-1.jpg" alt="Launching PowerShell and accessing the TSEnvironment from the command prompt."></p>
-<p>The first line creates the TSEnvironment object which has access to all of the variables inside the Task Sequence. The second gave me the value of the OSDComptuerName variable. You can change this to any valid variable name. If you don&rsquo;t know what variables are currently loaded, you can run this command to get a list:</p>
+</code></pre></div><p><div class="image">
+
+  <figure>
+    <a href="2018-10-03_9-59-28-1.jpg" target="_blank">
+      <img src="2018-10-03_9-59-28-1.jpg" alt="Launching PowerShell and accessing the TSEnvironment from the command prompt.">
+    </a>
+    <figcaption>Launching PowerShell and accessing the TSEnvironment from the command prompt.</figcaption>
+  </figure>
+
+</div></p>
+<p>The first line creates the TSEnvironment object which has access to all of the variables inside the Task Sequence. The second gave me the value of the OSDComputerName variable. You can change this to any valid variable name. If you don&rsquo;t know what variables are currently loaded, you can run this command to get a list:</p>
 <p><code>$TSEnv.GetVariables()</code></p>
 <p>This works great in WinPE as long as the Task Sequence is running. In some cases, adding the debug step is a better way to go if you need to pause at a specific point, but if you are just looking quickly check a value, this is a great way to do it. If you want to do this while in Windows, you need to be running as Local System. To do that, I use <a href="https://docs.microsoft.com/sysinternals/">SysInternals Tools</a> and run:</p>
 <p><code>psexec.exe -i -s powershell.exe</code></p>
-<p>The -i opens the session interactively. The -s runas as Local System. Powershell.exe can be replaced by whatever process you want to launch in the system context. Once there, you can launch the same commands as above as long as the Task Sequence is running.
-This is just another tool to have in your SCCM/ConfigMgr toolkit. Hope it helps you someday.</p>
+<p>The -i opens the session interactively. The -s runas as Local System. Powershell.exe can be replaced by whatever process you want to launch in the system context. Once there, you can launch the same commands as above as long as the Task Sequence is running.</p>
+<p>This is just another tool to have in your SCCM/ConfigMgr toolkit. Hope it helps you someday.</p>
 
 			</div>
 			
