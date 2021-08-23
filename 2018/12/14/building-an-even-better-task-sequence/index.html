@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Building An Even Better Task Sequence-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Building An Even Better Task Sequence-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2018/12/14/building-an-even-better-task-sequence/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -32,24 +52,8 @@ if (!doNotTrack) {
 03/12/2019 - This post has been updated to support changes in 1901 TP and (I assume) 1902 CB to the TSProgressUI.exe ConfigMgr client component used for the custom described dialog below.
  Note: You must be running ConfigMgr/SCCM 1810 or higher to use the _SMSTSLastActionName variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go upvote the UserVoice item to have the product do this natively."/>
 
-
-        <link rel="canonical" href="/2018/12/14/building-an-even-better-task-sequence/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -214,7 +218,6 @@ if (!doNotTrack) {
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -230,6 +233,7 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -436,14 +440,17 @@ if (!doNotTrack) {
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -456,8 +463,6 @@ if (!doNotTrack) {
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

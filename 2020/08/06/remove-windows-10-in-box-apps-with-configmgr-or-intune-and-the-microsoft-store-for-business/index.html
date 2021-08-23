@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Remove Windows 10 In-Box Apps with ConfigMgr or Intune and the Microsoft Store for Business-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Remove Windows 10 In-Box Apps with ConfigMgr or Intune and the Microsoft Store for Business-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2020/08/06/remove-windows-10-in-box-apps-with-configmgr-or-intune-and-the-microsoft-store-for-business/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -30,24 +50,8 @@ if (!doNotTrack) {
 <meta name="twitter:title" content="Remove Windows 10 In-Box Apps with ConfigMgr or Intune and the Microsoft Store for Business"/>
 <meta name="twitter:description" content="If you&rsquo;ve been managing Windows 10 for very long, you&rsquo;ve likely implemented a script or other method to remove some of the In-Box apps that come with Windows 10. We have been using a customized version of a script that Michael Niehaus published in 2015. It uses PowerShell and an XML file with a list of apps to be removed. I have integrated it into my Windows 10 offline servicing script that I use to apply updates to my image each month."/>
 
-
-        <link rel="canonical" href="/2020/08/06/remove-windows-10-in-box-apps-with-configmgr-or-intune-and-the-microsoft-store-for-business/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -212,7 +216,6 @@ if (!doNotTrack) {
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -228,6 +231,7 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -539,14 +543,17 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -559,8 +566,6 @@ We have decided to use the Windows Store to manage the removal of these apps ins
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -31,24 +51,8 @@ if (!doNotTrack) {
 <meta name="twitter:description" content="This is Part 4 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word of caution. Make sure that your switch firmware is matched to the version required by ISE. I spent several weeks working with our Security and Networking guys to troubleshoot and discovered that our switches weren&rsquo;t at the required version for ISE 2."/>
 
-
-        <link rel="canonical" href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -213,7 +217,6 @@ Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word 
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -229,6 +232,7 @@ Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word 
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -480,14 +484,17 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -500,8 +507,6 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

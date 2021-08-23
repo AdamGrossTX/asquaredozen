@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>How to Identify Repeated SCCM Client Inventory Failures Using SQL-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>How to Identify Repeated SCCM Client Inventory Failures Using SQL-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -30,24 +50,8 @@ if (!doNotTrack) {
 <meta name="twitter:title" content="How to Identify Repeated SCCM Client Inventory Failures Using SQL"/>
 <meta name="twitter:description" content="For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here."/>
 
-
-        <link rel="canonical" href="/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -212,7 +216,6 @@ if (!doNotTrack) {
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -228,6 +231,7 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -429,14 +433,17 @@ Then I summarized this list (you could just do it in Excel from here) to give me
 			<div class="post-author">
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -449,8 +456,6 @@ Then I summarized this list (you could just do it in Excel from here) to give me
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

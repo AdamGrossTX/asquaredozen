@@ -8,6 +8,24 @@
     <language>en-us</language>
     <lastBuildDate>Thu, 04 Feb 2021 06:10:23 +0000</lastBuildDate><atom:link href="https://blog.asquaredozen.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Consulting</title>
+      <link>https://blog.asquaredozen.com/consulting/</link>
+      <pubDate>Sun, 22 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.asquaredozen.com/consulting/</guid>
+      <description>I work part time as a consultant with System Center Dudes. If you&amp;rsquo;d like to request my assistance with consulting work, please contact them directly at System Center Dudes. Tell them that Adam sent you :-).</description>
+    </item>
+    
+    <item>
+      <title>Contact</title>
+      <link>https://blog.asquaredozen.com/contact/</link>
+      <pubDate>Sun, 22 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.asquaredozen.com/contact/</guid>
+      <description>If you need to contact me, please send me a DM on Twitter or shoot me an Email.</description>
+    </item>
+    
+    <item>
       <title>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</title>
       <link>https://blog.asquaredozen.com/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/</link>
       <pubDate>Thu, 04 Feb 2021 06:10:23 +0000</pubDate>

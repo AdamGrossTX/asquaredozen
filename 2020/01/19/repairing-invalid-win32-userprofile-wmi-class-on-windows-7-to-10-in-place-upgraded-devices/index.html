@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -30,24 +50,8 @@ if (!doNotTrack) {
 <meta name="twitter:title" content="Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices"/>
 <meta name="twitter:description" content="I recently needed to query the Win32_UserProfile class in WMI for some reporting I was working on. This class is a default Hardware Inventory class in ConfigMgr. I noticed that we had a large number of devices were reporting NULL values for several properties in this class when I queried them in SQL so I decided to investigate. From the ConfigMgr console, I used CMPivot (only one of the best tools ever!"/>
 
-
-        <link rel="canonical" href="/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -212,7 +216,6 @@ if (!doNotTrack) {
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -228,6 +231,7 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -462,14 +466,17 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -482,8 +489,6 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

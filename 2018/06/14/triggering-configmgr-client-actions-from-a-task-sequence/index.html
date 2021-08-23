@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Triggering ConfigMgr Client Actions from a Task Sequence-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Triggering ConfigMgr Client Actions from a Task Sequence-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -30,24 +50,8 @@ if (!doNotTrack) {
 <meta name="twitter:title" content="Triggering ConfigMgr Client Actions from a Task Sequence"/>
 <meta name="twitter:description" content="This week, we were working on testing Windows 7 to Windows 10 In-Place Upgrades and ran into an issue where our clients weren&rsquo;t updating their Operating System version in the ConfigMgr console. After some helpful responses on Twitter, I was able to add a client action trigger step to the end of my Task Sequence. In my production environment, we have a child task sequence that we call that has several client action steps in it including Request Machine Assignments (Machine Policies) {00000000-0000-0000-0000-000000000021}, Hardware Inventory {00000000-0000-0000-0000-000000000001} and now a Discovery Inventory {00000000-0000-0000-0000-000000000003}."/>
 
-
-        <link rel="canonical" href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -212,7 +216,6 @@ if (!doNotTrack) {
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -228,6 +231,7 @@ if (!doNotTrack) {
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -417,14 +421,17 @@ Then run the script that pops up. Don&rsquo;t edit that script! Once in ISE, cop
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -437,8 +444,6 @@ Then run the script that pops up. Don&rsquo;t edit that script! Once in ISE, cop
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

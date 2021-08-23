@@ -6,12 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
         <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Windows 10 1709 In-Place Upgrade Hangs on Making sure you&#39;re ready to install-A Square Dozen | A. Gross Blog</title>
-
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
+        <link rel="shortcut icon" href="/img/favicon.ico">
+        <title>Windows 10 1709 In-Place Upgrade Hangs on Making sure you&#39;re ready to install-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/2018/05/21/windows-10-1709-in-place-upgrade-hangs-on-making-sure-youre-ready-to-install/">
 
+        
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/code.css">
+        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
+        
+
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
+        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
+        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
+
+        
+
+        
+        
+        
+
+        
         
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
 <script>
@@ -32,24 +52,8 @@ if (!doNotTrack) {
 http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/
 UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.com/jarwidmark/status/998591545392685057 and http://blog.ctglobalservices.com/configuration-manager-sccm/mag/devicemap-and-device-inventory-failures-in-win7-to-win10-1709-in-place-upgrades/ which indicated that the fix was to update the devinv.dll file in Sources directory of your Windows 10 Upgrade media. This led me to finding out that KB2952664 updates devinv."/>
 
-
-        <link rel="canonical" href="/2018/05/21/windows-10-1709-in-place-upgrade-hangs-on-making-sure-youre-ready-to-install/">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
         
 
-        
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-
-        <script src="js/asd.js"></script>
-
-        
-        
-
-        
     </head>
 		<body class="home blog">
 			<div id="asd-container">
@@ -214,7 +218,6 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
                             </li>
                         
                     
-                
                 </ul>
         </div>
         <div class="menu" id="menu-mobile"></div>
@@ -230,6 +233,7 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
         </div>
     </div>
 </div>
+
 				<header id="header" class="noslider">
 	<div class="container">
 		<div id="logo">
@@ -451,14 +455,17 @@ Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</c
 
 			</div>
 			
-			<script src="https://utteranc.es/client.js"
-				repo="AdamGrossTX/asquaredozen"
-				issue-term="title"
-				label="blog comment"
-				theme="github-light"
-				crossorigin="anonymous"
-				async>
-			</script>
+			 <comments id="comments">
+    <script 
+        src="https://utteranc.es/client.js"
+        repo="AdamGrossTX/asquaredozen"
+        issue-term="title"
+        label="blog comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</comments>
 		</article>
 </div>
 
@@ -471,8 +478,6 @@ Be sure to include <code>/norestart</code>. I tested with <code>/forcerestart</c
 		</div>
 	</div>
 </footer>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="css/SlickNav/jquery.slicknav.js"></script>
 			</div>
 		</body>
 </html>

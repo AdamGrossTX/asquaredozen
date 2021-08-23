@@ -9,8 +9,8 @@
         <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
         
         <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>How to Use Profiles in Microsoft’s Chromium Edge for Managing Multiple Accounts in Azure, Teams and More-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2019/08/15/how-to-use-profiles-in-microsofts-chromium-edge-for-managing-multiple-accounts-in-azure-teams-and-more/">
+        <title>Consulting-A Square Dozen | A. Gross Blog</title>
+        <link rel="canonical" href="/consulting/">
 
         
         <link rel="stylesheet" href="/css/style.css">
@@ -47,8 +47,8 @@ if (!doNotTrack) {
         <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
 
-<meta name="twitter:title" content="How to Use Profiles in Microsoft’s Chromium Edge for Managing Multiple Accounts in Azure, Teams and More"/>
-<meta name="twitter:description" content="I&rsquo;ve never been a fan of alternate web browsers (Chrome, Firefox, etc), not because I don&rsquo;t believe they may have better features than Internet Explorer or Edge, but because I live in the End User Computing space and find it easier to support users if I use the same browsers that they do. Even at home, I keep it simple and just use Edge or IE to help reduce my frustration of having different features depending on where I may be logged in each day."/>
+<meta name="twitter:title" content="Consulting"/>
+<meta name="twitter:description" content="I work part time as a consultant with System Center Dudes. If you&rsquo;d like to request my assistance with consulting work, please contact them directly at System Center Dudes. Tell them that Adam sent you :-)."/>
 
         
 
@@ -245,164 +245,15 @@ if (!doNotTrack) {
 <div id="main" class="fullwidth">
 		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
 			<div class="post-header">
-				<h1>How to Use Profiles in Microsoft’s Chromium Edge for Managing Multiple Accounts in Azure, Teams and More</h1>
-				<span class="post-date">August 15, 2019</span>
+				<h1>Consulting</h1>
+				<span class="post-date">August 22, 2021</span>
 			</div>
 			<div class="post-entry">
-				<p>I&rsquo;ve never been a fan of alternate web browsers (Chrome, Firefox, etc), not because I don&rsquo;t believe they may have better features than Internet Explorer or Edge, but because I live in the End User Computing space and find it easier to support users if I use the same browsers that they do. Even at home, I keep it simple and just use Edge or IE to help reduce my frustration of having different features depending on where I may be logged in each day. On my iPhone, I use the default Safari, though I have tested out Edge on it and it&rsquo;s pretty sweet too. There are obvious occasions when I have to use Chrome because of compatibility issues.</p>
-<p>In my environment, we offer Chrome as an alternate browser (which must be requested separately from the core OS image) for our users, but Edge/IE are still the defaults since we have several legacy applications that still need IE. Whenever Microsoft released Chromium Edge (Edge Dev/Edge Canary) I was excited that hopefully we would be able to move back to a single browser but it took several months of hearing people talk about how great it was before I finally installed Edge Dev at home. It didn&rsquo;t take long before I made it my daily driver at home and work and every other machine I spent time on. It just works, very well.</p>
-<p>One day while I was in a Teams meeting with <a href="https://www.twitter.com/OnPremCloudGuy">Steve Hosking</a>, I noticed that he had about 5 Edge Canary shortcuts pinned to his taskbar. When I asked him about them, he showed me how each one was a shortcut to launch Edge Canary using a different profile. I immediately tested it out was blown away. This post will walk you through the basics of setting up multiple profiles in Edge Dev to allow you to quickly switch between O365/M365/Azure/Teams/Intune Tenants (this works for anything, just using Azure Tenants and Teams as the example here), or even run them all side by side without having to constantly log in and out of each one or use several browsers and/or Incognito/InPrivate modes to allow you to use them side by side.</p>
-<h2 id="installing-chromuim-edge">Installing Chromuim Edge</h2>
-<p>To install Edge Dev or Edge Canary, download the latest version from here: <a href="https://www.microsoftedgeinsider.com/download/">https://www.microsoftedgeinsider.com/download/</a></p>
-<p><div class="image">
-  <figure>
-    <a href="image-5.png" target="_blank">
-      <img src="image-5.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>Run setup and Follow the wizard and install it. It&rsquo;s that easy. It will even automatically update (weekly for Edge Dev or daily for Edge Canary).</p>
-<p><div class="image">
-  <figure>
-    <a href="image-6.png" target="_blank">
-      <img src="image-6.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<h2 id="getting-started-with-edge-dev">Getting Started with Edge Dev</h2>
-<p>When the installer completes, Edge Dev will launch and you can choose to import data or start from scratch. Don&rsquo;t do anything with the wizard. We want to create a new profile and leave the default profile alone for now.
-Click on the People icon to the right of the address bar then either click <code>Manage profile settings</code> or <code>Add a profile</code>. I&rsquo;ll show both ways. To start, I&rsquo;ll click <code>Manage profile settings</code> to open the Settings page.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-15.png" target="_blank">
-      <img src="image-15.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>This is the settings page. You can also get here by typing <a href="edge://settings/people">edge://settings/people</a> in the address bar. Once you are here, we want to create a new profile by clicking <code>Add profile</code>.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-16.png" target="_blank">
-      <img src="image-16.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>In the <code>Add a profile wizard</code>, 1) enter a name for the profile, 2) select an icon then 3) click Add. You can also change settings for the profile while you are here. For the most part, you can change settings for each profile, however I did discover that on the Appearance tab, if you change between dark and light, it seems to toggle all profiles instead of the single profile you are editing. Everything else I&rsquo;ve changed has applied to each profile uniquely.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-17.png" target="_blank">
-      <img src="image-17.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>Once you click Add, you will be taken back to the start page where you will notice that the people icon shows the icon that you selected on the settings page. Notice that you now have a new instance of Edge Dev on your taskbar with a matching icon on it. This indicator allows you to quickly choose which profile you want to load the browser with.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-19.png" target="_blank">
-      <img src="image-19.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>Right click on the taskbar with the correct icon and click <code>Pin to taskbar</code>. Now it will be there any time you want to launch a new instance of that session.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-20.png" target="_blank">
-      <img src="image-20.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>Click on your People icon once more and this time click <code>Add a profile</code>.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-21.png" target="_blank">
-      <img src="image-21.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<ol>
-<li>Enter a profile name, 2) select an icon then 3) click Add. This should open a new browser instance with the new people icon.</li>
-</ol>
-<p><div class="image">
-  <figure>
-    <a href="image-22.png" target="_blank">
-      <img src="image-22.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<p>For each new profile that you add, right click on the instance in the taskbar and pin it to the taskbar. Now you&rsquo;re ready to go!</p>
-<p><div class="image">
-  <figure>
-    <a href="image-25.png" target="_blank">
-      <img src="image-25.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<h2 id="solving-the-multiple-account-login-problem">Solving the Multiple-Account Login Problem</h2>
-<h4 id="azure">Azure</h4>
-<p>Now that you have two profiles, open to <a href="https://portal.azure.com">https://portal.azure.com</a> in each instance and log in to the Azure tenant that corresponds with the profile name for that profile. You can choose to save your creds if you are so inclined. From here on, as long as you just use one Azure/M365/O365 account per Edge Dev profile that you create, you should be able to avoid the the constant account switching or the multiple browser dance. You can use this functionality to segregate ANY services (Gmail, Twitter, YouTube, etc), not just Azure, I just chose Azure because that&rsquo;s the main reason I use this feature.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-23.png" target="_blank">
-      <img src="image-23.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<h4 id="teams">Teams</h4>
-<p>Another scenario that we&rsquo;ve started using this for is multiple tenant Microsoft Teams management. Instead of using the desktop Teams client, just open a new Edge Dev instance for each Teams tenant you want to log into. Open Teams from <a href="https://teams.microsoft.com">https://teams.microsoft.com</a> and click <code>Use the web app instead</code> to launch Teams in the browser.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-26.png" target="_blank">
-      <img src="image-26.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<h4 id="profile-1">Profile 1</h4>
-<p>Earlier I mentioned that you should skip Profile 1. Click the people Icon then select the Profile 1 icon. If you navigate to a web page with this profile and right click on any hyperlink, you will get an option to open the URL in any of your other profiles.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-27.png" target="_blank">
-      <img src="image-27.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
-</div></p>
-<h2 id="final-thoughts">Final Thoughts</h2>
-<p>I&rsquo;m sure there are plenty of cool things you can do with these browsers, but this is as far as I&rsquo;ve gotten so far. Honestly, unless someone points out some other cool feature, I probably won&rsquo;t learn any new Edge Dev tricks, because, well, it&rsquo;s a web browser. That being said, I can&rsquo;t wait to see what the final product looks like.</p>
-<p>Special thanks to <a href="https://www.twitter.com/OnPremCloudGuy">Steve Hosking</a> for pointing me in the right direction!</p>
+				<p>I work part time as a consultant with <a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&amp;campaign=Consulting">System Center Dudes</a>. If you&rsquo;d like to request my assistance with consulting work, please contact them directly at <a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&amp;campaign=Consulting">System Center Dudes</a>. Tell them that Adam sent you :-).</p>
 
 			</div>
 			
-			<div class="post-share">
-				<div class="post-share-box share-comments">
-					hello
-				</div>
-			</div>
-			<div class="post-author">
-			</div>
 			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
 		</article>
 </div>
 
