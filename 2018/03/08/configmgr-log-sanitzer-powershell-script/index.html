@@ -1,342 +1,245 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>ConfigMgr Log Sanitizer Powershell Script-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2018/03/08/configmgr-log-sanitzer-powershell-script/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>ConfigMgr Log Sanitizer Powershell Script-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2018/03/08/configmgr-log-sanitzer-powershell-script/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="ConfigMgr Log Sanitizer Powershell Script"/>
-<meta name="twitter:description" content="Do you ever need to email or post ConfigMgr log files or snippets online for blogs or support? I know I do. I wanted to have a way to consistently clean log files quickly, so I wrote a small PowerShell script to help. It&rsquo;s nothing special - the hardest part is figuring out which regular expressions work best for each data type you want to replace. I ended up with 4 regular expressions that work well for the smsts."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="ConfigMgr Log Sanitizer Powershell Script">
+<meta name=twitter:description content="Do you ever need to email or post ConfigMgr log files or snippets online for blogs or support? I know I do. I wanted to have a way to consistently clean log files quickly, so I wrote a small PowerShell script to help. It&rsquo;s nothing special - the hardest part is figuring out which regular expressions work best for each data type you want to replace. I ended up with 4 regular expressions that work well for the smsts.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>ConfigMgr Log Sanitizer Powershell Script</h1>
-				<span class="post-date">March 8, 2018</span>
-			</div>
-			<div class="post-entry">
-				<p>Do you ever need to email or post ConfigMgr log files or snippets online for blogs or support? I know I do. I wanted to have a way to consistently clean log files quickly, so I wrote a small PowerShell script to help. It&rsquo;s nothing special - the hardest part is figuring out which regular expressions work best for each data type you want to replace. I ended up with 4 regular expressions that work well for the smsts.log. Here are the 4 types and examples of log file entries before and after each regex:</p>
-<p>Server Name</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;ASD\w*-\w+&#34;</span>,<span style="color:#d14">&#34;XXX-ServerName&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>Before<span style="color:#a61717;background-color:#e3d2d2">:</span> Successfully connected to <span style="color:#0086b3">MP ASD-CM01</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>After<span style="color:#a61717;background-color:#e3d2d2">:</span> Successfully connected to <span style="color:#0086b3">MP XXX-ServerName</span>
-</code></pre></div><p>SCCM Site Code</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(CM1)&#34;</span>,<span style="color:#d14">&#34;XXX&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>Before<span style="color:#a61717;background-color:#e3d2d2">:</span> Action command line<span style="color:#a61717;background-color:#e3d2d2">:</span> smsswd.exe /run<span style="color:#a61717;background-color:#e3d2d2">:</span>CM100123 ServiceUI.exe -process<span style="color:#a61717;background-color:#e3d2d2">:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>After<span style="color:#a61717;background-color:#e3d2d2">:</span> Action command line<span style="color:#a61717;background-color:#e3d2d2">:</span> smsswd.exe /run<span style="color:#a61717;background-color:#e3d2d2">:</span>XXX00123 ServiceUI.exe -process<span style="color:#a61717;background-color:#e3d2d2">:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
-</code></pre></div><p>URLs with domain names</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(CM1)&#34;</span>,<span style="color:#d14">&#34;XXX&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>Before<span style="color:#a61717;background-color:#e3d2d2">:</span> Action command line<span style="color:#a61717;background-color:#e3d2d2">:</span> smsswd.exe /run<span style="color:#a61717;background-color:#e3d2d2">:</span>CM100123 ServiceUI.exe -process<span style="color:#a61717;background-color:#e3d2d2">:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>After<span style="color:#a61717;background-color:#e3d2d2">:</span> Action command line<span style="color:#a61717;background-color:#e3d2d2">:</span> smsswd.exe /run<span style="color:#a61717;background-color:#e3d2d2">:</span>XXX00123 ServiceUI.exe -process<span style="color:#a61717;background-color:#e3d2d2">:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
-</code></pre></div><p>Specific words unique to your company</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(SecretProductName|SecretProductName2)&#34;</span>,<span style="color:#d14">&#34;XXXXXXXXX&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>Before<span style="color:#a61717;background-color:#e3d2d2">:</span> Parsing step node<span style="color:#a61717;background-color:#e3d2d2">:</span> 1.0 Launch SecretProductName1 UDI Wizard
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>Parsing step node<span style="color:#a61717;background-color:#e3d2d2">:</span> 1.0 Launch XXXXXXXXX UDI Wizard
-</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">#Be sure to test your regular expressions.  There are several online test tools available.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#998;font-style:italic">#I used this one and it worked very well http://regexstorm.net/tester</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#998;font-style:italic">#Regex Reference</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#998;font-style:italic">#https://www.zerrouki.com/powershell-cheatsheet-regular-expressions/</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#998;font-style:italic">##############################################################################################################################################</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#998;font-style:italic">#Modify these entries to match your site&#39;s needs. So far, these 4 are all I need, but there may be others.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#998;font-style:italic">#Format is (RegexValue, ReplacementValue)</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#008080">$regex</span> = @{}
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;ASD\w*-\w+&#34;</span>,<span style="color:#d14">&#34;XXX-ServerName&#34;</span>) <span style="color:#998;font-style:italic">#Replace server names following format &lt;CompanyPrefix&gt;*-*</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(CM1)&#34;</span>,<span style="color:#d14">&#34;XXX&#34;</span>) <span style="color:#998;font-style:italic">#Replace all instances of your configmgr site prefix, mostly seein in package names</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(\.\w?\w?\.|\.)asquaredozen.com&#34;</span>,<span style="color:#d14">&#34;.XXXXXXX.com&#34;</span>) <span style="color:#998;font-style:italic">#Replace all domain urls matching .*.&lt;mydomain.com&gt; or .&lt;mydomain.com&gt;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#008080">$regex</span>.Add(<span style="color:#d14">&#34;(SecretProductName|SecretProductName2)&#34;</span>,<span style="color:#d14">&#34;XXXXXXXXX&#34;</span>) <span style="color:#998;font-style:italic">#Replace any other exact match words - like internal product names and such.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#998;font-style:italic">##############################################################################################################################################</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#998;font-style:italic">#Location of this script.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">set-location</span> <span style="color:#008080">$PSScriptRoot</span> 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#998;font-style:italic">#Path to the log files.  Default location is the same folder as this script.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#008080">$logfiles</span> = <span style="color:#0086b3">Get-ChildItem</span> <span style="color:#d14">&#34;$PSScriptRoot\*.log&#34;</span> 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#0086b3">Write-Host</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#000;font-weight:bold">forEach</span> (<span style="color:#008080">$log</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$logfiles</span>){
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>    <span style="color:#0086b3">Write-Host</span> <span style="color:#000;font-weight:bold">-f</span> green <span style="color:#d14">&#34;Parsing </span>$(<span style="color:#008080">$log</span>)<span style="color:#d14">&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#008080">$Content</span> = (<span style="color:#0086b3">Get-Content</span> <span style="color:#008080">$log</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>    <span style="color:#000;font-weight:bold">foreach</span> (<span style="color:#008080">$rex</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$regex</span>.keys)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>    {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>        <span style="color:#008080">$Content</span> = <span style="color:#008080">$Content</span> <span style="color:#000;font-weight:bold">-ireplace</span> <span style="color:#d14">&#34;</span>$(<span style="color:#008080">$rex</span>)<span style="color:#d14">&#34;</span>,<span style="color:#d14">&#34;</span>$(<span style="color:#008080">$regex</span>[<span style="color:#008080">$rex</span>])<span style="color:#d14">&#34;</span> <span style="color:#998;font-style:italic">#Use ireplace for case insensetive replace</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>    }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>     <span style="color:#998;font-style:italic">#Files are saved with &#34;_parsed appended to the end to preserve your originals.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>     <span style="color:#008080">$parsedLogName</span> = <span style="color:#008080">$log</span>.Name.Split(<span style="color:#d14">&#39;.&#39;</span>)[0] + <span style="color:#d14">&#34;_parsed.&#34;</span> + <span style="color:#008080">$log</span>.Name.Split(<span style="color:#d14">&#39;.&#39;</span>)[-1]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>     <span style="color:#008080">$content</span> | <span style="color:#0086b3">Set-Content</span> <span style="color:#008080">$parsedLogName</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>     
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>     <span style="color:#0086b3">Write-Host</span> <span style="color:#000;font-weight:bold">-f</span> green <span style="color:#d14">&#34;Parsing Completed for </span>$(<span style="color:#008080">$log</span>)<span style="color:#d14">.&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>}
-</code></pre></div><p>I&rsquo;ve added the file to my GitHub repository (first one yay!!) here: <a href="https://github.com/AdamGrossTX/PowershellScripts/blob/master/PSLogSanitizer.ps1">https://github.com/AdamGrossTX/PowershellScripts/blob/master/PSLogSanitizer.ps1</a>.</p>
-<p>Let me know if you have any suggestions for improvements.</p>
-
-			</div>
-			
-			<div class="post-share">
-				<div class="post-share-box share-comments">
-					hello
-				</div>
-			</div>
-			<div class="post-author">
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>ConfigMgr Log Sanitizer Powershell Script</h1>
+<span class=post-date>March 8, 2018</span>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<div class=post-entry>
+<p>Do you ever need to email or post ConfigMgr log files or snippets online for blogs or support? I know I do. I wanted to have a way to consistently clean log files quickly, so I wrote a small PowerShell script to help. It&rsquo;s nothing special - the hardest part is figuring out which regular expressions work best for each data type you want to replace. I ended up with 4 regular expressions that work well for the smsts.log. Here are the 4 types and examples of log file entries before and after each regex:</p>
+<p>Server Name</p>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;ASD\w*-\w+&#34;</span>,<span style=color:#d14>&#34;XXX-ServerName&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Before<span style=color:#a61717;background-color:#e3d2d2>:</span> Successfully connected to <span style=color:#0086b3>MP ASD-CM01</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>After<span style=color:#a61717;background-color:#e3d2d2>:</span> Successfully connected to <span style=color:#0086b3>MP XXX-ServerName</span>
+</code></pre></div><p>SCCM Site Code</p>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(CM1)&#34;</span>,<span style=color:#d14>&#34;XXX&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Before<span style=color:#a61717;background-color:#e3d2d2>:</span> Action command line<span style=color:#a61717;background-color:#e3d2d2>:</span> smsswd.exe /run<span style=color:#a61717;background-color:#e3d2d2>:</span>CM100123 ServiceUI.exe -process<span style=color:#a61717;background-color:#e3d2d2>:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>After<span style=color:#a61717;background-color:#e3d2d2>:</span> Action command line<span style=color:#a61717;background-color:#e3d2d2>:</span> smsswd.exe /run<span style=color:#a61717;background-color:#e3d2d2>:</span>XXX00123 ServiceUI.exe -process<span style=color:#a61717;background-color:#e3d2d2>:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
+</code></pre></div><p>URLs with domain names</p>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(CM1)&#34;</span>,<span style=color:#d14>&#34;XXX&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Before<span style=color:#a61717;background-color:#e3d2d2>:</span> Action command line<span style=color:#a61717;background-color:#e3d2d2>:</span> smsswd.exe /run<span style=color:#a61717;background-color:#e3d2d2>:</span>CM100123 ServiceUI.exe -process<span style=color:#a61717;background-color:#e3d2d2>:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>After<span style=color:#a61717;background-color:#e3d2d2>:</span> Action command line<span style=color:#a61717;background-color:#e3d2d2>:</span> smsswd.exe /run<span style=color:#a61717;background-color:#e3d2d2>:</span>XXX00123 ServiceUI.exe -process<span style=color:#a61717;background-color:#e3d2d2>:</span>TSProgressUI.exe C:\Windows\System32\cmd.exe
+</code></pre></div><p>Specific words unique to your company</p>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(SecretProductName|SecretProductName2)&#34;</span>,<span style=color:#d14>&#34;XXXXXXXXX&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Before<span style=color:#a61717;background-color:#e3d2d2>:</span> Parsing step node<span style=color:#a61717;background-color:#e3d2d2>:</span> 1.0 Launch SecretProductName1 UDI Wizard
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>Parsing step node<span style=color:#a61717;background-color:#e3d2d2>:</span> 1.0 Launch XXXXXXXXX UDI Wizard
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>#Be sure to test your regular expressions.  There are several online test tools available.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#998;font-style:italic>#I used this one and it worked very well http://regexstorm.net/tester</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#998;font-style:italic>#Regex Reference</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#998;font-style:italic>#https://www.zerrouki.com/powershell-cheatsheet-regular-expressions/</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#998;font-style:italic>##############################################################################################################################################</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#998;font-style:italic>#Modify these entries to match your site&#39;s needs. So far, these 4 are all I need, but there may be others.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#998;font-style:italic>#Format is (RegexValue, ReplacementValue)</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>$regex</span> = @{}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;ASD\w*-\w+&#34;</span>,<span style=color:#d14>&#34;XXX-ServerName&#34;</span>) <span style=color:#998;font-style:italic>#Replace server names following format &lt;CompanyPrefix&gt;*-*</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(CM1)&#34;</span>,<span style=color:#d14>&#34;XXX&#34;</span>) <span style=color:#998;font-style:italic>#Replace all instances of your configmgr site prefix, mostly seein in package names</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(\.\w?\w?\.|\.)asquaredozen.com&#34;</span>,<span style=color:#d14>&#34;.XXXXXXX.com&#34;</span>) <span style=color:#998;font-style:italic>#Replace all domain urls matching .*.&lt;mydomain.com&gt; or .&lt;mydomain.com&gt;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:teal>$regex</span>.Add(<span style=color:#d14>&#34;(SecretProductName|SecretProductName2)&#34;</span>,<span style=color:#d14>&#34;XXXXXXXXX&#34;</span>) <span style=color:#998;font-style:italic>#Replace any other exact match words - like internal product names and such.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#998;font-style:italic>##############################################################################################################################################</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#998;font-style:italic>#Location of this script.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>set-location</span> <span style=color:teal>$PSScriptRoot</span> 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#998;font-style:italic>#Path to the log files.  Default location is the same folder as this script.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:teal>$logfiles</span> = <span style=color:#0086b3>Get-ChildItem</span> <span style=color:#d14>&#34;$PSScriptRoot\*.log&#34;</span> 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#0086b3>Write-Host</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:#000;font-weight:700>forEach</span> (<span style=color:teal>$log</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$logfiles</span>){
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>    <span style=color:#0086b3>Write-Host</span> <span style=color:#000;font-weight:700>-f</span> green <span style=color:#d14>&#34;Parsing </span>$(<span style=color:teal>$log</span>)<span style=color:#d14>&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>    <span style=color:teal>$Content</span> = (<span style=color:#0086b3>Get-Content</span> <span style=color:teal>$log</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>    <span style=color:#000;font-weight:700>foreach</span> (<span style=color:teal>$rex</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$regex</span>.keys)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>    {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>        <span style=color:teal>$Content</span> = <span style=color:teal>$Content</span> <span style=color:#000;font-weight:700>-ireplace</span> <span style=color:#d14>&#34;</span>$(<span style=color:teal>$rex</span>)<span style=color:#d14>&#34;</span>,<span style=color:#d14>&#34;</span>$(<span style=color:teal>$regex</span>[<span style=color:teal>$rex</span>])<span style=color:#d14>&#34;</span> <span style=color:#998;font-style:italic>#Use ireplace for case insensetive replace</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>     <span style=color:#998;font-style:italic>#Files are saved with &#34;_parsed appended to the end to preserve your originals.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>     <span style=color:teal>$parsedLogName</span> = <span style=color:teal>$log</span>.Name.Split(<span style=color:#d14>&#39;.&#39;</span>)[0] + <span style=color:#d14>&#34;_parsed.&#34;</span> + <span style=color:teal>$log</span>.Name.Split(<span style=color:#d14>&#39;.&#39;</span>)[-1]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>     <span style=color:teal>$content</span> | <span style=color:#0086b3>Set-Content</span> <span style=color:teal>$parsedLogName</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>     
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span>     <span style=color:#0086b3>Write-Host</span> <span style=color:#000;font-weight:700>-f</span> green <span style=color:#d14>&#34;Parsing Completed for </span>$(<span style=color:teal>$log</span>)<span style=color:#d14>.&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>}
+</code></pre></div><p>I&rsquo;ve added the file to my GitHub repository (first one yay!!) here: <a href=https://github.com/AdamGrossTX/PowershellScripts/blob/master/PSLogSanitizer.ps1>https://github.com/AdamGrossTX/PowershellScripts/blob/master/PSLogSanitizer.ps1</a>.</p>
+<p>Let me know if you have any suggestions for improvements.</p>
+</div>
+<div class=post-share>
+<div class="post-share-box share-comments">
+hello
+</div>
+</div>
+<div class=post-author>
+</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

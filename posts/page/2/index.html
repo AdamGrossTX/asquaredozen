@@ -1,613 +1,455 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Posts-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/posts/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        <link rel="alternate" type="application/rss+xml" href="/posts/index.xml" title="A Square Dozen">
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Posts-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/posts/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
+<link rel=alternate type=application/rss+xml href=/posts/index.xml title="A Square Dozen">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Posts">
+<meta name=twitter:description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main">
-	
-	
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/image-12.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/">Extracting Device Names from Bad MIFs in ConfigMgr</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    If you are here, you either know what a BADMIF is or Google brought you here after you searched for something like &lsquo;Large number of BADMIFS&rsquo; or &lsquo;Can I delete BADMIFS&rsquo; or something like that. Anyway, if you want great info on what MIFs are and some great in-depth troubleshooting steps for them, you should check out Umair Kahn&rsquo;s post over on Tech Community (migrated from Technet). It&rsquo;s a bit old, but still very relevant.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/Schrodingers_cat.svg_.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/">Lockdown Diary – My Always On VPN is Schrödinger’s Cat</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    When is your Always On VPN not Always On? An Always On VPN client uses a machine certificate to connect to the VPN gateway and connect to the network on startup. This feature is wonderful since it allows VPN clients to process machine group policies and even makes it easy for users with expired passwords to reset their passwords. But how can you verify that the machine channel is connected if you can&rsquo;t see any indicators on the logon screen?
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/image.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/">LockDown Diary – How I used DJOIN to Build Test Machines over VPN</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    It&rsquo;s been a few months since I&rsquo;ve sat down to put write something. I&rsquo;ve been taking a break trying to pick up some woodworking skills and spend a bit more time with the family during this COVID-19 lockdown. On March 5, I left work to take a week off for Spring Break and never returned to the office. Today is May 5. I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work from home, I don&rsquo;t have any hardware here other than a normal desk setup.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/image-3.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/">Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
-  Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
- If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/image-2.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/">Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    I recently needed to query the Win32_UserProfile class in WMI for some reporting I was working on. This class is a default Hardware Inventory class in ConfigMgr. I noticed that we had a large number of devices were reporting NULL values for several properties in this class when I queried them in SQL so I decided to investigate. From the ConfigMgr console, I used CMPivot (only one of the best tools ever!
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/image-11.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/">ConfigMgr AdminService and WMI Methods – A match made in the cloud (1910)</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    This post applies to Microsoft Endpoint Configuration Manager 1910 Current Branch
- At Microsoft Ignite 2019 Brad Anderson demoed a few things in his sessions, later covered more in depth in other sessions, that highlighted some new features to allow you to leverage the cloud console to manage ConfigMgr-only devices. As I watched these sessions, I realized that they were using the ConfigMgr Administration Service to do integrate into the cloud.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/image-45.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/">Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 3</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 3 of a 3-part series. Part 1covers how to create a PowerShell script to lookup error messages. Part 2 covers creating an Azure Function.
- My goal is to use ConfigMgr ErrorCodes in a report in Power BI for easier deployment monitoring. As I mentioned in Part 1, the error text isn&rsquo;t available in the ConfigMgr DB, so I created a PowerShell script to look up the error code.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/image-2-1.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/">Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 2</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 2 of a 3-part series. Part 1 covers how to create a PowerShell script to lookup error messages. Part 3 covers how to create a Power BI function to use an Azure Function.
- I had heard of Azure Functions and I&rsquo;ve written web API&rsquo;s but I had never put the 2 together until I ran into this dilemma.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/image-24.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/">Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 1</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 1 of a 3-part series. Part 2 covers creating an Azure Function. Part 3 covers how to create a Power BI function to use an Azure Function.
- If you have ever checked the logs in ConfigMgr, you&rsquo;ve likely run across an error code in a format like 0x87D00664 or -2016410012. If use the error lookup feature in CMTrace, you can generally convert the error to plain text.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <article class="list-item">
-        
-        <div class="post-img">
-            <a href="https://blog.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">
-                <img width="520" height="400" src="https://blog.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/image-1.png">
-            </a>
-        </div>
-        
-        <div class="list-content">
-            <div class="post-header">
-                    <h2 class="post-title">
-                        <a href="https://blog.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                    </h2>
-            </div>
-            <div class="post-entry">
-                <p>
-                
-                    I hope I never have to build another Task Sequence again. Seriously. Wouldn&rsquo;t that be nice? I know that&rsquo;s not truly feasible, but can&rsquo;t a guy dream? It&rsquo;s not that I dislike Task Sequences, it&rsquo;s just that I strongly believe that Modern Desktop Management (AutoPilot/Device Reset/Feature Update servicing/etc.) is going to continue to improve and we should continue to attempt to adopt these tools with as much effort as we spend on customizing Task Sequences.
-                
-                </p>
-            </div>
-            <div class="list-meta">
-                <span class="post-date">
-                    
-                </span>
-            </div>
-        </div>
-    </article>
-    
-    <div class="pagination">
-	<div class="newer">
-	
-		<a href="/posts/">← Newer Posts</a>
-	
-	</div>
-	<div class="older">
-	
-		<a href="/posts/page/3/">Older Posts →</a>
-	
-	</div>
+<div class=container>
+<div id=content>
+<div id=main>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/image-12.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2020/05/19/extracting-device-names-from-bad-mifs-in-configmgr/>Extracting Device Names from Bad MIFs in ConfigMgr</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+If you are here, you either know what a BADMIF is or Google brought you here after you searched for something like &lsquo;Large number of BADMIFS&rsquo; or &lsquo;Can I delete BADMIFS&rsquo; or something like that. Anyway, if you want great info on what MIFs are and some great in-depth troubleshooting steps for them, you should check out Umair Kahn&rsquo;s post over on Tech Community (migrated from Technet). It&rsquo;s a bit old, but still very relevant.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
 </div>
 </div>
-<aside id="sidebar">
-	<div class="widget widget_search">
-		<form role="search" method="get" action="https://www.google.com/search" id="searchform">
-			<input type="search" placeholder="Search and hit enter..." value="" name="q" id="q" title="Search and hit enter...">
-			<input type="hidden" name="sitesearch" value="asquaredozen.com">
-			<button type="submit" value="Search"/>
-		</form>
-		</div>
-	<div>
-	<div class="widget widget_MVP">
-		<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target="_blank">
-		<img src="/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png">
-		</a>
-	</div>	
-	<div class="widget widget_recent_entries">
-		<h4 class="widget-title">Recent Posts</h4>
-		<ul>
-			
-			<li><a href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/" target="_blank">Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-			
-			<li><a href="/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/" target="_blank">How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
-			
-			<li><a href="/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/" target="_blank">Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
-			
-			<li><a href="/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/" target="_blank">New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
-			
-			<li><a href="/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/" target="_blank">Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
-			
-		</ul>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Consulting</h4>
-		<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target="_blank">
-		<img src="/img/SCDLogo.png">
-		</a>
-	</div>
-	<div class="widget widget_SCD">
-		<h4 class="widget-title">Intune.Training</h4>
-		<a href="http://intune.training" target="_blank">
-		<img src="/img/ITLogo.png">
-		</a>
-	</div>	
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/Schrodingers_cat.svg_.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/>Lockdown Diary – My Always On VPN is Schrödinger’s Cat</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+When is your Always On VPN not Always On? An Always On VPN client uses a machine certificate to connect to the VPN gateway and connect to the network on startup. This feature is wonderful since it allows VPN clients to process machine group policies and even makes it easy for users with expired passwords to reset their passwords. But how can you verify that the machine channel is connected if you can&rsquo;t see any indicators on the logon screen?
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/image.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/>LockDown Diary – How I used DJOIN to Build Test Machines over VPN</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+It&rsquo;s been a few months since I&rsquo;ve sat down to put write something. I&rsquo;ve been taking a break trying to pick up some woodworking skills and spend a bit more time with the family during this COVID-19 lockdown. On March 5, I left work to take a week off for Spring Break and never returned to the office. Today is May 5. I wasn&rsquo;t prepared for being at home and since I don&rsquo;t regularly work from home, I don&rsquo;t have any hardware here other than a normal desk setup.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/image-3.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/>Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
+Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
+If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/image-2.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2020/01/19/repairing-invalid-win32-userprofile-wmi-class-on-windows-7-to-10-in-place-upgraded-devices/>Repairing Invalid Win32_UserProfile WMI Class on Windows 7 to 10 In-Place Upgraded Devices</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+I recently needed to query the Win32_UserProfile class in WMI for some reporting I was working on. This class is a default Hardware Inventory class in ConfigMgr. I noticed that we had a large number of devices were reporting NULL values for several properties in this class when I queried them in SQL so I decided to investigate. From the ConfigMgr console, I used CMPivot (only one of the best tools ever!
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/image-11.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2019/11/29/configmgr-adminservice-and-wmi-methods-a-match-made-in-the-cloud-1910/>ConfigMgr AdminService and WMI Methods – A match made in the cloud (1910)</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+This post applies to Microsoft Endpoint Configuration Manager 1910 Current Branch
+At Microsoft Ignite 2019 Brad Anderson demoed a few things in his sessions, later covered more in depth in other sessions, that highlighted some new features to allow you to leverage the cloud console to manage ConfigMgr-only devices. As I watched these sessions, I realized that they were using the ConfigMgr Administration Service to do integrate into the cloud.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/image-45.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-3/>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 3</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 3 of a 3-part series. Part 1covers how to create a PowerShell script to lookup error messages. Part 2 covers creating an Azure Function.
+My goal is to use ConfigMgr ErrorCodes in a report in Power BI for easier deployment monitoring. As I mentioned in Part 1, the error text isn&rsquo;t available in the ConfigMgr DB, so I created a PowerShell script to look up the error code.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/image-2-1.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-2/>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 2</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 2 of a 3-part series. Part 1 covers how to create a PowerShell script to lookup error messages. Part 3 covers how to create a Power BI function to use an Azure Function.
+I had heard of Azure Functions and I&rsquo;ve written web API&rsquo;s but I had never put the 2 together until I ran into this dilemma.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/image-24.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2019/11/25/convert-configmgr-error-codes-to-plain-text-messages-for-reporting-part-1/>Convert ConfigMgr Error Codes to Plain Text Messages for Reporting – Part 1</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+I demoed this at MMS Jazz 2019 Tip and Tricks. This is Part 1 of a 3-part series. Part 2 covers creating an Azure Function. Part 3 covers how to create a Power BI function to use an Azure Function.
+If you have ever checked the logs in ConfigMgr, you&rsquo;ve likely run across an error code in a format like 0x87D00664 or -2016410012. If use the error lookup feature in CMTrace, you can generally convert the error to plain text.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
+<a href=https://www.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/image-1.png>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+I hope I never have to build another Task Sequence again. Seriously. Wouldn&rsquo;t that be nice? I know that&rsquo;s not truly feasible, but can&rsquo;t a guy dream? It&rsquo;s not that I dislike Task Sequences, it&rsquo;s just that I strongly believe that Modern Desktop Management (AutoPilot/Device Reset/Feature Update servicing/etc.) is going to continue to improve and we should continue to attempt to adopt these tools with as much effort as we spend on customizing Task Sequences.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<div class=pagination>
+<div class=newer>
+<a href=/posts/>← Newer Posts</a>
+</div>
+<div class=older>
+<a href=/posts/page/3/>Older Posts →</a>
+</div>
+</div>
+</div>
+<aside id=sidebar>
+<div class="widget widget_search">
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+<div>
+<div class="widget widget_MVP">
+<a href="https://mvp.microsoft.com/en-us/PublicProfile/5003519?fullName=Adam%20Gross" target=_blank>
+<img src=/img/MVP_Logo_Horizontal_Secondary_Black_RGB_300ppi.png>
+</a>
+</div>
+<div class="widget widget_recent_entries">
+<h4 class=widget-title>Recent Posts</h4>
+<ul>
+<li><a href=/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/ target=_blank>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
+<li><a href=/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/ target=_blank>How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
+<li><a href=/2020/12/02/autopilot-profile-causes-device-rename-after-configmgr-osd-task-sequence-and-breaks-ad-domain-trust/ target=_blank>Autopilot Profile causes Device Rename after ConfigMgr OSD Task Sequence and Breaks AD Domain Trust</a></li>
+<li><a href=/2020/09/30/new-post-on-sysmansquad-com-configmgr-and-the-case-of-the-mysterious-3da228be-34da-49f4-a081-66465b077429-folder/ target=_blank>New Post on SysManSquad.com – ConfigMgr and The Case of the Mysterious {3DA228BE-34DA-49f4-A081-66465B077429} Folder</a></li>
+<li><a href=/2020/09/13/windows-10-feature-updates-testing-the-migneo-disable-parameter/ target=_blank>Windows 10 Feature Updates – Testing the /MigNEO Disable Parameter</a></li>
+</ul>
+</div>
+<div class="widget widget_SCD">
+<h4 class=widget-title>Consulting</h4>
+<a href="https://systemcenterdudes.com/sccm-consulting-services/?ref=5&campaign=Consulting" target=_blank>
+<img src=/img/SCDLogo.png>
+</a>
+</div>
+<div class="widget widget_SCD">
+<h4 class=widget-title>Intune.Training</h4>
+<a href=http://intune.training target=_blank>
+<img src=/img/ITLogo.png>
+</a>
+</div>
 </aside>
-
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

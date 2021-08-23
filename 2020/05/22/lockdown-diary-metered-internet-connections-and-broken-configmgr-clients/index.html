@@ -1,256 +1,171 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2020/05/22/lockdown-diary-metered-internet-connections-and-broken-configmgr-clients/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2020/05/22/lockdown-diary-metered-internet-connections-and-broken-configmgr-clients/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients"/>
-<meta name="twitter:description" content="Do you know how hard it is to find things when you don&rsquo;t know what to search for??
- I&rsquo;m paranoid. We recently upgraded our site to ConfigMgr 2002, first fast ring, then the hotfix. We also installed a Cloud Management Gateway, re-worked our Boundary Groups to handle VPN better, added a second Management Point and generally made a butt-load of changes to our environment to help our remote clients have access to content more easily."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients">
+<meta name=twitter:description content="Do you know how hard it is to find things when you don&rsquo;t know what to search for??
+ I&rsquo;m paranoid. We recently upgraded our site to ConfigMgr 2002, first fast ring, then the hotfix. We also installed a Cloud Management Gateway, re-worked our Boundary Groups to handle VPN better, added a second Management Point and generally made a butt-load of changes to our environment to help our remote clients have access to content more easily.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients</h1>
-				<span class="post-date">May 23, 2020</span>
-			</div>
-			<div class="post-entry">
-				<hr>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Lockdown Diary – Metered Internet Connections and Broken ConfigMgr Clients</h1>
+<span class=post-date>May 23, 2020</span>
+</div>
+<div class=post-entry>
+<hr>
 <p>Do you know how hard it is to find things when you don&rsquo;t know what to search for??</p>
 <hr>
 <p>I&rsquo;m paranoid. We recently upgraded our site to ConfigMgr 2002, first fast ring, then the hotfix. We also installed a Cloud Management Gateway, re-worked our Boundary Groups to handle VPN better, added a second Management Point and generally made a butt-load of changes to our environment to help our remote clients have access to content more easily. I&rsquo;ve been frantically spot checking clients to ensure they are working now and hoping that one of the many changes hasn&rsquo;t caused them to drop off the face of the earth. There was also a bug that got fixed in slow ring/hotfix, related to client failing to authenticate the CMG that wanted to ensure was working now.
@@ -260,284 +175,265 @@ Unfortunately, when you go looking into client logs, you can end up chasing lots
 <p><strong>DISCLAIMER:</strong>
 The &lsquo;solution&rsquo; provided below uses several &lsquo;unsupported&rsquo; steps to achieve the intended results and is provided for informational purposes only.</p>
 <hr>
-<p>Without further ado, here&rsquo;s the brain dump firehose&hellip;</p>
-<p><div class="image">
-  <figure>
-    <a href="200.gif" target="_blank">
-      <img src="200.gif" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p>Without further ado, here&rsquo;s the brain dump firehose&mldr;</p>
+<p><div class=image>
+<figure>
+<a href=200.gif target=_blank>
+<img src=200.gif alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<h2 id="see-what-had-happened-was">See, what had happened was&hellip;</h2>
+<h2 id=see-what-had-happened-was>See, what had happened was&mldr;</h2>
 <p>I used Recast Right Click tools (free community edition) <em>not a sponsored post :-)</em> to trigger a client repair on around 500 devices. About 60 of the machines were online even though they were showing no client in the console. I waited to see if they would check in and they never did. Started looking at client logs and noticed that the repairs seemed to be working and the clients appeared to be fine, but when I checked CcmMessaging.log, it was full of these errors:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Request to http://CM01.ASD.net/ccm_system/request cannot be fulfilled since use of metered network is not allowed.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">Post to https://CM01.ASD.net/ccm_system_windowsauth/request failed with 0x87d00231.</span>
-</code></pre></div><p><div class="image">
-  <figure>
-    <a href="image-13.png" target="_blank">
-      <img src="image-13.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>Request to http://CM01.ASD.net/ccm_system/request cannot be fulfilled since use of metered network is not allowed.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:teal>Post to https://CM01.ASD.net/ccm_system_windowsauth/request failed with 0x87d00231.</span>
+</code></pre></div><p><div class=image>
+<figure>
+<a href=image-13.png target=_blank>
+<img src=image-13.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>I opened a remote PowerShell console to some of the machines and I started checking to see if metering had been enabled on the wireless adapters by the end user. I ran some NETSH commands to find the profiles where metering was enabled and the clients began working. I was excited until I got to my next machine and discovered that it was on the LAN at the office and we don&rsquo;t enable metering on any of our adapters by default.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$ProfileList</span> = <span style="color:#0086b3">Get-NetConnectionProfile</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#000;font-weight:bold">ForEach</span> (<span style="color:#008080">$Profile</span> <span style="color:#000;font-weight:bold">in</span> <span style="color:#008080">$ProfileList</span>.Name) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>    (netsh wlan show profile name=<span style="color:#d14">&#34;</span>$(<span style="color:#008080">$Profile</span>)<span style="color:#d14">&#34;</span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>}
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$ProfileList</span> = <span style=color:#0086b3>Get-NetConnectionProfile</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#000;font-weight:700>ForEach</span> (<span style=color:teal>$Profile</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$ProfileList</span>.Name) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>    (netsh wlan show profile name=<span style=color:#d14>&#34;</span>$(<span style=color:teal>$Profile</span>)<span style=color:#d14>&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>}
 </code></pre></div><p>I tried the same NETSH commands and they didn&rsquo;t work on the LAN adapters. It took me a while but I stumbled on several posts that had bits and pieces that helped find what I needed. There&rsquo;s a fair amount of detail upcoming, but the script is at the end. I want to include all of the components that I discovered so I can consolidate everything into one place.</p>
 <p>Also, I&rsquo;m just making most of this up based on what I have been able to piece together. I have spent WAY too much time digging and just need to move on. I could be REALLY wrong, but it&rsquo;s the best I&rsquo;ve got. If you know more, send me a note and I&rsquo;ll delete it, I mean, I&rsquo;ll update the post.</p>
-<h2 id="network-adapter-metering">Network Adapter Metering</h2>
+<h2 id=network-adapter-metering>Network Adapter Metering</h2>
 <p>When setting up your network adapters in Windows 10, I&rsquo;m sure you&rsquo;ve seen this section under the properties for your network adapters. By enabling metering, you tell Windows to limit the amount of data that it and other applications can put through the adapter. This is a way to reduce consumption of pay-per-use internet plans and or wifi hotspots, etc.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-18.png" target="_blank">
-      <img src="image-18.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-18.png target=_blank>
+<img src=image-18.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div>
-<div class="image">
-  <figure>
-    <a href="image-17.png" target="_blank">
-      <img src="image-17.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=image>
+<figure>
+<a href=image-17.png target=_blank>
+<img src=image-17.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>One problem with this setting is that it will actually disable Windows updates (there&rsquo;s an option to override this as well) AND more importantly, it will prevent the installation of the ConfigMgr client. Also, if you haven&rsquo;t changed your Client Settings policy from the default &lsquo;Block&rsquo;, devices with the client installed won&rsquo;t communicate with your MP - as shown in the error log above.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-20.png" target="_blank">
-      <img src="image-20.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-20.png target=_blank>
+<img src=image-20.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Another problem is that there appear to be Group Policies for disabling the ability for users to change this setting for wireless adapters or cellular cards, but I wasn&rsquo;t able to find one that prevented users from setting metering on their wired LAN adapters.</p>
 <p>It also appears that there have been changes to where/how you manage metering in the registry/Group Policy in later versions of Windows (1709 and later).</p>
 <p><code>Computer Configuration \ Administrative Templates \ Network \ WLAN Service \ WLAN Media Cost</code></p>
 <p><code>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList\DefaultMediaCost</code></p>
 <p>Basically, there are some options that are somewhat difficult to lock down that users can change and break things.</p>
-<h2 id="configmgr-client-event-handling">ConfigMgr Client Event Handling</h2>
-<p>The ConfigMgr client has lots of event handlers that it uses to monitor system processes and trigger processes in response to the events. One of the items it monitors is network connectivity and adapter events. Whenever you enable metering on your adapter, you can watch the CcmNotificationAgent.log to see that the network cost was changed to 2 (Enabled/Fixed/Metered) or if you disable, it will show 1 (Disabled/Unlimited/Not Metered). If you enable Debug logging on your ConfigMgr client, you will see even more info (not shown). <a href="https://www.imab.dk/enabling-and-disabling-configmgr-client-debug-logging-in-a-jiffy-using-powershell-and-run-script/">Martin has a great script to enable debug logging here</a>.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-15.png" target="_blank">
-      <img src="image-15.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<h2 id=configmgr-client-event-handling>ConfigMgr Client Event Handling</h2>
+<p>The ConfigMgr client has lots of event handlers that it uses to monitor system processes and trigger processes in response to the events. One of the items it monitors is network connectivity and adapter events. Whenever you enable metering on your adapter, you can watch the CcmNotificationAgent.log to see that the network cost was changed to 2 (Enabled/Fixed/Metered) or if you disable, it will show 1 (Disabled/Unlimited/Not Metered). If you enable Debug logging on your ConfigMgr client, you will see even more info (not shown). <a href=https://www.imab.dk/enabling-and-disabling-configmgr-client-debug-logging-in-a-jiffy-using-powershell-and-run-script/>Martin has a great script to enable debug logging here</a>.</p>
+<p><div class=image>
+<figure>
+<a href=image-15.png target=_blank>
+<img src=image-15.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">Cost Network state has been updated to 2, trigger client endpoint reset connection according to the change.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#008080">Cancel the active connector here, tcp connection will be disconnected immediately while http connection will be timeout evetually.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#008080">Connection is reset</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span><span style="color:#008080">Critical Battery: [FALSE]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span><span style="color:#008080">Connection Standy: [FALSE]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span><span style="color:#008080">Network allowed to use: [FALSE]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span><span style="color:#008080">Sleep 59 seconds to restart client...</span>
-</code></pre></div><div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>Cost Network state has been updated to 1, trigger client endpoint reset connection according to the change.
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>Critical Battery<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">[FALSE]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span>Connection Standy<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">[FALSE]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>Network allowed to use<span style="color:#a61717;background-color:#e3d2d2">:</span> <span style="color:#008080">[True]</span>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>Cost Network state has been updated to 2, trigger client endpoint reset connection according to the change.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>Cancel the active connector here, tcp connection will be disconnected immediately while http connection will be timeout evetually.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:teal>Connection is reset</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:teal>Critical Battery: [FALSE]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span><span style=color:teal>Connection Standy: [FALSE]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span><span style=color:teal>Network allowed to use: [FALSE]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span><span style=color:teal>Sleep 59 seconds to restart client...</span>
+</code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>Cost Network state has been updated to 1, trigger client endpoint reset connection according to the change.
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Critical Battery<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[FALSE]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>Connection Standy<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[FALSE]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>Network allowed to use<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[True]</span>
 </code></pre></div><p>You can even run a PowerShell command to check the ConfigMgr client for it&rsquo;s current Network Cost - it will return 1 or 2. From what I can tell, ConfigMgr monitors for a State Change event on the network adapter, then updates it&rsquo;s network cost value and caches it. As far as I could determine, there doesn&rsquo;t appear to be a way to force the client to check for the network cost again nor is there a way to trigger a network state change that it would see.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#0086b3">Invoke-CimMethod</span> -Namespace <span style="color:#d14">&#34;root\ccm\ClientSDK&#34;</span> -ClassName <span style="color:#d14">&#34;CCM_ClientUtilities&#34;</span> -MethodName GetNetworkCost
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Invoke-CimMethod</span> -Namespace <span style=color:#d14>&#34;root\ccm\ClientSDK&#34;</span> -ClassName <span style=color:#d14>&#34;CCM_ClientUtilities&#34;</span> -MethodName GetNetworkCost
 </code></pre></div><p>You can watch the NetworkProfile event log and see the State Change event when you enable/disable metering on the adapter.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-19.png" target="_blank">
-      <img src="image-19.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-19.png target=_blank>
+<img src=image-19.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Log Name:      Microsoft-Windows-NetworkProfile/Operational</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Source:        Microsoft-Windows-NetworkProfile</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">Date:          5/22/2020 2:15:58 PM</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#008080">Event ID:      4004</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#008080">Task Category: None</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#008080">Level:         Information</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#008080">Keywords:      </span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#008080">User:          LOCAL SERVICE</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#008080">Computer:     mycomputer.asd.net </span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#008080">Description:</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">Network State Change Fired</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>	<span style="color:#008080">New Internet Connection Profile: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>	<span style="color:#008080">Connection Cost Changed: true</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>	<span style="color:#008080">Domain Connectivity Level Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>	<span style="color:#008080">Network Connectivity Level Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>	<span style="color:#008080">Host Name Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>	<span style="color:#008080">Wwan Registration State Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>	<span style="color:#008080">Tethering Operational State Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>	<span style="color:#008080">Tethering Client Count Changed: false</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#008080">Event Xml:</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#008080">&lt;Event xmlns</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;http://schemas.microsoft.com/win/2004/08/events/event&#34;&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#d14">  &lt;System&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#d14">    &lt;Provider Name=&#34;Microsoft-Windows-NetworkProfile&#34; Guid=&#34;{fbcfac3f-8459-419f-8e48-1f0b49cdb85e}&#34; /&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span><span style="color:#d14">    &lt;EventID&gt;4004&lt;/EventID&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#d14">    &lt;Version&gt;0&lt;/Version&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#d14">    &lt;Level&gt;4&lt;/Level&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span><span style="color:#d14">    &lt;Task&gt;0&lt;/Task&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span><span style="color:#d14">    &lt;Opcode&gt;0&lt;/Opcode&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span><span style="color:#d14">    &lt;Keywords&gt;0x4000000000000000&lt;/Keywords&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#d14">    &lt;TimeCreated SystemTime=&#34;2020-05-22T19:15:58.412838100Z&#34; /&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span><span style="color:#d14">    &lt;EventRecordID&gt;113&lt;/EventRecordID&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#d14">    &lt;Correlation /&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span><span style="color:#d14">    &lt;Execution ProcessID=&#34;1984&#34; ThreadID=&#34;1308&#34; /&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span><span style="color:#d14">    &lt;Channel&gt;Microsoft-Windows-NetworkProfile/Operational&lt;/Channel&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span><span style="color:#d14">    &lt;Computer&gt;mycomputer.asd.net&lt;/Computer&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span><span style="color:#d14">    &lt;Security UserID=&#34;S-1-5-19&#34; /&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span><span style="color:#d14">  &lt;/System&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span><span style="color:#d14">  &lt;EventData&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span><span style="color:#d14">    &lt;Data Name=&#34;NewInternetConnectionProfile&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span><span style="color:#d14">    &lt;Data Name=&#34;ConnectionCostChanged&#34;&gt;true&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span><span style="color:#d14">    &lt;Data Name=&#34;DomainConnectivityLevelChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span><span style="color:#d14">    &lt;Data Name=&#34;NetworkConnectivityLevelChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span><span style="color:#d14">    &lt;Data Name=&#34;HostNameChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span><span style="color:#d14">    &lt;Data Name=&#34;WwanRegistrationStateChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span><span style="color:#d14">    &lt;Data Name=&#34;TetheringOperationalStateChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span><span style="color:#d14">    &lt;Data Name=&#34;TetheringClientCountChanged&#34;&gt;false&lt;/Data&gt;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span><span style="color:#d14">  &lt;/EventData&gt;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span><span style="color:#008080">&lt;/Event&gt;</span>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>Log Name:      Microsoft-Windows-NetworkProfile/Operational</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>Source:        Microsoft-Windows-NetworkProfile</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>Date:          5/22/2020 2:15:58 PM</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>Event ID:      4004</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>Task Category: None</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>Level:         Information</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>Keywords:      </span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>User:          LOCAL SERVICE</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>Computer:     mycomputer.asd.net </span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>Description:</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:teal>Network State Change Fired</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>	<span style=color:teal>New Internet Connection Profile: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>	<span style=color:teal>Connection Cost Changed: true</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>	<span style=color:teal>Domain Connectivity Level Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>	<span style=color:teal>Network Connectivity Level Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>	<span style=color:teal>Host Name Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>	<span style=color:teal>Wwan Registration State Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>	<span style=color:teal>Tethering Operational State Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>	<span style=color:teal>Tethering Client Count Changed: false</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:teal>Event Xml:</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:teal>&lt;Event xmlns</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#34;http://schemas.microsoft.com/win/2004/08/events/event&#34;&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#d14>  &lt;System&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:#d14>    &lt;Provider Name=&#34;Microsoft-Windows-NetworkProfile&#34; Guid=&#34;{fbcfac3f-8459-419f-8e48-1f0b49cdb85e}&#34; /&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:#d14>    &lt;EventID&gt;4004&lt;/EventID&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#d14>    &lt;Version&gt;0&lt;/Version&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#d14>    &lt;Level&gt;4&lt;/Level&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:#d14>    &lt;Task&gt;0&lt;/Task&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#d14>    &lt;Opcode&gt;0&lt;/Opcode&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#d14>    &lt;Keywords&gt;0x4000000000000000&lt;/Keywords&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#d14>    &lt;TimeCreated SystemTime=&#34;2020-05-22T19:15:58.412838100Z&#34; /&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#d14>    &lt;EventRecordID&gt;113&lt;/EventRecordID&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#d14>    &lt;Correlation /&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span><span style=color:#d14>    &lt;Execution ProcessID=&#34;1984&#34; ThreadID=&#34;1308&#34; /&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#d14>    &lt;Channel&gt;Microsoft-Windows-NetworkProfile/Operational&lt;/Channel&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#d14>    &lt;Computer&gt;mycomputer.asd.net&lt;/Computer&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span><span style=color:#d14>    &lt;Security UserID=&#34;S-1-5-19&#34; /&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span><span style=color:#d14>  &lt;/System&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span><span style=color:#d14>  &lt;EventData&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span><span style=color:#d14>    &lt;Data Name=&#34;NewInternetConnectionProfile&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span><span style=color:#d14>    &lt;Data Name=&#34;ConnectionCostChanged&#34;&gt;true&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span><span style=color:#d14>    &lt;Data Name=&#34;DomainConnectivityLevelChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a></span><span style=color:#d14>    &lt;Data Name=&#34;NetworkConnectivityLevelChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a></span><span style=color:#d14>    &lt;Data Name=&#34;HostNameChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a></span><span style=color:#d14>    &lt;Data Name=&#34;WwanRegistrationStateChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a></span><span style=color:#d14>    &lt;Data Name=&#34;TetheringOperationalStateChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a></span><span style=color:#d14>    &lt;Data Name=&#34;TetheringClientCountChanged&#34;&gt;false&lt;/Data&gt;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a></span><span style=color:#d14>  &lt;/EventData&gt;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a></span><span style=color:teal>&lt;/Event&gt;</span>
 </code></pre></div><p>You can see the <code>ConnectionCostChanged</code> entry. This is what ConfigMgr is looking for.</p>
 <p>Here&rsquo;s what ccmsetup.log looks like if you have metering enabled and try to install the ConfigMgr client. It&rsquo;s a hardcoded check too, so no overriding it.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-14.png" target="_blank">
-      <img src="image-14.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-14.png target=_blank>
+<img src=image-14.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">Failed to connect to machine policy namespace. 0x8004100e</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">Client deployment cannot be fulfilled since use of metered network is not allowed.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">Failed to parse &#39;&#34;C:\WINDOWS\ccmsetup\ccmsetup.exe&#34; /runservice /ForceInstall /ignoreskipupgrade /config:MobileClient.tcf&#39; with error 0x87d00227</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#008080">Sending state &#39;329&#39;...</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#008080">Updating MDM_ConfigSetting.ClientDeploymentErrorCode with value 2278556199</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#008080">Failed to get client version for sending state messages. Error 0x8004100e</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#008080">[] Params to send &#39;5.0.8968.1014 Deployment &#34;C:\WINDOWS\ccmsetup\ccmsetup.exe&#34; /runservice /ForceInstall /ignoreskipupgrade /config:MobileClient.tcf&#39;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#008080">Sending Fallback Status Point message to &#39;cm01.asd.net&#39;, STATEID</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#39;329&#39;.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#008080">&lt;ClientDeploymentMessage ErrorCode</span><span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;-2016411097&#34;&gt;&lt;Client Baseline=&#34;1&#34; BaselineCookie=&#34;&#34; Platform=&#34;2&#34; Langs=&#34;&#34;/&gt;&lt;/ClientDeploymentMessage&gt;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#008080">State message with TopicType 800 and TopicId {732AC9D5-1BE6-4EDC-9488-5AE42B63CA5D} has been sent to the FSP</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">Failed to connect to policy namespace. Error 0x8004100e</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#008080">Sending state &#39;301&#39;...</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#008080">Updating MDM_ConfigSetting.ClientDeploymentErrorCode with value 2278556199</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#008080">CcmSetup failed with error code 0x87d00227</span>
-</code></pre></div><h2 id="the-windows-network-adapter-black-hole">The Windows Network Adapter Black Hole</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>Failed to connect to machine policy namespace. 0x8004100e</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>Client deployment cannot be fulfilled since use of metered network is not allowed.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>Failed to parse &#39;&#34;C:\WINDOWS\ccmsetup\ccmsetup.exe&#34; /runservice /ForceInstall /ignoreskipupgrade /config:MobileClient.tcf&#39; with error 0x87d00227</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>Sending state &#39;329&#39;...</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>Updating MDM_ConfigSetting.ClientDeploymentErrorCode with value 2278556199</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>Failed to get client version for sending state messages. Error 0x8004100e</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>[] Params to send &#39;5.0.8968.1014 Deployment &#34;C:\WINDOWS\ccmsetup\ccmsetup.exe&#34; /runservice /ForceInstall /ignoreskipupgrade /config:MobileClient.tcf&#39;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>Sending Fallback Status Point message to &#39;cm01.asd.net&#39;, STATEID</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#39;329&#39;.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>&lt;ClientDeploymentMessage ErrorCode</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#34;-2016411097&#34;&gt;&lt;Client Baseline=&#34;1&#34; BaselineCookie=&#34;&#34; Platform=&#34;2&#34; Langs=&#34;&#34;/&gt;&lt;/ClientDeploymentMessage&gt;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>State message with TopicType 800 and TopicId {732AC9D5-1BE6-4EDC-9488-5AE42B63CA5D} has been sent to the FSP</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:teal>Failed to connect to policy namespace. Error 0x8004100e</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:teal>Sending state &#39;301&#39;...</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:teal>Updating MDM_ConfigSetting.ClientDeploymentErrorCode with value 2278556199</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:teal>CcmSetup failed with error code 0x87d00227</span>
+</code></pre></div><h2 id=the-windows-network-adapter-black-hole>The Windows Network Adapter Black Hole</h2>
 <p>I&rsquo;ll be the first to admit, I don&rsquo;t like networking. I dislike it even more after this adventure. So we&rsquo;ve seen where in the UI you can enable/disable metering. We&rsquo;ve seen in GPO where you can configure WLAN cost options. We&rsquo;ve seen the network event that gets triggered when you make a change. What we haven&rsquo;t seen is how you can programatically change costing on a LAN adapter in a way that causes the ConfigMgr to see the event and trigger a re-cache of costing for the network adapter. Spoiler - I can&rsquo;t find a way, but here&rsquo;s how far I got.</p>
-<h4 id="data-usage">Data Usage</h4>
+<h4 id=data-usage>Data Usage</h4>
 <p>There&rsquo;s a Windows system DLL <code>dusmapi.dll</code>(Data Usage API) and a service <code>dusmsvc</code> (Data Usage) that are used to manage your network adapter profile settings related to - you guessed it - DATA USAGE!!</p>
 <p>By watching ProcMon, I could see that <code>dusmapi.dll</code> was being called but I can&rsquo;t figure out how to import the dll into PowerShell or VS to try to manually call it. However, I did find find a dump of all of the functions in the dll.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">DusmEnumConnectionList</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#008080">DusmEnumProfileList</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#008080">DusmFlushCostCache</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#008080">DusmFree</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#008080">DusmGetAttributedNetworkUsage</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#008080">DusmGetConnectionListNetworkUsage</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#008080">DusmGetNetworkUsage</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#008080">DusmGetProviderNetworkUsage</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#008080">DusmQueryBackgroundRestriction</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#008080">DusmQueryConnectionProperties</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#008080">DusmQueryCost</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#008080">DusmQueryDataPlan</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#008080">DusmQueryGlobalDpuState</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#008080">DusmQueryOperatorCost</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#008080">DusmQueryOperatorDataPlan</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#008080">DusmQuerySource</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#008080">DusmQueryUserCost</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#008080">DusmQueryUserDataPlan</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#008080">DusmResetNetworkUsage</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#008080">DusmSetAttributionMapping</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#008080">DusmSetBackgroundRestriction</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#008080">DusmSetOperatorCost</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span><span style="color:#008080">DusmSetOperatorDataPlan</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span><span style="color:#008080">DusmSetSource</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#008080">DusmSetUserCost</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#008080">DusmSetUserDataPlan</span>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>DusmEnumConnectionList</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>DusmEnumProfileList</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>DusmFlushCostCache</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>DusmFree</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>DusmGetAttributedNetworkUsage</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>DusmGetConnectionListNetworkUsage</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>DusmGetNetworkUsage</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>DusmGetProviderNetworkUsage</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>DusmQueryBackgroundRestriction</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>DusmQueryConnectionProperties</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:teal>DusmQueryCost</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:teal>DusmQueryDataPlan</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:teal>DusmQueryGlobalDpuState</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:teal>DusmQueryOperatorCost</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:teal>DusmQueryOperatorDataPlan</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:teal>DusmQuerySource</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:teal>DusmQueryUserCost</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:teal>DusmQueryUserDataPlan</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:teal>DusmResetNetworkUsage</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:teal>DusmSetAttributionMapping</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:teal>DusmSetBackgroundRestriction</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:teal>DusmSetOperatorCost</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:teal>DusmSetOperatorDataPlan</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:teal>DusmSetSource</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:teal>DusmSetUserCost</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:teal>DusmSetUserDataPlan</span>
 </code></pre></div><p>On line 25 we can see that there&rsquo;s a function called <code>DusmSetUserCost</code>. That&rsquo;s the one we want. I&rsquo;ve searched GitHub, in the Windows networking PowerShell module and everywhere else and I can&rsquo;t find any info on how to call this but I&rsquo;m certain it&rsquo;s the key to triggering the costing state change event on the adapter.</p>
-<p>The other related bit here is that the setting that gets created by toggling metering on an adapter is a registry key <code>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DusmSvc\Profiles\&lt;AdapterGUID&gt;\*\UserCost</code>. The value will be set to 2 if it&rsquo;s enabled and 0 if you disable it. If you never touch it, you will only have the base key of <code>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DusmSvc\Profiles</code>.</p>
-<h4 id="a-light-in-the-darkness">A light in the darkness</h4>
+<p>The other related bit here is that the setting that gets created by toggling metering on an adapter is a registry key <code>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DusmSvc\Profiles\&lt;AdapterGUID>\*\UserCost</code>. The value will be set to 2 if it&rsquo;s enabled and 0 if you disable it. If you never touch it, you will only have the base key of <code>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DusmSvc\Profiles</code>.</p>
+<h4 id=a-light-in-the-darkness>A light in the darkness</h4>
 <p>There are other references to network costs, but only for querying them, nothing for setting them.</p>
 <p>Run this in PowerShell and you can dump out the cost info for all of your network adapter profiles.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#0086b3">Get-ConnectionCost</span>.ps1<span style="color:#d14">&#34;,&#34;</span>language<span style="color:#d14">&#34;:&#34;</span>PowerShell<span style="color:#d14">&#34;,&#34;</span>modeName<span style="color:#d14">&#34;:&#34;</span>powershell<span style="color:#d14">&#34;}&#34;</span>&gt;<span style="color:#008080">[void]</span>[Windows.Networking.Connectivity.NetworkInformation, Windows, ContentType = WindowsRuntime]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>Windows.Networking.Connectivity.NetworkInformation]::GetInternetConnectionProfile().GetConnectionCost()
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>output<span style="color:#a61717;background-color:#e3d2d2">:</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#0086b3">PS </span>C:\&gt; <span style="color:#008080">[void]</span>[Windows.Networking.Connectivity.NetworkInformation, Windows, ContentType = WindowsRuntime]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#008080">[Windows.Networking.Connectivity.NetworkInformation]</span>::GetInternetConnectionProfile().GetConnectionCost()
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>ApproachingDataLimit          <span style="color:#a61717;background-color:#e3d2d2">:</span> False
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>NetworkCostType               <span style="color:#a61717;background-color:#e3d2d2">:</span> Unrestricted
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>OverDataLimit                 <span style="color:#a61717;background-color:#e3d2d2">:</span> False
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>Roaming                       <span style="color:#a61717;background-color:#e3d2d2">:</span> False
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>BackgroundDataUsageRestricted <span style="color:#a61717;background-color:#e3d2d2">:</span> False
-</code></pre></div><p>A nice guy named <a href="https://www.powershellgallery.com/packages/NetMetered/1.0">Wil (with 1 L) Taylor even has a module to help dump cost info out.</a> Unfortunately, there&rsquo;s not a module for modifying the settings.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>Get-ConnectionCost</span>.ps1<span style=color:#d14>&#34;,&#34;</span>language<span style=color:#d14>&#34;:&#34;</span>PowerShell<span style=color:#d14>&#34;,&#34;</span>modeName<span style=color:#d14>&#34;:&#34;</span>powershell<span style=color:#d14>&#34;}&#34;</span>&gt;<span style=color:teal>[void]</span>[Windows.Networking.Connectivity.NetworkInformation, Windows, ContentType = WindowsRuntime]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>Windows.Networking.Connectivity.NetworkInformation]::GetInternetConnectionProfile().GetConnectionCost()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>output<span style=color:#a61717;background-color:#e3d2d2>:</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#0086b3>PS </span>C:\&gt; <span style=color:teal>[void]</span>[Windows.Networking.Connectivity.NetworkInformation, Windows, ContentType = WindowsRuntime]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>[Windows.Networking.Connectivity.NetworkInformation]</span>::GetInternetConnectionProfile().GetConnectionCost()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>ApproachingDataLimit          <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>NetworkCostType               <span style=color:#a61717;background-color:#e3d2d2>:</span> Unrestricted
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>OverDataLimit                 <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>Roaming                       <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>BackgroundDataUsageRestricted <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+</code></pre></div><p>A nice guy named <a href=https://www.powershellgallery.com/packages/NetMetered/1.0>Wil (with 1 L) Taylor even has a module to help dump cost info out.</a> Unfortunately, there&rsquo;s not a module for modifying the settings.</p>
 <p>I have to give credit to Franck Richard for his nice write ups on this topic as well. He provided some of the only pieces to this puzzle that I found initially. These 2 posts talked about the issues I was facing and he even has a script for it editing it that I used bits of in my final solution.<br>
-<a href="http://franckrichard.blogspot.com/2018/11/sccm-client-certificate-value-set-to.html">http://franckrichard.blogspot.com/2018/11/sccm-client-certificate-value-set-to.html</a>
-<a href="http://franckrichard.blogspot.com/2018/11/set-onoff-metered-ethernet-connection.html">http://franckrichard.blogspot.com/2018/11/set-onoff-metered-ethernet-connection.html</a></p>
-<h2 id="the-script">The Script</h2>
-<p><a href="https://github.com/AdamGrossTX/PowershellScripts/blob/master/ConfigMgr/Troubleshooting/Remove-NetworkMetering.ps1">Here&rsquo;s a link to my GitHub repo where you can download the latest version of the script.</a></p>
+<a href=http://franckrichard.blogspot.com/2018/11/sccm-client-certificate-value-set-to.html>http://franckrichard.blogspot.com/2018/11/sccm-client-certificate-value-set-to.html</a>
+<a href=http://franckrichard.blogspot.com/2018/11/set-onoff-metered-ethernet-connection.html>http://franckrichard.blogspot.com/2018/11/set-onoff-metered-ethernet-connection.html</a></p>
+<h2 id=the-script>The Script</h2>
+<p><a href=https://github.com/AdamGrossTX/PowershellScripts/blob/master/ConfigMgr/Troubleshooting/Remove-NetworkMetering.ps1>Here&rsquo;s a link to my GitHub repo where you can download the latest version of the script.</a></p>
 <p>The script has 3 main parts. LAN, WLAN and ConfigMgr. It checks the registry for any LAN profiles set using the Settings app in Windows. These will be under the dusmsvc registry key here: <code>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DusmSvc\Profiles</code>. Then it uses NETSH to find WLAN profiles with metering not set to <code>Unlimited</code>. And finally it checks to see of the ConfigMgr client costing is set to metered. Examples and info are included in the script.</p>
-<h2 id="alternatives">Alternatives</h2>
+<h2 id=alternatives>Alternatives</h2>
 <p>As soon as I hit publish, I considered that perhaps I could have handled this slightly differently. Honestly, I wrote all of the code before I found the ConfigMgr CCM_NetworkSettings class. Now that I&rsquo;m thinking about it and understand things more, here&rsquo;s how I would ACTUALLY do it.</p>
 <p>This is part of the final code in the repo. It&rsquo;s the part that resets the CCM_NetworkSettings class. The cool part here is that it allows the client to check in and get new policies, even if metering is enabled. My issue was that we had our client settings policy set to Block. If I remove the policy (with the code below), the clients can get an updates.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">$CCMNetworkCost</span> = (<span style="color:#0086b3">Invoke-CimMethod</span> -Namespace <span style="color:#d14">&#34;root\ccm\ClientSDK&#34;</span> -ClassName <span style="color:#d14">&#34;CCM_ClientUtilities&#34;</span> -MethodName GetNetworkCost).Value
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#0086b3">Write-Host</span> <span style="color:#d14">&#34;ConfigMgr Cost: </span>$(<span style="color:#008080">$CCMNetworkCost</span>)<span style="color:#d14">&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#000;font-weight:bold">If</span>(<span style="color:#008080">$CCMNetworkCost</span> <span style="color:#000;font-weight:bold">-ne</span> 1) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>    <span style="color:#998;font-style:italic">#Set metering to 1, restart client so it will check in, remove the policy instance, then get new policies</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>    <span style="color:#008080">$PolicyNameSpace</span> = <span style="color:#d14">&#34;root\ccm\Policy\Machine\ActualConfig&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span>    <span style="color:#008080">$NwClassName</span> = <span style="color:#d14">&#34;CCM_NetworkSettings&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>    <span style="color:#008080">$obj</span> = <span style="color:#0086b3">Get-CIMInstance</span> -Namespace <span style="color:#008080">$PolicyNameSpace</span> -ClassName <span style="color:#008080">$NwClassName</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span>    <span style="color:#000;font-weight:bold">If</span>(<span style="color:#008080">$obj</span>.MeteredNetworkUsage <span style="color:#000;font-weight:bold">-ne</span> 1) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span>        <span style="color:#0086b3">Write-Host</span> <span style="color:#d14">&#34;ConfigMgr MeteredNetworkUsage is set to </span>$(<span style="color:#008080">$obj</span>.MeteredNetworkUsage)<span style="color:#d14">&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>        <span style="color:#0086b3">Write-Host</span> <span style="color:#d14">&#34;Reseting ConfigMgr CCM_NetworkSettings Policy&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span>        <span style="color:#998;font-style:italic">#Set usage to 1 in the policy first. This allows the client to go get policies.        #We will delete the entry at the end to ensure that the setting gets re-applied after a policy refresh.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>        <span style="color:#998;font-style:italic">#In testing, policies didn&#39;t reapply without removing the entry.</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>        <span style="color:#008080">$obj</span> | <span style="color:#0086b3">Set-CimInstance</span> -Property @{MeteredNetworkUsage=1}  
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>        <span style="color:#0086b3">Restart-Service</span> -Name ccmexec -ErrorAction SilentlyContinue
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>        <span style="color:#998;font-style:italic">#Give policies time to churn</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span>        <span style="color:#0086b3">Start-Sleep</span> -Seconds 30 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>        <span style="color:#998;font-style:italic">#Remove the policy entry from WMI</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>        <span style="color:#008080">$obj</span> | <span style="color:#0086b3">Remove-CimInstance</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>        <span style="color:#0086b3">Invoke-CimMethod</span> -Namespace <span style="color:#d14">&#34;root\ccm&#34;</span> -ClassName <span style="color:#d14">&#34;SMS_Client&#34;</span> -MethodName RequestMachinePolicy -Arguments @{uFlags = <span style="color:#008080">[uint32]</span>1 }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>        <span style="color:#0086b3">Invoke-CimMethod</span> -Namespace <span style="color:#d14">&#34;root\ccm&#34;</span> -ClassName <span style="color:#d14">&#34;SMS_Client&#34;</span> -MethodName EvaluateMachinePolicy
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>    }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>}
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$CCMNetworkCost</span> = (<span style=color:#0086b3>Invoke-CimMethod</span> -Namespace <span style=color:#d14>&#34;root\ccm\ClientSDK&#34;</span> -ClassName <span style=color:#d14>&#34;CCM_ClientUtilities&#34;</span> -MethodName GetNetworkCost).Value
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;ConfigMgr Cost: </span>$(<span style=color:teal>$CCMNetworkCost</span>)<span style=color:#d14>&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$CCMNetworkCost</span> <span style=color:#000;font-weight:700>-ne</span> 1) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>    <span style=color:#998;font-style:italic>#Set metering to 1, restart client so it will check in, remove the policy instance, then get new policies</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>    <span style=color:teal>$PolicyNameSpace</span> = <span style=color:#d14>&#34;root\ccm\Policy\Machine\ActualConfig&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>    <span style=color:teal>$NwClassName</span> = <span style=color:#d14>&#34;CCM_NetworkSettings&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>    <span style=color:teal>$obj</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:teal>$PolicyNameSpace</span> -ClassName <span style=color:teal>$NwClassName</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>    <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$obj</span>.MeteredNetworkUsage <span style=color:#000;font-weight:700>-ne</span> 1) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>        <span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;ConfigMgr MeteredNetworkUsage is set to </span>$(<span style=color:teal>$obj</span>.MeteredNetworkUsage)<span style=color:#d14>&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>        <span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;Reseting ConfigMgr CCM_NetworkSettings Policy&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>        <span style=color:#998;font-style:italic>#Set usage to 1 in the policy first. This allows the client to go get policies.        #We will delete the entry at the end to ensure that the setting gets re-applied after a policy refresh.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>        <span style=color:#998;font-style:italic>#In testing, policies didn&#39;t reapply without removing the entry.</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>        <span style=color:teal>$obj</span> | <span style=color:#0086b3>Set-CimInstance</span> -Property @{MeteredNetworkUsage=1}  
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>        <span style=color:#0086b3>Restart-Service</span> -Name ccmexec -ErrorAction SilentlyContinue
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>        <span style=color:#998;font-style:italic>#Give policies time to churn</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>        <span style=color:#0086b3>Start-Sleep</span> -Seconds 30 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>        <span style=color:#998;font-style:italic>#Remove the policy entry from WMI</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>        <span style=color:teal>$obj</span> | <span style=color:#0086b3>Remove-CimInstance</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>        <span style=color:#0086b3>Invoke-CimMethod</span> -Namespace <span style=color:#d14>&#34;root\ccm&#34;</span> -ClassName <span style=color:#d14>&#34;SMS_Client&#34;</span> -MethodName RequestMachinePolicy -Arguments @{uFlags = <span style=color:teal>[uint32]</span>1 }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>        <span style=color:#0086b3>Invoke-CimMethod</span> -Namespace <span style=color:#d14>&#34;root\ccm&#34;</span> -ClassName <span style=color:#d14>&#34;SMS_Client&#34;</span> -MethodName EvaluateMachinePolicy
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>}
 </code></pre></div><p>Next, I would add a Configuration Item or a scheduled script to check for and remove metering. I haven&rsquo;t test Group Policy preferences but since the registry key has a * in the path (who decided that was a good idea??) and * is a wildcard pretty much EVERYWHERE, I&rsquo;m not sure how well that will work. Either way, having a mechanism to block or remove this from being set again would be the next step.</p>
 <p>And instead of a script, I think I could have just updated the client settings policy to Allow ConfigMgr over metered connections then used Right Click Tools to reset client policies on any devices that I suspected had metering enabled.</p>
-<h2 id="the-end">The End</h2>
+<h2 id=the-end>The End</h2>
 <p>This has been a fun dive into the bowels of network connectivity. I&rsquo;m REALLY hoping someone sends me an email with the code to update costs using the Windows API. Feels like there&rsquo;s still some opportunity for polishing this turd.</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

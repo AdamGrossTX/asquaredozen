@@ -1,280 +1,194 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Windows 10 Feature Updates – Using Custom Action Scripts-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Windows 10 Feature Updates – Using Custom Action Scripts-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Windows 10 Feature Updates – Using Custom Action Scripts"/>
-<meta name="twitter:description" content="This is the next installment in my Windows 10 Feature Updates series.
-Custom Actions Beginning in Windows 10 1803, custom actions were introduced and represent what Suma SaganeGowda referred to as a &lsquo;poor man&rsquo;s implementation of Task Sequences&rsquo; at Ignite 2018 in session BRK3027. Windows setup will check for the existence of these special folders and scripts and use them as part of the Feature Update process. They allow you to run scripts at various stages in the Feature Update process as well as specify reflected driver paths just as you can in Setupconfig."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Windows 10 Feature Updates – Using Custom Action Scripts">
+<meta name=twitter:description content="This is the next installment in my Windows 10 Feature Updates series.
+Custom Actions Beginning in Windows 10 1803, custom actions were introduced and represent what Suma SaganeGowda referred to as a &lsquo;poor man&rsquo;s implementation of Task Sequences&rsquo; at Ignite 2018 in session BRK3027. Windows setup will check for the existence of these special folders and scripts and use them as part of the Feature Update process. They allow you to run scripts at various stages in the Feature Update process as well as specify reflected driver paths just as you can in Setupconfig.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Windows 10 Feature Updates – Using Custom Action Scripts</h1>
-				<span class="post-date">August 26, 2019</span>
-			</div>
-			<div class="post-entry">
-				<p>This is the next installment in my Windows 10 Feature Updates series.</p>
-<h2 id="custom-actions">Custom Actions</h2>
-<p>Beginning in Windows 10 1803, <a href="https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions">custom actions</a> were introduced and represent what <a href="https://twitter.com/sumasa_sea">Suma SaganeGowda</a> referred to as a <a href="https://youtu.be/DCwKqZvJ64k?t=2226">&lsquo;poor man&rsquo;s implementation of Task Sequences&rsquo;</a> at Ignite 2018 in session <a href="https://youtu.be/DCwKqZvJ64k">BRK3027</a>. Windows setup will check for the existence of these special folders and scripts and use them as part of the Feature Update process. They allow you to run scripts at various stages in the Feature Update process as well as specify reflected driver paths just as you can in <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Setupconfig.ini</a>. Like Setupconfig.ini, Custom Actions has limited documentation, but don&rsquo;t let the lack of documentation fool you, Custom Actions are pretty cool.
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Windows 10 Feature Updates – Using Custom Action Scripts</h1>
+<span class=post-date>August 26, 2019</span>
+</div>
+<div class=post-entry>
+<p>This is the next installment in my Windows 10 Feature Updates series.</p>
+<h2 id=custom-actions>Custom Actions</h2>
+<p>Beginning in Windows 10 1803, <a href=https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions>custom actions</a> were introduced and represent what <a href=https://twitter.com/sumasa_sea>Suma SaganeGowda</a> referred to as a <a href="https://youtu.be/DCwKqZvJ64k?t=2226">&lsquo;poor man&rsquo;s implementation of Task Sequences&rsquo;</a> at Ignite 2018 in session <a href=https://youtu.be/DCwKqZvJ64k>BRK3027</a>. Windows setup will check for the existence of these special folders and scripts and use them as part of the Feature Update process. They allow you to run scripts at various stages in the Feature Update process as well as specify reflected driver paths just as you can in <a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Setupconfig.ini</a>. Like Setupconfig.ini, Custom Actions has limited documentation, but don&rsquo;t let the lack of documentation fool you, Custom Actions are pretty cool.
 From the Microsoft Docs article:</p>
 <blockquote>
 <p>Custom actions are .cmd scripts that run during the feature update process. These can be run during two phases of an upgrade:</p>
 <ol>
 <li>Pre-install phase: This phase is when Setup starts, but prior compatibility checks. Actions during this phase are specified in <strong><code>preinstall.cmd</code></strong>.</li>
 <li>Pre-commit phase: This phase is prior to the upgrade being applied and the system rebooting. Actions during this phase are specified in <strong><code>precommit.cmd</code></strong>.
-<a href="https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions">https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions</a></li>
+<a href=https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions>https://docs.microsoft.com/windows-hardware/manufacture/desktop/windows-setup-enable-custom-actions</a></li>
 </ol>
 </blockquote>
-<h2 id="folder-structure">Folder Structure</h2>
+<h2 id=folder-structure>Folder Structure</h2>
 <p>Custom Action folder structure includes <strong><code>run</code></strong> and <strong><code>runonce</code></strong> folders followed by a unique <strong><code>GUID</code></strong> folder and, if needed, a <strong><code>reflectdrivers</code></strong> folder. Your folders should look like this:<br>
-<strong><code>c:\Windows\System32\update\run\&lt;GUID&gt;</code></strong>
-<strong><code>c:\Windows\System32\update\run\&lt;GUID&gt;\reflectdrivers</code></strong>
-<strong><code>c:\Windows\System32\update\runonce\&lt;GUID&gt;</code></strong>
-<strong><code>c:\Windows\System32\update\runonce\&lt;GUID&gt;\reflectdrivers</code></strong></p>
-<p><div class="image">
-  <figure>
-    <a href="image-45.png" target="_blank">
-      <img src="image-45.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<strong><code>c:\Windows\System32\update\run\&lt;GUID></code></strong>
+<strong><code>c:\Windows\System32\update\run\&lt;GUID>\reflectdrivers</code></strong>
+<strong><code>c:\Windows\System32\update\runonce\&lt;GUID></code></strong>
+<strong><code>c:\Windows\System32\update\runonce\&lt;GUID>\reflectdrivers</code></strong></p>
+<p><div class=image>
+<figure>
+<a href=image-45.png target=_blank>
+<img src=image-45.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>The GUID is something that you generate is simply a unique identifier folder. I contacted the Feature Update team regarding the GUID folder and this is their explanation for it&rsquo;s existence:</p>
 <blockquote>
@@ -294,11 +208,11 @@ My contact is confirming additional information regarding sequencing of the GUID
 </ul>
 <p>Since <strong><code>preinstall.cmd</code></strong> and <strong><code>precommit.cmd</code></strong> run before any files have moved, it is safe to include any supporting scripts in the <strong><code>run</code></strong>/<strong><code>runonce</code></strong> folders to be used by the cmd files. However, <strong><code>failure.cmd</code></strong> is copied to <strong>C:~Windows.BT\Sources\Scripts</strong> before the reboot and the supporting files may not be present in the original folders if the Feature Update fails before the OS migration has been fully completed. To remedy this, I ensure that whatever scripts I reference in failure.cmd are stored in a temporary directory outside of any system folders. I create the hidden folder <strong><code>C:\~FeatureUpdateTemp\Scripts</code></strong> and cache the files there for <strong><code>failure.cmd</code></strong> to reference.</p>
 <p>Using these files in conjunction with Setupconfig.ini&rsquo;s <strong><code>PostOOBE</code></strong> and <strong><code>PostRollback</code></strong> command line options, you can perform most just-in-time actions on your clients without using a task sequence.</p>
-<h2 id="usage-example">Usage Example</h2>
-<p>If you&rsquo;ve spent much time on my blog, you&rsquo;ve probably <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">noticed my posts around 802.1x</a> and how to manage it during Operating System Deployment and InPlace Upgrades. As we began looking at Feature Update servicing, we once again needed to handle 802.1x. We are using my <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">whitelisting solution</a> in production today. In our InPlace Upgrade Task Sequence, we will run the script to whitelist a device just before the upgrade begins. This ensures that the device won&rsquo;t be challenged by our NAC to re-authenticate during the Feature Update reboot cycles. Now with Feature Update servicing, we use <strong><code>precommit.cmd</code></strong> to run the whitelisting script just before the first reboot into the SafeOS phase.</p>
-<p>To achieve this, we simply create the required folder structure <strong><code>C:\Windows\System32\Update\Run\&lt;GUID&gt;</code></strong> and include <strong><code>precommit.cmd</code></strong> and our whitelisting script in the folder. Whenever the Downlevel phase is complete, it will run <strong><code>precommit.cmd</code></strong> and launch the PowerShell whitelisting script. Setup doesn&rsquo;t check for success or failure, so be sure to include good error handling and logging with any of your scripts.</p>
-<h2 id="sample-scripts">Sample Scripts</h2>
-<p>To deploy the files to the correct locations, I have another PowerShell script that we deploy as an Application in SCCM that will copy everything down. There&rsquo;s nothing special about the Application model, I just like using it. 🙂 You can download the scripts from my repo <a href="https://github.com/AdamGrossTX/Windows10FeatureUpdates">https://github.com/AdamGrossTX/Windows10FeatureUpdates</a>. You will need the following files:</p>
+<h2 id=usage-example>Usage Example</h2>
+<p>If you&rsquo;ve spent much time on my blog, you&rsquo;ve probably <a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>noticed my posts around 802.1x</a> and how to manage it during Operating System Deployment and InPlace Upgrades. As we began looking at Feature Update servicing, we once again needed to handle 802.1x. We are using my <a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>whitelisting solution</a> in production today. In our InPlace Upgrade Task Sequence, we will run the script to whitelist a device just before the upgrade begins. This ensures that the device won&rsquo;t be challenged by our NAC to re-authenticate during the Feature Update reboot cycles. Now with Feature Update servicing, we use <strong><code>precommit.cmd</code></strong> to run the whitelisting script just before the first reboot into the SafeOS phase.</p>
+<p>To achieve this, we simply create the required folder structure <strong><code>C:\Windows\System32\Update\Run\&lt;GUID></code></strong> and include <strong><code>precommit.cmd</code></strong> and our whitelisting script in the folder. Whenever the Downlevel phase is complete, it will run <strong><code>precommit.cmd</code></strong> and launch the PowerShell whitelisting script. Setup doesn&rsquo;t check for success or failure, so be sure to include good error handling and logging with any of your scripts.</p>
+<h2 id=sample-scripts>Sample Scripts</h2>
+<p>To deploy the files to the correct locations, I have another PowerShell script that we deploy as an Application in SCCM that will copy everything down. There&rsquo;s nothing special about the Application model, I just like using it. 🙂 You can download the scripts from my repo <a href=https://github.com/AdamGrossTX/Windows10FeatureUpdates>https://github.com/AdamGrossTX/Windows10FeatureUpdates</a>. You will need the following files:</p>
 <ul>
 <li>
 <p><strong><code>Copy-FeatureUpdateFiles.ps1</code></strong></p>
@@ -324,20 +238,20 @@ My contact is confirming additional information regarding sequencing of the GUID
 <li>
 <p>Update <strong><code>Copy-FeatureUpdateFiles.ps1</code></strong> with your new <strong><code>GUID</code></strong> and <strong><code>TempDirPath</code></strong> <strong>(</strong><code>C:\~FeatureUpdateTemp</code>** is the default).</p>
 <ul>
-<li><strong><code>Copy-FeatureUpdateFiles.ps1</code></strong> is configured to run the setupconfig.ini baseline (<a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">see previous post</a>) if you specify the name of the baseline in the <strong><code>$BaseLineName</code></strong> parameter.</li>
+<li><strong><code>Copy-FeatureUpdateFiles.ps1</code></strong> is configured to run the setupconfig.ini baseline (<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>see previous post</a>) if you specify the name of the baseline in the <strong><code>$BaseLineName</code></strong> parameter.</li>
 </ul>
 </li>
 <li>
 <p>Update and Run <strong><code>Generate-CMDFiles.ps1</code></strong> to build any cmd files that you want to include. It&rsquo;s just an easy way to update your cmd files in the same way each time.</p>
 </li>
 <li>
-<p>Create a new application and add these files &amp; folders in as your source content (you can exclude the Admin folder from the source).  * Install: <strong><code>Powershell.exe -ExecutionPolicy ByPass -File Copy-FeatureUpdateFiles.ps1</code></strong></p>
+<p>Create a new application and add these files & folders in as your source content (you can exclude the Admin folder from the source). * Install: <strong><code>Powershell.exe -ExecutionPolicy ByPass -File Copy-FeatureUpdateFiles.ps1</code></strong></p>
 <ul>
 <li>Repair: <strong><code>Powershell.exe -ExecutionPolicy ByPass -File Copy-FeatureUpdateFiles.ps1</code></strong></li>
 <li>Uninstall: <strong><code>Powershell.exe -ExecutionPolicy ByPass -File Copy-FeatureUpdateFiles.ps1 -RemoveOnly</code></strong></li>
 <li>Detection Method
 <ul>
-<li>Folder Existence rule: <strong><code>C:\Windows\System32\Update\&lt;GUID&gt;</code></strong> where <code>&lt;GUID&gt;</code> is your new custom GUID specified in the scripts.</li>
+<li>Folder Existence rule: <strong><code>C:\Windows\System32\Update\&lt;GUID></code></strong> where <code>&lt;GUID></code> is your new custom GUID specified in the scripts.</li>
 <li>Folder Existence rule: <strong><code>C:\~FeatureUpdateTemp\Scripts</code></strong></li>
 </ul>
 </li>
@@ -345,36 +259,25 @@ My contact is confirming additional information regarding sequencing of the GUID
 </ul>
 </li>
 </ul>
-<h2 id="error-handling">Error Handling</h2>
+<h2 id=error-handling>Error Handling</h2>
 <p>I have another post planned for <strong>SetupComplete.cmd</strong> and <strong>Failure.cmd</strong> which will fully cover these files. The GitHub repo contains everything you need to build everything out fully, there are just a lot of moving pieces to write up for the full picture here. Ultimately, you can use failure.cmd to run any post-failure script you would like.</p>
-<h2 id="summary">Summary</h2>
+<h2 id=summary>Summary</h2>
 <p>If you have a need for pre-install and pre-commit actions that need to be triggered just-in-time as well as a way to handle failures, you should take a look at Custom Actions. They work very well! More to come on these in a future post.</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

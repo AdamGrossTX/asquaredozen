@@ -1,468 +1,343 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Building An Even Better Task Sequence-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2018/12/14/building-an-even-better-task-sequence/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Building An Even Better Task Sequence-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2018/12/14/building-an-even-better-task-sequence/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Building An Even Better Task Sequence"/>
-<meta name="twitter:description" content="Note
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Building An Even Better Task Sequence">
+<meta name=twitter:description content="Note
 03/12/2019 - This post has been updated to support changes in 1901 TP and (I assume) 1902 CB to the TSProgressUI.exe ConfigMgr client component used for the custom described dialog below.
- Note: You must be running ConfigMgr/SCCM 1810 or higher to use the _SMSTSLastActionName variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go upvote the UserVoice item to have the product do this natively."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+ Note: You must be running ConfigMgr/SCCM 1810 or higher to use the _SMSTSLastActionName variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go upvote the UserVoice item to have the product do this natively.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Building An Even Better Task Sequence</h1>
-				<span class="post-date">December 14, 2018</span>
-			</div>
-			<div class="post-entry">
-				<hr>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Building An Even Better Task Sequence</h1>
+<span class=post-date>December 14, 2018</span>
+</div>
+<div class=post-entry>
+<hr>
 <p><em><strong>Note</strong></em><br>
 03/12/2019 - This post has been updated to support changes in 1901 TP and (I assume) 1902 CB to the TSProgressUI.exe ConfigMgr client component used for the custom described dialog below.</p>
 <hr>
-<p>Note: You must be running ConfigMgr/SCCM 1810 or higher to use the <strong>_SMSTSLastActionName</strong> variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go <a href="%22https://configurationmanager.uservoice.com/forums/300492-ideas/suggestions/13880781-task-sequence-error-dialog-box-needs-to-show-step">upvote the UserVoice item</a> to have the product do this natively. (Thanks <a href="https://twitter.com/kidmystic">Nash</a>!).</p>
-<p>In my <a href="/2018/11/29/building-a-better-task-sequence/">Building A Better Task Sequence</a> post, I discussed how to use the new <strong>_SMSTSLastActionName</strong> Task Sequence variable to capture the name of a failed step and still gracefully exit the Task Sequence. At MMS Desert Edition last week, <a href="https://twitter.com/miketerrill">Mike Terrill</a> used some of my concepts for his <a href="https://mmsde2018.sched.com/event/F9fm/osd-mvp-showcase">MVP Showcase</a>. After the session, <a href="https://twitter.com/AndHammarskjold">Andreas Hammarskjöld</a> from <a href="https://2pintsoftware.com/">2 Pint Software</a> suggested that we should be able to customize the error message that is displayed after a failure. I saw him the next morning at the <a href="https://www.eventbrite.com/e/azsmug-a-taste-of-mms-tickets-52446108723#%22">AZSMUG</a> meeting and we quickly chatted about the dialog again. I had about 1.5 hrs before I was scheduled to speak so I figured, why not try to build, test and demo a custom error dialog in that time. Somehow, it worked, so thanks Mike and Andreas for the inspiration. Here&rsquo;s yet another take on this idea (I have a few more I think. Maybe I need to just number my posts now&hellip;).</p>
-<p>This post also relies on concepts from my previous <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a> post, so if you get lost, go check it out. My goal here isn&rsquo;t to create some beautiful error dialog, but to give you another option to use to build your solution out.</p>
-<h2 id="picking-up-where-we-left-off">Picking Up Where We Left Off</h2>
+<p>Note: You must be running ConfigMgr/SCCM 1810 or higher to use the <strong>_SMSTSLastActionName</strong> variable included in this post. However you can use the same concepts and error dialog with previous versions (but seriously, upgrade already!). Also, go <a href=%22https://configurationmanager.uservoice.com/forums/300492-ideas/suggestions/13880781-task-sequence-error-dialog-box-needs-to-show-step>upvote the UserVoice item</a> to have the product do this natively. (Thanks <a href=https://twitter.com/kidmystic>Nash</a>!).</p>
+<p>In my <a href=/2018/11/29/building-a-better-task-sequence/>Building A Better Task Sequence</a> post, I discussed how to use the new <strong>_SMSTSLastActionName</strong> Task Sequence variable to capture the name of a failed step and still gracefully exit the Task Sequence. At MMS Desert Edition last week, <a href=https://twitter.com/miketerrill>Mike Terrill</a> used some of my concepts for his <a href=https://mmsde2018.sched.com/event/F9fm/osd-mvp-showcase>MVP Showcase</a>. After the session, <a href=https://twitter.com/AndHammarskjold>Andreas Hammarskjöld</a> from <a href=https://2pintsoftware.com/>2 Pint Software</a> suggested that we should be able to customize the error message that is displayed after a failure. I saw him the next morning at the <a href=https://www.eventbrite.com/e/azsmug-a-taste-of-mms-tickets-52446108723#%22>AZSMUG</a> meeting and we quickly chatted about the dialog again. I had about 1.5 hrs before I was scheduled to speak so I figured, why not try to build, test and demo a custom error dialog in that time. Somehow, it worked, so thanks Mike and Andreas for the inspiration. Here&rsquo;s yet another take on this idea (I have a few more I think. Maybe I need to just number my posts now&mldr;).</p>
+<p>This post also relies on concepts from my previous <a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a> post, so if you get lost, go check it out. My goal here isn&rsquo;t to create some beautiful error dialog, but to give you another option to use to build your solution out.</p>
+<h2 id=picking-up-where-we-left-off>Picking Up Where We Left Off</h2>
 <p>The problem we want to solve is this ugly mess of dialog boxes when the Task Sequence fails. One problem is that the error dialog is mostly generic and it hides the ProgressUI, so users may never see our cool modified dialog and we will end up back at the same problem - not getting good info at the time of failure since most users will just screenshot the error dialog and send it in for support.</p>
-<p><div class="image">
-  <figure>
-    <a href="2018-11-29_0-52-38.jpg" target="_blank">
-      <img src="2018-11-29_0-52-38.jpg" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>Example of both dialogs, with the error dialog moved to reveal the Progress UI where the real info is.</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=2018-11-29_0-52-38.jpg target=_blank>
+<img src=2018-11-29_0-52-38.jpg alt="A Square Dozen Image">
+</a>
+<figcaption>Example of both dialogs, with the error dialog moved to reveal the Progress UI where the real info is.</figcaption>
+</figure>
 </div></p>
 <p>In the last post, I showed how to customize the ProgressUI. Now we will hide the ProgressUI and show a custom dialog with the same information that we need from the failed step.</p>
-<h2 id="showhide-progressui">Show/Hide ProgressUI</h2>
+<h2 id=showhide-progressui>Show/Hide ProgressUI</h2>
 <p>You may be aware that when you deploy a Task Sequence, you have the option to deploy it silently by unchecking the Show Task Sequence progress on the User Experience tab of your Task Sequence Deployment. The problem with this option is that it hides ALL of the dialogs, which may not be something you want to do — I know my users don&rsquo;t like to find out they have a new OS installing by having their machine randomly reboot with no warnings! However, if you want to display one of the many custom dialogs available from the ConfigMgr community, unchecking the box may be beneficial. Full list at the end.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-6.png" target="_blank">
-      <img src="image-6.png" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>Uncheck Show Task Sequence Progress to hide all progress and error dialogs</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-6.png target=_blank>
+<img src=image-6.png alt="A Square Dozen Image">
+</a>
+<figcaption>Uncheck Show Task Sequence Progress to hide all progress and error dialogs</figcaption>
+</figure>
 </div></p>
 <p>Another option to consider is the <strong>TSDisableProgressUI</strong> variable. You can use it anywhere in your Task Sequence to toggle the dialog on or off. Simply add a Set Task Sequence Variable step before or after any step you want to change the dialog display for, then set the value to True or False depending on the desired display mode. Once the variable is set, <strong>ProgressUI</strong> will stay on or off until you toggle it again.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-1.png" target="_blank">
-      <img src="image-1.png" alt="Toggle ProgressUI On by setting TSDisableProgressUI=False">
-    </a>
-    
-    <figcaption>Toggle ProgressUI On by setting TSDisableProgressUI=False</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-1.png target=_blank>
+<img src=image-1.png alt="Toggle ProgressUI On by setting TSDisableProgressUI=False">
+</a>
+<figcaption>Toggle ProgressUI On by setting TSDisableProgressUI=False</figcaption>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-2.png" target="_blank">
-      <img src="image-2.png" alt="Toggle ProgressUI Off by setting TSDisableProgressUI=True">
-    </a>
-    
-    <figcaption>Toggle ProgressUI Off by setting TSDisableProgressUI=True</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-2.png target=_blank>
+<img src=image-2.png alt="Toggle ProgressUI Off by setting TSDisableProgressUI=True">
+</a>
+<figcaption>Toggle ProgressUI Off by setting TSDisableProgressUI=True</figcaption>
+</figure>
 </div></p>
-<h2 id="custom-error-dialog">Custom Error Dialog</h2>
+<h2 id=custom-error-dialog>Custom Error Dialog</h2>
 <p>Disabling ProgressUI, allows us to fully control the Task Sequence dialogs. For example, if you wanted to suppress the default dialog and put up a splash screen or simply customize the ProgressUI itself - though that would require adding a step to update the dialog in between each step, which isn&rsquo;t really the best. I have worked on a script to monitor the TS progress and update the dialog, but it&rsquo;s quite unstable and unreliable. All that to say, you CAN do it, you just may not want to.</p>
-<script type="application/javascript" src="https://gist.github.com/AdamGrossTX/5d58e1d7e7438aef00314e16ef5b34e0.js"></script>
-
-<p><div class="image">
-  <figure>
-    <a href="image-4.png" target="_blank">
-      <img src="image-4.png" alt="The final result.">
-    </a>
-    
-    <figcaption>The final result.</figcaption>
-    
-  </figure>
+<script type=application/javascript src=https://gist.github.com/AdamGrossTX/5d58e1d7e7438aef00314e16ef5b34e0.js></script>
+<p><div class=image>
+<figure>
+<a href=image-4.png target=_blank>
+<img src=image-4.png alt="The final result.">
+</a>
+<figcaption>The final result.</figcaption>
+</figure>
 </div></p>
-<h2 id="putting-it-all-together">Putting it All Together</h2>
+<h2 id=putting-it-all-together>Putting it All Together</h2>
 <p>For my sample Task Sequence, I&rsquo;m reusing the one from the previous post and just modifying a few steps to give us the desired result. Full TS is is available for download at the end.</p>
 <hr>
 <p>03/12/2019 - These steps have been updated for SCCM 1902 CB functionality. The WMI Condition and additional &lsquo;Set Custom Dialog&rsquo; should only be needed if you are running this TS in an environment with 1810 AND newer clients. The change to TSProgressUI.exe is an additional argument has been added to the ShowErrorDialog Method.</p>
 <hr>
-<p><div class="image">
-  <figure>
-    <a href="image-4.png" target="_blank">
-      <img src="image-4.png" alt="The basic TS structure">
-    </a>
-    
-    <figcaption>The basic TS structure</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-4.png target=_blank>
+<img src=image-4.png alt="The basic TS structure">
+</a>
+<figcaption>The basic TS structure</figcaption>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-7.png" target="_blank">
-      <img src="image-7.png" alt="Sample step that will case the TS to fail with exit code 12345">
-    </a>
-    
-    <figcaption>Sample step that will case the TS to fail with exit code 12345</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-7.png target=_blank>
+<img src=image-7.png alt="Sample step that will case the TS to fail with exit code 12345">
+</a>
+<figcaption>Sample step that will case the TS to fail with exit code 12345</figcaption>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-5.png" target="_blank">
-      <img src="image-5.png" alt="Condition on the Custom Error Dialog group to only run if there was a failure.">
-    </a>
-    
-    <figcaption>Condition on the Custom Error Dialog group to only run if there was a failure.</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-5.png target=_blank>
+<img src=image-5.png alt="Condition on the Custom Error Dialog group to only run if there was a failure.">
+</a>
+<figcaption>Condition on the Custom Error Dialog group to only run if there was a failure.</figcaption>
+</figure>
 </div></p>
-<h4 id="1810-clients-only">1810 Clients Only</h4>
-<p><div class="image">
-  <figure>
-    <a href="image-8.png" target="_blank">
-      <img src="image-8.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<h4 id=1810-clients-only>1810 Clients Only</h4>
+<p><div class=image>
+<figure>
+<a href=image-8.png target=_blank>
+<img src=image-8.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-9.png" target="_blank">
-      <img src="image-9.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-9.png target=_blank>
+<img src=image-9.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
 <strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &lt; '5.00.8772.1000'</code></p>
-<p><div class="image">
-  <figure>
-    <a href="image-7.png" target="_blank">
-      <img src="image-7.png" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>1810 Clients Only - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-7.png target=_blank>
+<img src=image-7.png alt="A Square Dozen Image">
+</a>
+<figcaption>1810 Clients Only - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+</figure>
 </div></p>
-<script type="application/javascript" src="https://gist.github.com/AdamGrossTX/f9b1de89ad7a981ab5b5844bd9210cd1.js"></script>
-
-<h4 id="1901-tp-or-1902-cb-clients-and-newer">1901 TP or 1902 CB Clients and Newer</h4>
-<p><div class="image">
-  <figure>
-    <a href="image-10.png" target="_blank">
-      <img src="image-10.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<script type=application/javascript src=https://gist.github.com/AdamGrossTX/f9b1de89ad7a981ab5b5844bd9210cd1.js></script>
+<h4 id=1901-tp-or-1902-cb-clients-and-newer>1901 TP or 1902 CB Clients and Newer</h4>
+<p><div class=image>
+<figure>
+<a href=image-10.png target=_blank>
+<img src=image-10.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-11.png" target="_blank">
-      <img src="image-11.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-11.png target=_blank>
+<img src=image-11.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p><strong>WMI NameSpace:</strong> <code>root\ccm</code><br>
-<strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion &gt;= '5.00.8772.1000'</code></p>
-<p><div class="image">
-  <figure>
-    <a href="image-6.png" target="_blank">
-      <img src="image-6.png" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>1901 Clients and Newer - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
-    
-  </figure>
+<strong>WQL Query:</strong> <code>Select ClientVersion from SMS_Client where ClientVersion >= '5.00.8772.1000'</code></p>
+<p><div class=image>
+<figure>
+<a href=image-6.png target=_blank>
+<img src=image-6.png alt="A Square Dozen Image">
+</a>
+<figcaption>1901 Clients and Newer - Setting the CustomDialog variable to our new PowerShell code block.</figcaption>
+</figure>
 </div></p>
-<script type="application/javascript" src="https://gist.github.com/AdamGrossTX/1292134b0eb2d1a9f822bbd304289980.js"></script>
-
-<h4 id="remaining-shared-steps">Remaining Shared Steps</h4>
-<p><div class="image">
-  <figure>
-    <a href="image-10.png" target="_blank">
-      <img src="image-10.png" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>Disable the progress dialog to suppress the default dialogs.</figcaption>
-    
-  </figure>
+<script type=application/javascript src=https://gist.github.com/AdamGrossTX/1292134b0eb2d1a9f822bbd304289980.js></script>
+<h4 id=remaining-shared-steps>Remaining Shared Steps</h4>
+<p><div class=image>
+<figure>
+<a href=image-10.png target=_blank>
+<img src=image-10.png alt="A Square Dozen Image">
+</a>
+<figcaption>Disable the progress dialog to suppress the default dialogs.</figcaption>
+</figure>
 </div></p>
-<p><a href="image-11.png" title="Run Command Line step to run the code block that we stored into the CustomDialog variable.">A Square Dozen Image</a></p>
+<p><a href=image-11.png title="Run Command Line step to run the code block that we stored into the CustomDialog variable.">A Square Dozen Image</a></p>
 <p>As you can see, the main changes from the previous post are that we are now toggling ProgressUI off and instead of using a variablized step name as the final step and we are going to call the PowerShell to show the custom dialog, but only <strong>AllStepsSucceeded = False</strong>.</p>
 <p>One more note on this - Instead of customizing the built-in error dialog, you could make your own custom message that provides the user with options to email IT or retry the TS, etc. You get the point.</p>
-<p>You can download the <a href="https://github.com/AdamGrossTX/BlogFiles/raw/master/Building%20An%20Even%20Better%20Task%20Sequence.zip">full sample Task Sequence from my GitHub</a>.</p>
-<h2 id="community-progress-dialogs">Community Progress Dialogs</h2>
+<p>You can download the <a href=https://github.com/AdamGrossTX/BlogFiles/raw/master/Building%20An%20Even%20Better%20Task%20Sequence.zip>full sample Task Sequence from my GitHub</a>.</p>
+<h2 id=community-progress-dialogs>Community Progress Dialogs</h2>
 <ul>
-<li><a href="https://ccmexec.com/2018/09/onevinn-windows-10-upgrade-tools-upgbackground/">Onevinn UPGBackground</a></li>
-<li><a href="https://smsagent.wordpress.com/2018/08/21/create-a-custom-splash-screen-for-a-windows-10-in-place-upgrade/">SMSAgent OSDUpgradeBackground</a></li>
-<li><a href="http://www.systanddeploy.com/2018/01/create-metro-design-mdt-progress-bar_9.html">SystAndDeploy Metro Progress Bar</a></li>
+<li><a href=https://ccmexec.com/2018/09/onevinn-windows-10-upgrade-tools-upgbackground/>Onevinn UPGBackground</a></li>
+<li><a href=https://smsagent.wordpress.com/2018/08/21/create-a-custom-splash-screen-for-a-windows-10-in-place-upgrade/>SMSAgent OSDUpgradeBackground</a></li>
+<li><a href=http://www.systanddeploy.com/2018/01/create-metro-design-mdt-progress-bar_9.html>SystAndDeploy Metro Progress Bar</a></li>
 </ul>
-<p>Additionally, check out <a href="https://garytown.com/bgin-place-upgrades">Gary Block&rsquo;s post</a> that talks about the <code>_SMSTSUserStarted</code> variable. You can use it to only show the dialog if a user initiated the TS.</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
+<p>Additionally, check out <a href=https://garytown.com/bgin-place-upgrades>Gary Block&rsquo;s post</a> that talks about the <code>_SMSTSUserStarted</code> variable. You can use it to only show the dialog if a user initiated the TS.</p>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

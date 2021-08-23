@@ -1,266 +1,181 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service"/>
-<meta name="twitter:description" content="This is Part 5 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts.
-A few months ago, when I published the first 4 parts on this series, I was unaware that there was a web service available for managing Cisco ISE, which is the NAC that I have to work with in my environment. I was fortunate to meet with a peer who works nearby and he shared a script demonstrating how to interact with the Cisco ISE External RESTful Service (ERS) to dynamically whitelist devices when WinPE starts for Bare Metal OSD and inside an SCCM/ConfigMgr Task Sequence for In-Place upgrades."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service">
+<meta name=twitter:description content="This is Part 5 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts.
+A few months ago, when I published the first 4 parts on this series, I was unaware that there was a web service available for managing Cisco ISE, which is the NAC that I have to work with in my environment. I was fortunate to meet with a peer who works nearby and he shared a script demonstrating how to interact with the Cisco ISE External RESTful Service (ERS) to dynamically whitelist devices when WinPE starts for Bare Metal OSD and inside an SCCM/ConfigMgr Task Sequence for In-Place upgrades.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</h1>
-				<span class="post-date">September 29, 2018</span>
-			</div>
-			<div class="post-entry">
-				<p>This is Part 5 in my <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">Configuring 802.1x Authentication for Windows Deployment </a>series. Be sure to check out all of the other parts.</p>
-<p>A few months ago, when I published the first 4 parts on this series, I was unaware that there was a web service available for managing Cisco ISE, which is the NAC that I have to work with in my environment. I was fortunate to meet with a peer who works nearby and he shared a script demonstrating how to interact with the Cisco ISE External RESTful Service (ERS) to dynamically whitelist devices when WinPE starts for Bare Metal OSD and inside an SCCM/ConfigMgr Task Sequence for In-Place upgrades. I built a script to use some of the newer features inside the ISE 2.2 service and includes logic to work with PowerShell 3.0 since most of my environment is still on Windows 7 and the Invoke-RestMethod and Invoke-WebRequest cmdlets don&rsquo;t work properly in PowerShell 3.0. My plan is to replace all of the things the components that I built in the first 4 parts of this series with this script.  Some of the steps I describe were completed by my ISE administrator. I don&rsquo;t have access to the admin console, so I have limited information about how some items are configured. Please let me know if you get stuck and I can ask for better information.</p>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Configuring 802.1x Authentication for Windows Deployment – Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</h1>
+<span class=post-date>September 29, 2018</span>
+</div>
+<div class=post-entry>
+<p>This is Part 5 in my <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>Configuring 802.1x Authentication for Windows Deployment </a>series. Be sure to check out all of the other parts.</p>
+<p>A few months ago, when I published the first 4 parts on this series, I was unaware that there was a web service available for managing Cisco ISE, which is the NAC that I have to work with in my environment. I was fortunate to meet with a peer who works nearby and he shared a script demonstrating how to interact with the Cisco ISE External RESTful Service (ERS) to dynamically whitelist devices when WinPE starts for Bare Metal OSD and inside an SCCM/ConfigMgr Task Sequence for In-Place upgrades. I built a script to use some of the newer features inside the ISE 2.2 service and includes logic to work with PowerShell 3.0 since most of my environment is still on Windows 7 and the Invoke-RestMethod and Invoke-WebRequest cmdlets don&rsquo;t work properly in PowerShell 3.0. My plan is to replace all of the things the components that I built in the first 4 parts of this series with this script. Some of the steps I describe were completed by my ISE administrator. I don&rsquo;t have access to the admin console, so I have limited information about how some items are configured. Please let me know if you get stuck and I can ask for better information.</p>
 <p><strong>Please note, the goal of this script is to give you the framework to build a solution for your needs and to provide one more set of tools to work with. It is not designed to be one-size-fits-all.</strong></p>
-<h2 id="the-steps">The Steps</h2>
+<h2 id=the-steps>The Steps</h2>
 <ol>
 <li>Enable ERS in ISE, Create an auto-purging whitelisting group in ISE and configure ISE to accept traffic from WinPE</li>
 <li>Test the whitelisting PowerShell script standalone</li>
 <li>Update your Boot WIM to include the whitelisting PowerShell script</li>
 <li>Update your In-Place Upgrade Task Sequence to run the whitelisting PowerShell script before the OS upgrade.</li>
 </ol>
-<h2 id="enabling-ers-on-your-ise-server">Enabling ERS on your ISE Server</h2>
+<h2 id=enabling-ers-on-your-ise-server>Enabling ERS on your ISE Server</h2>
 <p>Before you begin configuring ERS, here are a few things that I learned.</p>
 <ol>
 <li>
@@ -270,12 +185,12 @@ A few months ago, when I published the first 4 parts on this series, I was unawa
 <p>You must use an ERS admin account. The ERS user account doesn&rsquo;t have access to the ERS.</p>
 </li>
 <li>
-<p>A great tool for testing the API is <a href="https://www.getpostman.com/">Postman</a> or you can use the browser extensions referenced in the article below.</p>
+<p>A great tool for testing the API is <a href=https://www.getpostman.com/>Postman</a> or you can use the browser extensions referenced in the article below.</p>
 </li>
 </ol>
-<p><a href="https://community.cisco.com/t5/security-documents/ise-ers-api-examples/ta-p/3622623">Start Here</a> - This guide will walk you through configuring ERS on your server. <a href="https://github.com/AdamGrossTX/PowershellScripts/blob/master/CiscoISE/External%20RESTful%20Service%20(ERS)%20API/ISE%20ERS%20API%20Examples.pdf">Here</a> is a PDF version of it in case the source ever changes.
-Next, have your ISE administrator create a new endpoint Group. You should configure the group to automatically remove endpoints after 24 hours. This will prevent failed devices from being orphaned in the group. Additionally, the restricted DACL needs to be configured to redirect traffic to the ISE server&rsquo;s primary admin node (Per our admin. Not sure how he did this&hellip;).</p>
-<h2 id="whitelisting-mac-addresses">Whitelisting MAC Addresses</h2>
+<p><a href=https://community.cisco.com/t5/security-documents/ise-ers-api-examples/ta-p/3622623>Start Here</a> - This guide will walk you through configuring ERS on your server. <a href=https://github.com/AdamGrossTX/PowershellScripts/blob/master/CiscoISE/External%20RESTful%20Service%20(ERS)%20API/ISE%20ERS%20API%20Examples.pdf>Here</a> is a PDF version of it in case the source ever changes.
+Next, have your ISE administrator create a new endpoint Group. You should configure the group to automatically remove endpoints after 24 hours. This will prevent failed devices from being orphaned in the group. Additionally, the restricted DACL needs to be configured to redirect traffic to the ISE server&rsquo;s primary admin node (Per our admin. Not sure how he did this&mldr;).</p>
+<h2 id=whitelisting-mac-addresses>Whitelisting MAC Addresses</h2>
 <p>I originally intended to build a full PowerShell module to able you to fully manage ERS with PowerShell but it just turned into a huge undertaking so I decided to just go with the most important bits. The script has examples in the comments at the top, so it should be straightforward to execute.
 Note 1: The ISEServerList.txt file is used to map Gateways to ISE Servers for locations that have several ISE servers (we do). If you only have 1 server, use the -Server parameter on your command line.</p>
 <p>Note 2: The script will grab the currently active MAC address and whitelist it. You can use the -MACAddress parameter to specify a specific MAC Address if required.</p>
@@ -285,62 +200,49 @@ Note 1: The ISEServerList.txt file is used to map Gateways to ISE Servers for lo
 <li>Updates EndPoint&rsquo;s Group to a special WhiteListing group that you specify.</li>
 <li>Deletes the EndPoint&rsquo;s MAC record from ISE.</li>
 </ol>
-<p><strong>You can download the whitelisting script and all related files from my <a href="https://github.com/AdamGrossTX/PowershellScripts/tree/master/CiscoISE/External%20RESTful%20Service%20(ERS)%20API">GitHub</a> repo.</strong> The length of the script made posting inline prohibitive.</p>
-<h2 id="integrating-the-script-into-winpe">Integrating the script into WinPE</h2>
+<p><strong>You can download the whitelisting script and all related files from my <a href=https://github.com/AdamGrossTX/PowershellScripts/tree/master/CiscoISE/External%20RESTful%20Service%20(ERS)%20API>GitHub</a> repo.</strong> The length of the script made posting inline prohibitive.</p>
+<h2 id=integrating-the-script-into-winpe>Integrating the script into WinPE</h2>
 <p>If you followed the previous steps in this series, you should already have most if this in place. We are going to update the OSDInjection.XML file to include our new script and the ISEServers.txt file (optional). Before you do this, be sure that your script works and that you can add and remove a machine from your whitelisting group. I suggest booting into WinPE then running the script from a USB to test.</p>
 <p>If you want details on how to edit your OSDInjection.XML and winpeshl.ini files, please refer to the previous posts in this series. Also, I&rsquo;ve included sample files in the GitHub repo with the whitelisting script.
 <strong>Note</strong>: I tested adding the script to a new boot image and kept getting SSL errors from the script. I added my root cert to the media boot image (just like in the machine auth setup) and it resolved the issue. Plus it adds an extra level of security.</p>
-<h2 id="updating-your-upgrade-task-sequence">Updating your Upgrade Task Sequence</h2>
+<h2 id=updating-your-upgrade-task-sequence>Updating your Upgrade Task Sequence</h2>
 <p>Simply add a Run PowerShell Script step to the beginning of your Task Sequence to launch the script.
-<div class="image">
-  <figure>
-    <a href="2018-09-30_23-33-40.png" target="_blank">
-      <img src="2018-09-30_23-33-40.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=image>
+<figure>
+<a href=2018-09-30_23-33-40.png target=_blank>
+<img src=2018-09-30_23-33-40.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Add a second Run PowerShell Script step to the end of your Task Sequence to remove the MAC endpoint from ISE.</p>
-<p><div class="image">
-  <figure>
-    <a href="2018-09-30_23-34-29.png" target="_blank">
-      <img src="2018-09-30_23-34-29.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=2018-09-30_23-34-29.png target=_blank>
+<img src=2018-09-30_23-34-29.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>You may also consider importing your 802.1x GPO settings at this point, but once you&rsquo;ve joined your machine to the domain and the machine cert is created (assuming you use machine certs for auth), it should automatically get configured in ISE.
 You should be able to remove the custom Unattend.XML, SetupComplete and SetupRollback entries that you added in the previous steps in the series and just rely on the ERS whitelist to handle auth.</p>
-<h2 id="summary">Summary</h2>
-<p>Sorry if this isn&rsquo;t a full step-by-step of the complete process. I just needed to get this information and the script out for people to begin working with. If you have questions or concerns, please feel free to reach out to me here on on Twitter (<a href="http://www.twitter.com/AdamGrossTX">@AdamGrossTX</a>) and I&rsquo;ll see what I can do to help.</p>
-<p>In case you missed the link above you can download everything from my <a href="http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">GitHub repo Here</a></p>
-<p>Don&rsquo;t forget to check out the <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips &amp; Tricks</a> page.</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
+<h2 id=summary>Summary</h2>
+<p>Sorry if this isn&rsquo;t a full step-by-step of the complete process. I just needed to get this information and the script out for people to begin working with. If you have questions or concerns, please feel free to reach out to me here on on Twitter (<a href=http://www.twitter.com/AdamGrossTX>@AdamGrossTX</a>) and I&rsquo;ll see what I can do to help.</p>
+<p>In case you missed the link above you can download everything from my <a href=http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>GitHub repo Here</a></p>
+<p>Don&rsquo;t forget to check out the <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips & Tricks</a> page.</p>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

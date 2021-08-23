@@ -1,257 +1,172 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>SCCM Collection Evaluation – Troubleshooting Incremental Update Issues-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2019/02/21/sccm-collection-evaluation-troubleshooting-incremental-update-issues/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>SCCM Collection Evaluation – Troubleshooting Incremental Update Issues-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2019/02/21/sccm-collection-evaluation-troubleshooting-incremental-update-issues/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="SCCM Collection Evaluation – Troubleshooting Incremental Update Issues"/>
-<meta name="twitter:description" content="About a month ago, I wrote a post for System Center Dudes related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="SCCM Collection Evaluation – Troubleshooting Incremental Update Issues">
+<meta name=twitter:description content="About a month ago, I wrote a post for System Center Dudes related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>SCCM Collection Evaluation – Troubleshooting Incremental Update Issues</h1>
-				<span class="post-date">February 21, 2019</span>
-			</div>
-			<div class="post-entry">
-				<p>About a month ago, I wrote a <a href="https://www.systemcenterdudes.com/sccm-remove-recurring-schedules-collections-script/">post for System Center Dudes</a> related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything. I have confirmed that the behavior that I will describe exists in 1802 as well.).</p>
-<p>In the past month, we started to see issues with newly built devices not populating collections even though the Direct membership rules were being created and the devices eventually populated the limiting collections. The only way devices would populate collections was by manually refreshing the collection or adding/removing a rule which would triggers a collection update. I opened a case with Premier Support and worked with <a href="https://twitter.com/vinay_pamnani">Vinay Pinmani</a>, who helped investigate. So, here&rsquo;s what I know about SCCM Device collections now:</p>
-<h2 id="broken-collection-structure">&lsquo;Broken&rsquo; Collection Structure</h2>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>SCCM Collection Evaluation – Troubleshooting Incremental Update Issues</h1>
+<span class=post-date>February 21, 2019</span>
+</div>
+<div class=post-entry>
+<p>About a month ago, I wrote a <a href=https://www.systemcenterdudes.com/sccm-remove-recurring-schedules-collections-script/>post for System Center Dudes</a> related to the changes to recurring collection schedules in SCCM 1810. In our environment, we removed the default recurring schedules from about 1750 device collections that use Direct membership rules. Up until that point, we had seen some strange collection behaviors, but never at the level that we began to experience them post ConfigMgr 1810. (Let me stop here and say that 1810 didn&rsquo;t break anything. I have confirmed that the behavior that I will describe exists in 1802 as well.).</p>
+<p>In the past month, we started to see issues with newly built devices not populating collections even though the Direct membership rules were being created and the devices eventually populated the limiting collections. The only way devices would populate collections was by manually refreshing the collection or adding/removing a rule which would triggers a collection update. I opened a case with Premier Support and worked with <a href=https://twitter.com/vinay_pamnani>Vinay Pinmani</a>, who helped investigate. So, here&rsquo;s what I know about SCCM Device collections now:</p>
+<h2 id=broken-collection-structure>&lsquo;Broken&rsquo; Collection Structure</h2>
 <p>For our production collections, we have an All Workstations (Parent in the example below) collection limited to All Systems. It is used as the limiting collection for all of our workstation application deployment collections (Child 2 in the example below). For testing, we added a few additional collections to compare the experience.</p>
 <ul>
 <li><strong>All Systems</strong>
@@ -295,86 +210,75 @@ if (!doNotTrack) {
 </ul>
 </li>
 </ul>
-<h2 id="reproducing-the-issue">Reproducing the Issue</h2>
+<h2 id=reproducing-the-issue>Reproducing the Issue</h2>
 <p>During Operating System Deployment (OSD), we have a collection mapping process where we get a list of collections from a Source computer and add direct membership rules for the new device. This is where we were seeing our issues. Initially, I thought it may be an issue with our REST API calling the wrong WMI commands to create collection Direct membership rules. Upon further testing, I was able to reproduce the issue by manually importing a new device from the console (such a relief knowing it wasn&rsquo;t my code!).</p>
-<h4 id="test-scenario-1---import-new-device-manually-add-to-collections">Test Scenario 1 - Import New Device. Manually Add to Collections</h4>
+<h4 id=test-scenario-1---import-new-device-manually-add-to-collections>Test Scenario 1 - Import New Device. Manually Add to Collections</h4>
 <p>In the ConfigMgr Console import a new device named <strong>Test1</strong> accepting all defaults.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-13.png" target="_blank">
-      <img src="image-13.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-13.png target=_blank>
+<img src=image-13.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Wait for the device populate the Parent collection (Default Incremental update is 5 mins), then manually add Direct rules to each of the Child collections by selecting the collection and clicking <strong>Add Resources</strong>. This action cause a .UDC file to be added to the colleval.box and processed. This file simply tells SCCM to trigger an update on the collection right away. It&rsquo;s equivalent to clicking <strong>Update Membership</strong> on a collection. At this point, Test1 should be added to ALL Child collections.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-20.png" target="_blank">
-      <img src="image-20.png" alt="A Square Dozen Image">
-    </a>
-    
-    <figcaption>Verify Collection Membership</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-20.png target=_blank>
+<img src=image-20.png alt="A Square Dozen Image">
+</a>
+<figcaption>Verify Collection Membership</figcaption>
+</figure>
 </div></p>
 <p><strong>Summary</strong><br>
 This test worked as expected. The device made it into all collections. My guess is that MOST collection membership rules are added After a device is already in the limiting collection, so this just works because of the UDC file being added to the colleval.box.</p>
-<h4 id="test-scenario-2---import-new-device-and-pre-add-to-collections">Test Scenario 2 - Import New Device and Pre-Add to Collections</h4>
+<h4 id=test-scenario-2---import-new-device-and-pre-add-to-collections>Test Scenario 2 - Import New Device and Pre-Add to Collections</h4>
 <p>In the ConfigMgr Console import a new device named <strong>Test2</strong>. On the <strong>Choose Target Collections</strong> step, click Add then select all 3 Child collections then accept the remaining defaults.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-15.png" target="_blank">
-      <img src="image-15.png" alt="Click Add to select collections. Add device only to child collections.">
-    </a>
-    
-    <figcaption>Click Add to select collections. Add device only to child collections.</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-15.png target=_blank>
+<img src=image-15.png alt="Click Add to select collections. Add device only to child collections.">
+</a>
+<figcaption>Click Add to select collections. Add device only to child collections.</figcaption>
+</figure>
 </div></p>
 <p>Check the child collection properties now and you will see Direct membership rules have been added to them.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-21.png" target="_blank">
-      <img src="image-21.png" alt="Verify Rule Creation">
-    </a>
-    
-    <figcaption>Verify Rule Creation</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-21.png target=_blank>
+<img src=image-21.png alt="Verify Rule Creation">
+</a>
+<figcaption>Verify Rule Creation</figcaption>
+</figure>
 </div></p>
 <p>Wait for the All Systems incremental again. DON&rsquo;T manually update ANY collection at this stage or you will corrupt the test. You can monitor colleval.log and should see the collectionID of your limiting collection added to the Graph for processing.
 Once the incremental evaluation has added the new device to All Systems, check the limiting collection (Parent - Incremental) to verify that the device is now a member of it as well.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-22.png" target="_blank">
-      <img src="image-22.png" alt="Test2 is now in Parent - Incremental">
-    </a>
-    
-    <figcaption>Test2 is now in Parent - Incremental</figcaption>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-22.png target=_blank>
+<img src=image-22.png alt="Test2 is now in Parent - Incremental">
+</a>
+<figcaption>Test2 is now in Parent - Incremental</figcaption>
+</figure>
 </div></p>
-<p>When you check the membership for the child collections you will find that only <strong>Child 1</strong> was updated. Note the <strong>Date Modified</strong> and <strong>Membership Change Time</strong> columns (<em>you may have to right click on the column header and enable them</em>). Each child has a 11:15 PM <strong>Date Modified</strong> timestamp. This is the time that the new device was imported and the direct membership rules were created. The <strong>Membership Change Time</strong> on the full chain from <strong>All Systems</strong> to <strong>Child 1</strong> were all updated as part of the incremental refresh cycle, but Child 2 &amp; 3 did not see any membership changes.</p>
-<p><div class="image">
-  <figure>
-    <a href="image-23.png" target="_blank">
-      <img src="image-23.png" alt="Only Child 1 was updated">
-    </a>
-    
-    <figcaption>Only Child 1 was updated</figcaption>
-    
-  </figure>
+<p>When you check the membership for the child collections you will find that only <strong>Child 1</strong> was updated. Note the <strong>Date Modified</strong> and <strong>Membership Change Time</strong> columns (<em>you may have to right click on the column header and enable them</em>). Each child has a 11:15 PM <strong>Date Modified</strong> timestamp. This is the time that the new device was imported and the direct membership rules were created. The <strong>Membership Change Time</strong> on the full chain from <strong>All Systems</strong> to <strong>Child 1</strong> were all updated as part of the incremental refresh cycle, but Child 2 & 3 did not see any membership changes.</p>
+<p><div class=image>
+<figure>
+<a href=image-23.png target=_blank>
+<img src=image-23.png alt="Only Child 1 was updated">
+</a>
+<figcaption>Only Child 1 was updated</figcaption>
+</figure>
 </div></p>
 <p><strong>Summary</strong><br>
 When Child 3&rsquo;s schedule finally runs, the device will populate the collection. Child 2 will never see the device Test2 unless the collection is updated either manually or by making a rule change which will trigger the UDC file and a full update.</p>
-<h4 id="test-scenario-3---import-new-device-with-pre-add-to-collections-and-manual-all-system-update">Test Scenario 3 - Import New Device with Pre-Add to Collections and Manual All System Update</h4>
+<h4 id=test-scenario-3---import-new-device-with-pre-add-to-collections-and-manual-all-system-update>Test Scenario 3 - Import New Device with Pre-Add to Collections and Manual All System Update</h4>
 <p>For this last scenario, you will want to monitor the colleval.log and get the timing just right. You will create a new device named <strong>Test3</strong>.</p>
 <p>When colleval completes the next Incremental, follow the same steps as in Test 2, however this time, import the device and immediately Manually update All Systems. You will see colleval add all collections to the evaluation graph and perform a full update. You will also see that this will cause everything in the chain to perform a full update.</p>
 <p>Check the Child collections and you will see that all 3 devices are in all collections.</p>
 <p><strong>Summary</strong><br>
 By making a change on All Systems and forcing a full update between Incremental updates, we were able to force all child collections to update as well. Since it updated everything, Test2 was also added to Child 2 and 3.</p>
-<h2 id="the-details">The Details</h2>
+<h2 id=the-details>The Details</h2>
 <p><em>All of the following assumes that you want your child collections to stay updated automatically. If you do not desire this behavior, this doesn&rsquo;t really apply.</em> After testing several more scenarios including query rules for Child collections instead of direct, here&rsquo;s what we have concluded:</p>
 <ul>
 <li>Incremental updates clear the &lsquo;changed&rsquo; flag on collections as it processes them.</li>
@@ -384,47 +288,36 @@ By making a change on All Systems and forcing a full update between Incremental 
 <li>If there are unprocessed changes on an Incremental-enabled limiting collection BETWEEN incremental updates AND the collection is refreshed (manually or by schedule), a full update will be performed on the limiting collection and all items in it&rsquo;s dependency chain.</li>
 <li>All of these scenarios also apply to removal from collections when a device is deleted or is no longer in the limiting collection.</li>
 </ul>
-<h2 id="what-now">What Now?</h2>
+<h2 id=what-now>What Now?</h2>
 <p>I can&rsquo;t tell you what&rsquo;s best for you. For our environment, since we have need to add devices to collections during OSD, we have removed Incremental from all limiting collections and added recurring schedules instead. We are testing performance with the changes, but currently have our All Workstations collection scheduled to refresh every 30 minutes and it takes ~12 minutes for a full update to process through all collections. Hopefully this will help things along.
 Also, let me be clear, do what&rsquo;s best for your environment. We will still continue to use Incremental updates for our high priority collections, but we have a better understand better how they must be handled to ensure they function properly. You could also add incrementals for everything (tread carefully), but that&rsquo;s totally up to you! Use colleval.exe to see how things look and go from there.</p>
-<h2 id="resources">Resources</h2>
+<h2 id=resources>Resources</h2>
 <p>Can&rsquo;t get enough Collection info, check out these resources:</p>
 <ul>
-<li><a href="http://rzander.azurewebsites.net/collection-scenarios/">http://rzander.azurewebsites.net/collection-scenarios/</a></li>
-<li><a href="http://www.oscc.be/powershell/sccm/Collection-Evaluation-and-Such-Part-1-(of-who-knows-how-many)/">http://www.oscc.be/powershell/sccm/Collection-Evaluation-and-Such-Part-1-(of-who-knows-how-many)/</a></li>
-<li><a href="https://mms2015.sched.com/event/42yr/configmgr-collection-a-through-z-and-back">https://mms2015.sched.com/event/42yr/configmgr-collection-a-through-z-and-back</a> (check out the Slides here)</li>
-<li><a href="https://mms2017.sched.com/event/AUau/collection-evaluation-revisited-option-2">https://mms2017.sched.com/event/AUau/collection-evaluation-revisited-option-2</a></li>
-<li><a href="https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/">https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/</a></li>
-<li><a href="https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/">https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/</a></li>
-<li><a href="https://docs.microsoft.com/sccm/core/clients/manage/collections/best-practices-for-collections">https://docs.microsoft.com/sccm/core/clients/manage/collections/best-practices-for-collections</a></li>
-<li><a href="https://docs.microsoft.com/sccm/core/clients/manage/collections/create-collections">https://docs.microsoft.com/sccm/core/clients/manage/collections/create-collections</a></li>
+<li><a href=http://rzander.azurewebsites.net/collection-scenarios/>http://rzander.azurewebsites.net/collection-scenarios/</a></li>
+<li><a href=http://www.oscc.be/powershell/sccm/Collection-Evaluation-and-Such-Part-1-(of-who-knows-how-many)/>http://www.oscc.be/powershell/sccm/Collection-Evaluation-and-Such-Part-1-(of-who-knows-how-many)/</a></li>
+<li><a href=https://mms2015.sched.com/event/42yr/configmgr-collection-a-through-z-and-back>https://mms2015.sched.com/event/42yr/configmgr-collection-a-through-z-and-back</a> (check out the Slides here)</li>
+<li><a href=https://mms2017.sched.com/event/AUau/collection-evaluation-revisited-option-2>https://mms2017.sched.com/event/AUau/collection-evaluation-revisited-option-2</a></li>
+<li><a href=https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/>https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/</a></li>
+<li><a href=https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/>https://blogs.technet.microsoft.com/leesteve/2017/08/22/sccm-for-those-nasty-incremental-collections/</a></li>
+<li><a href=https://docs.microsoft.com/sccm/core/clients/manage/collections/best-practices-for-collections>https://docs.microsoft.com/sccm/core/clients/manage/collections/best-practices-for-collections</a></li>
+<li><a href=https://docs.microsoft.com/sccm/core/clients/manage/collections/create-collections>https://docs.microsoft.com/sccm/core/clients/manage/collections/create-collections</a></li>
 </ul>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

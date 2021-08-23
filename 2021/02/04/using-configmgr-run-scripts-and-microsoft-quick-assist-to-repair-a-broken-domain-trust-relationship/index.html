@@ -1,256 +1,171 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship"/>
-<meta name="twitter:description" content="Recently one of our sites began having some issues with domain joined devices losing their trust relationship with Active Directory. While some users were able to log in with cached credentials, we had no easy way to get admin credentials to repair the domain trust. I’m going to show how Configmgr Run Scripts and Microsoft Quick Assist helped us get admin access to the devices to perform troubleshooting and remediation. The purpose of this post is to show how we can leverage various tools to solve challenging problems in production."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship">
+<meta name=twitter:description content="Recently one of our sites began having some issues with domain joined devices losing their trust relationship with Active Directory. While some users were able to log in with cached credentials, we had no easy way to get admin credentials to repair the domain trust. I’m going to show how Configmgr Run Scripts and Microsoft Quick Assist helped us get admin access to the devices to perform troubleshooting and remediation. The purpose of this post is to show how we can leverage various tools to solve challenging problems in production.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</h1>
-				<span class="post-date">February 4, 2021</span>
-			</div>
-			<div class="post-entry">
-				<p>Recently one of our sites began having some issues with domain joined devices losing their trust relationship with Active Directory. While some users were able to log in with cached credentials, we had no easy way to get admin credentials to repair the domain trust. I’m going to show how Configmgr Run Scripts and Microsoft Quick Assist helped us get admin access to the devices to perform troubleshooting and remediation. The purpose of this post is to show how we can leverage various tools to solve challenging problems in production. We will likely automate this using <a href="https://twitter.com/Johnny_Radeck">Johnny Radeck&rsquo;s</a> solution at the end, but I wanted to use this post to show highlight ways to use these tools in a real-world scenario.</p>
-<h2 id="the-environment">The Environment</h2>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</h1>
+<span class=post-date>February 4, 2021</span>
+</div>
+<div class=post-entry>
+<p>Recently one of our sites began having some issues with domain joined devices losing their trust relationship with Active Directory. While some users were able to log in with cached credentials, we had no easy way to get admin credentials to repair the domain trust. I’m going to show how Configmgr Run Scripts and Microsoft Quick Assist helped us get admin access to the devices to perform troubleshooting and remediation. The purpose of this post is to show how we can leverage various tools to solve challenging problems in production. We will likely automate this using <a href=https://twitter.com/Johnny_Radeck>Johnny Radeck&rsquo;s</a> solution at the end, but I wanted to use this post to show highlight ways to use these tools in a real-world scenario.</p>
+<h2 id=the-environment>The Environment</h2>
 <ul>
 <li>Devices randomly lose domain trust and unable to repair without admin intervention</li>
 <li>Active Directory domain joined devices</li>
@@ -259,127 +174,116 @@ if (!doNotTrack) {
 <li>LAPS is used to scramble the local Administrator password but since the account is disabled, it&rsquo;s not helpful here.</li>
 <li>No cached domain account with Administrator rights</li>
 </ul>
-<h2 id="enable-local-administrator-with-configmgr-run-scripts">Enable Local Administrator with ConfigMgr Run Scripts</h2>
-<p>One of the most useful new features of <a href="https://docs.microsoft.com/mem/configmgr/apps/deploy-use/create-deploy-scripts">ConfigMgr is Run Scripts</a>. It allows you to deploy PowerShell scripts from the ConfigMgr console immediately to any online device. Because the ConfigMgr client is running under the System account of the device being targeted, these scripts are also run in the System context which has local admin rights to the device.</p>
+<h2 id=enable-local-administrator-with-configmgr-run-scripts>Enable Local Administrator with ConfigMgr Run Scripts</h2>
+<p>One of the most useful new features of <a href=https://docs.microsoft.com/mem/configmgr/apps/deploy-use/create-deploy-scripts>ConfigMgr is Run Scripts</a>. It allows you to deploy PowerShell scripts from the ConfigMgr console immediately to any online device. Because the ConfigMgr client is running under the System account of the device being targeted, these scripts are also run in the System context which has local admin rights to the device.</p>
 <p>For this example I’ve written a simple PowerShell script that can enable or disable a local account (using the account SID as a parameter). In production, we would only need to enable the account then retrieve the password from LAPS. While the script has the code commented out to set the password, I would advise against using it since the password will get logged in the local client logs. Additionally, you could use NET commands (included in the script as an example) in Run Scripts but I wanted to have a script that was flexible and could output results to the console and could catch errors.</p>
-<p>If you aren&rsquo;t familiar with Run Scripts, check out the the docs to learn everything about Run Scripts then come back here for the rest of the story. Follow the steps to add this script to your console. <a href="https://docs.microsoft.com/mem/configmgr/apps/deploy-use/create-deploy-scripts">Create and run scripts - Configuration Manager | Microsoft Docs</a></p>
+<p>If you aren&rsquo;t familiar with Run Scripts, check out the the docs to learn everything about Run Scripts then come back here for the rest of the story. Follow the steps to add this script to your console. <a href=https://docs.microsoft.com/mem/configmgr/apps/deploy-use/create-deploy-scripts>Create and run scripts - Configuration Manager | Microsoft Docs</a></p>
 <blockquote>
 <p><strong>Note</strong><br>
-I&rsquo;ve submitted the script to the Community Hub but it is still pending at the time of this writing. Check out more about the Community Hub here: <a href="https://docs.microsoft.com/mem/configmgr/core/servers/manage/community-hub">Community hub and GitHub - Configuration Manager | Microsoft Docs</a>. You can check the status of my PR here <a href="https://github.com/Microsoft/configmgr-hub/pull/64">https://github.com/Microsoft/configmgr-hub/pull/64</a>.</p>
+I&rsquo;ve submitted the script to the Community Hub but it is still pending at the time of this writing. Check out more about the Community Hub here: <a href=https://docs.microsoft.com/mem/configmgr/core/servers/manage/community-hub>Community hub and GitHub - Configuration Manager | Microsoft Docs</a>. You can check the status of my PR here <a href=https://github.com/Microsoft/configmgr-hub/pull/64>https://github.com/Microsoft/configmgr-hub/pull/64</a>.</p>
 </blockquote>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#998;font-style:italic">&lt;#
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span><span style="color:#998;font-style:italic"></span><span style="color:#d14">.SYNOPSIS</span><span style="color:#998;font-style:italic">
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span><span style="color:#998;font-style:italic">    Enables the built-in local Administrator account
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span><span style="color:#998;font-style:italic"></span><span style="color:#d14">.DESCRIPTION</span><span style="color:#998;font-style:italic">
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span><span style="color:#998;font-style:italic">    Enables the built-in local Administrator account
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span><span style="color:#998;font-style:italic"></span><span style="color:#d14">.PARAMETER</span><span style="color:#998;font-style:italic"> Enable
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#998;font-style:italic">    Set to True to Enable the account    
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span><span style="color:#998;font-style:italic">    Set to False to Disable the account
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#998;font-style:italic"></span><span style="color:#d14">.NOTES</span><span style="color:#998;font-style:italic">
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#998;font-style:italic">    Author:     Adam Gross
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span><span style="color:#998;font-style:italic">    Website:    https://www.ASquareDozen.com
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#998;font-style:italic">    GitHub:     https://www.github.com/AdamGrossTX
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span><span style="color:#998;font-style:italic">    Twitter:    https://www.twitter.com/AdamGrossTX
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span><span style="color:#998;font-style:italic">
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span><span style="color:#998;font-style:italic">    Using NET commands instead
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#998;font-style:italic">        net user Administrator /ACTIVE:YES
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#998;font-style:italic">        net user Administrator P@ssw0rd
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#998;font-style:italic">        
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#998;font-style:italic">    Removing the option to set the password here since the env uses LAPS and password parameter is passed in plain text and will show in the client logs.
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#998;font-style:italic">#&gt;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#000;font-weight:bold">Param</span> (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>    [<span style="color:#000;font-weight:bold">Parameter</span>(<span style="color:#000;font-weight:bold">Mandatory</span>=<span style="color:#008080">$true</span>)]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>    [<span style="color:#000;font-weight:bold">ValidateSet</span>(<span style="color:#d14">&#34;True&#34;</span>,<span style="color:#d14">&#34;False&#34;</span>)]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>    <span style="color:#008080">[string]</span><span style="color:#008080">$Enable</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span>    <span style="color:#998;font-style:italic">#,[string]$Password = &#34;P@ssw0rd&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span><span style="color:#000;font-weight:bold">Try</span> {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>    <span style="color:#008080">$LocalAdminSIDSearchString</span> = <span style="color:#d14">&#34;S-1-5-21-*-500&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span>    
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>    <span style="color:#008080">$Account</span> = <span style="color:#0086b3">Get-LocalUser</span> | <span style="color:#0086b3">Where-Object</span> {<span style="color:#008080">$_</span>.SID <span style="color:#000;font-weight:bold">-like</span> <span style="color:#008080">$LocalAdminSIDSearchString</span>}
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>    <span style="color:#008080">$Return</span> = @()
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>    <span style="color:#000;font-weight:bold">If</span>(<span style="color:#008080">$Account</span>) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span>        <span style="color:#000;font-weight:bold">If</span>(<span style="color:#008080">$Enable</span> <span style="color:#000;font-weight:bold">-eq</span> <span style="color:#d14">&#34;True&#34;</span>) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>            <span style="color:#000;font-weight:bold">If</span>(<span style="color:#000;font-weight:bold">-not</span> <span style="color:#008080">$Account</span>.Enabled) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>                <span style="color:#008080">$Account</span> | <span style="color:#0086b3">Enable-LocalUser</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>                <span style="color:#008080">$Return</span> += <span style="color:#d14">&#34;Account Enabled&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>            <span style="color:#000;font-weight:bold">Else</span> {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span>                <span style="color:#008080">$Return</span> += <span style="color:#d14">&#34;Account Already Enabled&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="42"><a style="outline: none; text-decoration:none; color:inherit" href="#42">42</a></span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="43"><a style="outline: none; text-decoration:none; color:inherit" href="#43">43</a></span>        }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="44"><a style="outline: none; text-decoration:none; color:inherit" href="#44">44</a></span>        <span style="color:#000;font-weight:bold">Else</span> {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="45"><a style="outline: none; text-decoration:none; color:inherit" href="#45">45</a></span>            <span style="color:#000;font-weight:bold">If</span>(<span style="color:#008080">$Account</span>.Enabled) {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="46"><a style="outline: none; text-decoration:none; color:inherit" href="#46">46</a></span>                <span style="color:#008080">$Account</span> | <span style="color:#0086b3">Disable-LocalUser</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="47"><a style="outline: none; text-decoration:none; color:inherit" href="#47">47</a></span>                <span style="color:#008080">$Return</span> += <span style="color:#d14">&#34;Account Disabled&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="48"><a style="outline: none; text-decoration:none; color:inherit" href="#48">48</a></span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="49"><a style="outline: none; text-decoration:none; color:inherit" href="#49">49</a></span>            <span style="color:#000;font-weight:bold">Else</span> {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="50"><a style="outline: none; text-decoration:none; color:inherit" href="#50">50</a></span>                <span style="color:#008080">$Return</span> += <span style="color:#d14">&#34;Account Already Disabled&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="51"><a style="outline: none; text-decoration:none; color:inherit" href="#51">51</a></span>            }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="52"><a style="outline: none; text-decoration:none; color:inherit" href="#52">52</a></span>        }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="53"><a style="outline: none; text-decoration:none; color:inherit" href="#53">53</a></span>        <span style="color:#998;font-style:italic">&lt;#If($Password) {
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="54"><a style="outline: none; text-decoration:none; color:inherit" href="#54">54</a></span><span style="color:#998;font-style:italic">            $SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="55"><a style="outline: none; text-decoration:none; color:inherit" href="#55">55</a></span><span style="color:#998;font-style:italic">            $Account | Set-LocalUser -Password $SecurePassword
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="56"><a style="outline: none; text-decoration:none; color:inherit" href="#56">56</a></span><span style="color:#998;font-style:italic">            $Return += &#34;Password Reset&#34;
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="57"><a style="outline: none; text-decoration:none; color:inherit" href="#57">57</a></span><span style="color:#998;font-style:italic">        }#&gt;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="58"><a style="outline: none; text-decoration:none; color:inherit" href="#58">58</a></span>    }
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="59"><a style="outline: none; text-decoration:none; color:inherit" href="#59">59</a></span>    <span style="color:#008080">$Return</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="60"><a style="outline: none; text-decoration:none; color:inherit" href="#60">60</a></span>}
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="61"><a style="outline: none; text-decoration:none; color:inherit" href="#61">61</a></span><span style="color:#000;font-weight:bold">Catch</span> {
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="62"><a style="outline: none; text-decoration:none; color:inherit" href="#62">62</a></span>    <span style="color:#000;font-weight:bold">Return</span> <span style="color:#008080">$Error</span>[0]
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="63"><a style="outline: none; text-decoration:none; color:inherit" href="#63">63</a></span>}
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>&lt;#
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#998;font-style:italic></span><span style=color:#d14>.SYNOPSIS</span><span style=color:#998;font-style:italic>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#998;font-style:italic>    Enables the built-in local Administrator account
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#998;font-style:italic></span><span style=color:#d14>.DESCRIPTION</span><span style=color:#998;font-style:italic>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#998;font-style:italic>    Enables the built-in local Administrator account
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#998;font-style:italic></span><span style=color:#d14>.PARAMETER</span><span style=color:#998;font-style:italic> Enable
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#998;font-style:italic>    Set to True to Enable the account    
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#998;font-style:italic>    Set to False to Disable the account
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#998;font-style:italic></span><span style=color:#d14>.NOTES</span><span style=color:#998;font-style:italic>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#998;font-style:italic>    Author:     Adam Gross
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#998;font-style:italic>    Website:    https://www.ASquareDozen.com
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#998;font-style:italic>    GitHub:     https://www.github.com/AdamGrossTX
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#998;font-style:italic>    Twitter:    https://www.twitter.com/AdamGrossTX
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#998;font-style:italic>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#998;font-style:italic>    Using NET commands instead
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#998;font-style:italic>        net user Administrator /ACTIVE:YES
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#998;font-style:italic>        net user Administrator P@ssw0rd
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#998;font-style:italic>        
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#998;font-style:italic>    Removing the option to set the password here since the env uses LAPS and password parameter is passed in plain text and will show in the client logs.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#998;font-style:italic>#&gt;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#000;font-weight:700>Param</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>(<span style=color:#000;font-weight:700>Mandatory</span>=<span style=color:teal>$true</span>)]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>    [<span style=color:#000;font-weight:700>ValidateSet</span>(<span style=color:#d14>&#34;True&#34;</span>,<span style=color:#d14>&#34;False&#34;</span>)]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>    <span style=color:teal>[string]</span><span style=color:teal>$Enable</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>    <span style=color:#998;font-style:italic>#,[string]$Password = &#34;P@ssw0rd&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#000;font-weight:700>Try</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>    <span style=color:teal>$LocalAdminSIDSearchString</span> = <span style=color:#d14>&#34;S-1-5-21-*-500&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>    
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>    <span style=color:teal>$Account</span> = <span style=color:#0086b3>Get-LocalUser</span> | <span style=color:#0086b3>Where-Object</span> {<span style=color:teal>$_</span>.SID <span style=color:#000;font-weight:700>-like</span> <span style=color:teal>$LocalAdminSIDSearchString</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>    <span style=color:teal>$Return</span> = @()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>    <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Account</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>        <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Enable</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:#d14>&#34;True&#34;</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>            <span style=color:#000;font-weight:700>If</span>(<span style=color:#000;font-weight:700>-not</span> <span style=color:teal>$Account</span>.Enabled) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>                <span style=color:teal>$Account</span> | <span style=color:#0086b3>Enable-LocalUser</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>                <span style=color:teal>$Return</span> += <span style=color:#d14>&#34;Account Enabled&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span>            }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>            <span style=color:#000;font-weight:700>Else</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span>                <span style=color:teal>$Return</span> += <span style=color:#d14>&#34;Account Already Enabled&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a></span>            }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a></span>        }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a></span>        <span style=color:#000;font-weight:700>Else</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a></span>            <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Account</span>.Enabled) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a></span>                <span style=color:teal>$Account</span> | <span style=color:#0086b3>Disable-LocalUser</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a></span>                <span style=color:teal>$Return</span> += <span style=color:#d14>&#34;Account Disabled&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a></span>            }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a></span>            <span style=color:#000;font-weight:700>Else</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50>50</a></span>                <span style=color:teal>$Return</span> += <span style=color:#d14>&#34;Account Already Disabled&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51>51</a></span>            }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52>52</a></span>        }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53>53</a></span>        <span style=color:#998;font-style:italic>&lt;#If($Password) {
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54>54</a></span><span style=color:#998;font-style:italic>            $SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=55><a style=outline:none;text-decoration:none;color:inherit href=#55>55</a></span><span style=color:#998;font-style:italic>            $Account | Set-LocalUser -Password $SecurePassword
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=56><a style=outline:none;text-decoration:none;color:inherit href=#56>56</a></span><span style=color:#998;font-style:italic>            $Return += &#34;Password Reset&#34;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=57><a style=outline:none;text-decoration:none;color:inherit href=#57>57</a></span><span style=color:#998;font-style:italic>        }#&gt;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=58><a style=outline:none;text-decoration:none;color:inherit href=#58>58</a></span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=59><a style=outline:none;text-decoration:none;color:inherit href=#59>59</a></span>    <span style=color:teal>$Return</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=60><a style=outline:none;text-decoration:none;color:inherit href=#60>60</a></span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=61><a style=outline:none;text-decoration:none;color:inherit href=#61>61</a></span><span style=color:#000;font-weight:700>Catch</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=62><a style=outline:none;text-decoration:none;color:inherit href=#62>62</a></span>    <span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$Error</span>[0]
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=63><a style=outline:none;text-decoration:none;color:inherit href=#63>63</a></span>}
 </code></pre></div><p>Once the script has been added to your console, select the impacted device(s) and run the script. You can monitor the status of the script using Scripts.log in the C:\Windows\CCM\Logs folder.</p>
-<h2 id="getting-connected-with-microsoft-quick-assist">Getting Connected with Microsoft Quick Assist</h2>
-<p>Once the local administrator account has been enabled, you can remotely connect to the device using Quick Assist (or before - Quick Assist is not dependent on Admin rights to launch). If you haven&rsquo;t used this tool yet, be sure to give it a test drive. I have been using it for the past year and it has been THE MOST RELIABE remote management tool I&rsquo;ve ever used! Hands down! I have even used it to (begrudgingly) work on my parents &amp; in-laws computers with ease and it even works from the Windows OOBE screen (Shift+F10 then type QuickAssist) to allow you to troubleshoot device provisioning issues when using Windows Autopilot.
-I was going to write a nice post on Quick Assist, but <a href="https://twitter.com/okieselb">MVP Oliver Kieselbach</a> has an excellent write-up on it. <a href="https://oliverkieselbach.com/2020/03/03/quick-assist-the-built-in-remote-control-in-windows-10/">Quick Assist the built-in Remote Control in Windows 10 – Modern IT – Cloud – Workplace (oliverkieselbach.com)</a> plus Microsoft does as well <a href="https://support.microsoft.com/windows/solve-pc-problems-over-a-remote-connection-b077e31a-16f4-2529-1a47-21f6a9040bf3">Solve PC problems over a remote connection (microsoft.com)</a>.</p>
+<h2 id=getting-connected-with-microsoft-quick-assist>Getting Connected with Microsoft Quick Assist</h2>
+<p>Once the local administrator account has been enabled, you can remotely connect to the device using Quick Assist (or before - Quick Assist is not dependent on Admin rights to launch). If you haven&rsquo;t used this tool yet, be sure to give it a test drive. I have been using it for the past year and it has been THE MOST RELIABE remote management tool I&rsquo;ve ever used! Hands down! I have even used it to (begrudgingly) work on my parents & in-laws computers with ease and it even works from the Windows OOBE screen (Shift+F10 then type QuickAssist) to allow you to troubleshoot device provisioning issues when using Windows Autopilot.
+I was going to write a nice post on Quick Assist, but <a href=https://twitter.com/okieselb>MVP Oliver Kieselbach</a> has an excellent write-up on it. <a href=https://oliverkieselbach.com/2020/03/03/quick-assist-the-built-in-remote-control-in-windows-10/>Quick Assist the built-in Remote Control in Windows 10 – Modern IT – Cloud – Workplace (oliverkieselbach.com)</a> plus Microsoft does as well <a href=https://support.microsoft.com/windows/solve-pc-problems-over-a-remote-connection-b077e31a-16f4-2529-1a47-21f6a9040bf3>Solve PC problems over a remote connection (microsoft.com)</a>.</p>
 <p>Simply have the user with the problem computer launch QuickAssist.exe from a command prompt or Windows search box so you can connect to them. Follow the instructions on the screen and you can connect within minutes. Oh, and did I mention Quick Assist even handles reconnecting after reboots (it at least tries to reconnect).</p>
-<h2 id="microsoft-laps">Microsoft LAPS</h2>
-<p>If you&rsquo;re not already using Microsoft LAPS, you should really take a look. Gary Blok has a great write-up on the Recast Software blog <a href="https://www.recastsoftware.com/blog/overview-of-microsoft-laps-local-administrator-password-solution">Overview of Microsoft LAPS (Local Administrator Password Solution) (recastsoftware.com)</a></p>
+<h2 id=microsoft-laps>Microsoft LAPS</h2>
+<p>If you&rsquo;re not already using Microsoft LAPS, you should really take a look. Gary Blok has a great write-up on the Recast Software blog <a href=https://www.recastsoftware.com/blog/overview-of-microsoft-laps-local-administrator-password-solution>Overview of Microsoft LAPS (Local Administrator Password Solution) (recastsoftware.com)</a></p>
 <p>Since we are using LAPS, we can simply used the LAPS console integrated in the ConfigMgr console to retrieve the password for the broken device. If we didn&rsquo;t have LAPS enabled or if the expected LAPS password wasn&rsquo;t working, we could have edited our script from above to set the password manually (last resort).</p>
-<h2 id="repair-the-domain-trust">Repair the Domain Trust</h2>
+<h2 id=repair-the-domain-trust>Repair the Domain Trust</h2>
 <p>For years, any time a device lost it&rsquo;s domain trust, I would disjoin the device from the domain then re-join it. Then I discovered that you could skip the disjoin and simply change from the short Netbios domain to the FQDN or the other way around and it would do the same thing. Then one day I discovered <code>Test-ComputerSecureChannel</code> and it changed my life!</p>
 <p>Once logged onto the broken device, we were able to launch PowerShell using the local Administrator account then run the following command.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#0086b3">Test-ComputerSecureChannel</span> -Credential (<span style="color:#0086b3">Get-Credential</span>) -Repair
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Test-ComputerSecureChannel</span> -Credential (<span style=color:#0086b3>Get-Credential</span>) -Repair
 </code></pre></div><p>Note that <code>Get-Credential</code> will pop up a dialog asking for your domain credentials. You could also use Get-Credential and store the credentials into a variable and pass them in like this.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span><span style="color:#008080">$Creds</span> = <span style="color:#0086b3">Get-Credential</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#0086b3">Test-ComputerSecureChannel</span> -Credential <span style="color:#008080">$Creds</span> -Repair
-</code></pre></div><h2 id="auto-remediation">Auto Remediation</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$Creds</span> = <span style=color:#0086b3>Get-Credential</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#0086b3>Test-ComputerSecureChannel</span> -Credential <span style=color:teal>$Creds</span> -Repair
+</code></pre></div><h2 id=auto-remediation>Auto Remediation</h2>
 <p>As I mentioned at the top, Johnny Radeck wrote this great blog post and script to that uses a ConfigMgr Configuration Item to automatically detect and repair the broken trust. In Johnny&rsquo;s solution, he encrypts domain credentials and uses those to reset the password using an special domain account that only has rights to reset passwords. My plan is to use this as a foundation for detecting, reporting and remediating this issue automatically moving forward.</p>
-<p><a href="https://msendpointmgr.com/2021/02/03/repair-a-broken-trust-relationship-between-a-workstation-and-the-domain/">Repair a broken trust relationship between a workstation and the domain - MSEndpointMgr</a></p>
-<h2 id="special-thanks">Special Thanks</h2>
-<p>I would like to say thanks to <a href="https://twitter.com/NickolajA">Nickolaj</a>, <a href="https://twitter.com/modaly_it">Maurice</a> and <a href="https://twitter.com/Johnny_Radeck">Johnny</a> for helping me out here. Johnny wrote the post above 2 years ago and it got lost during the <a href="https://msendpointmgr.com/">MSEndpointMgr</a> site migration. I reached out to them and they were able to recover the post (I heard Johnny had to re-write it!). You guys are top notch! Thank you for all you do for the community.</p>
-<h2 id="summary">Summary</h2>
+<p><a href=https://msendpointmgr.com/2021/02/03/repair-a-broken-trust-relationship-between-a-workstation-and-the-domain/>Repair a broken trust relationship between a workstation and the domain - MSEndpointMgr</a></p>
+<h2 id=special-thanks>Special Thanks</h2>
+<p>I would like to say thanks to <a href=https://twitter.com/NickolajA>Nickolaj</a>, <a href=https://twitter.com/modaly_it>Maurice</a> and <a href=https://twitter.com/Johnny_Radeck>Johnny</a> for helping me out here. Johnny wrote the post above 2 years ago and it got lost during the <a href=https://msendpointmgr.com/>MSEndpointMgr</a> site migration. I reached out to them and they were able to recover the post (I heard Johnny had to re-write it!). You guys are top notch! Thank you for all you do for the community.</p>
+<h2 id=summary>Summary</h2>
 <p>So I know this post is mostly just links to other posts, but sometimes that&rsquo;s just what a day in our IT lives is like - putting together all of the pieces of information we can to attack a problem - so I felt like it was worth sharing.</p>
 <p>To wrap up the story, the Server team has been working to replace the domain controller at the site where the issue is occurring. I haven&rsquo;t heard anything from local support in a while, so either it&rsquo;s working or they are all offline and can&rsquo;t send me a message 🙂 Now that we have a handle on the issue, putting some automation in to detect and report on future issues is going to be useful and having the option to auto-remediate will be the icing on the cake.
 Well, that&rsquo;s all for now. Wait for the next post where I tell you how bad I am at IT. It&rsquo;s gonna be a rollercoaster!!</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

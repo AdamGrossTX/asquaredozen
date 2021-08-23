@@ -1,383 +1,277 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Lockdown Diary – My Always On VPN is Schrödinger’s Cat-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Lockdown Diary – My Always On VPN is Schrödinger’s Cat-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2020/05/12/lockdown-diary-my-always-on-vpn-is-schrodingers-cat/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Lockdown Diary – My Always On VPN is Schrödinger’s Cat"/>
-<meta name="twitter:description" content="When is your Always On VPN not Always On? An Always On VPN client uses a machine certificate to connect to the VPN gateway and connect to the network on startup. This feature is wonderful since it allows VPN clients to process machine group policies and even makes it easy for users with expired passwords to reset their passwords. But how can you verify that the machine channel is connected if you can&rsquo;t see any indicators on the logon screen?"/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Lockdown Diary – My Always On VPN is Schrödinger’s Cat">
+<meta name=twitter:description content="When is your Always On VPN not Always On? An Always On VPN client uses a machine certificate to connect to the VPN gateway and connect to the network on startup. This feature is wonderful since it allows VPN clients to process machine group policies and even makes it easy for users with expired passwords to reset their passwords. But how can you verify that the machine channel is connected if you can&rsquo;t see any indicators on the logon screen?">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Lockdown Diary – My Always On VPN is Schrödinger’s Cat</h1>
-				<span class="post-date">May 13, 2020</span>
-			</div>
-			<div class="post-entry">
-				<h2 id="when-is-your-always-on-vpn-not-always-on">When is your Always On VPN not Always On?</h2>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Lockdown Diary – My Always On VPN is Schrödinger’s Cat</h1>
+<span class=post-date>May 13, 2020</span>
+</div>
+<div class=post-entry>
+<h2 id=when-is-your-always-on-vpn-not-always-on>When is your Always On VPN not Always On?</h2>
 <p>An Always On VPN client uses a machine certificate to connect to the VPN gateway and connect to the network on startup. This feature is wonderful since it allows VPN clients to process machine group policies and even makes it easy for users with expired passwords to reset their passwords. But how can you verify that the machine channel is connected if you can&rsquo;t see any indicators on the logon screen? As soon as I log in, the VPN client connects with my user credentials.
 I have had a long-held suspicion that our Always On VPN client hasn&rsquo;t been working as advertised, however it was generally on nights/weekends when working from home, so I rarely put any thought into verifying it. Plus it was intermittent and I never could nail down what I felt was the issue. After all, surely the VPN admins would have noticed something by now right?</p>
-<p>In my <a href="/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/">last post I talked about building a Hyper-VM VM and using DJOIN to build VPN-enabled VMs from home</a>. Consider this Part 2 of that process. In that post, I mentioned that I had to log in after each reboot of the Task Sequence to reconnect the VPN since the machine channel didn&rsquo;t appear to be working. Today I finally spent some time testing it and SPOILER&hellip;.I was right!!</p>
+<p>In my <a href=/2020/05/05/lockdown-diary-how-i-used-djoin-to-build-test-machines-over-vpn/>last post I talked about building a Hyper-VM VM and using DJOIN to build VPN-enabled VMs from home</a>. Consider this Part 2 of that process. In that post, I mentioned that I had to log in after each reboot of the Task Sequence to reconnect the VPN since the machine channel didn&rsquo;t appear to be working. Today I finally spent some time testing it and SPOILER&mldr;.I was right!!</p>
 <hr>
-<p><a href="https://en.wikipedia.org/wiki/Schr%C3%B6dinger%27s_cat"><strong>Schrödinger&rsquo;s VPN</strong> - If I can&rsquo;t see that the VPN client is connected, is it connected? If it&rsquo;s connected when I log in, was it connected all along, or did it just connect when I logged in? How can I verify connectivity without logging in?</a></p>
+<p><a href=https://en.wikipedia.org/wiki/Schr%C3%B6dinger%27s_cat><strong>Schrödinger&rsquo;s VPN</strong> - If I can&rsquo;t see that the VPN client is connected, is it connected? If it&rsquo;s connected when I log in, was it connected all along, or did it just connect when I logged in? How can I verify connectivity without logging in?</a></p>
 <hr>
-<h2 id="getting-familiar-with-the-client">Getting familiar with the client</h2>
+<h2 id=getting-familiar-with-the-client>Getting familiar with the client</h2>
 <p>There were probably several other ways to tackle this issue, but I ultimately wanted a way to witness the machine tunnel connection progress.</p>
 <p>The first problem here is that I don&rsquo;t manage our VPN client so I don&rsquo;t REALLY know how it&rsquo;s SUPPOSED to work or even have access to the configuration console. I&rsquo;m just a consumer of it.
-I know that we hide the client&rsquo;s credential provider from the logon screen for&hellip;reasons. I re-enabled it for my testing and while it does give a visual indicator showing connectivity, it doesn&rsquo;t tell you what&rsquo;s broken. I also wasn&rsquo;t sure sure if it was telling me that the machine channel was connected or the user channel.
+I know that we hide the client&rsquo;s credential provider from the logon screen for&mldr;reasons. I re-enabled it for my testing and while it does give a visual indicator showing connectivity, it doesn&rsquo;t tell you what&rsquo;s broken. I also wasn&rsquo;t sure sure if it was telling me that the machine channel was connected or the user channel.
 I also found the client log files and discovered how to enable DUMP 💩 logging level, which includes all the crap in logs. (poop jokes - you&rsquo;re welcome). This helped greatly since I was able to follow along with the background processes and determine the root cause.</p>
-<h2 id="1337-hax0rz-ski11z">1337 hax0rz ski11z</h2>
-<p>I just stole that heading from the internet, just like I stole my &lsquo;solution&rsquo; from <a href="https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/">Johan</a> who apparently stole it from some other folks on the internet. This one&rsquo;s been around for a while. I&rsquo;ve used it several times and think it&rsquo;s a very useful tool, as long as you revert your changes and you don&rsquo;t bake this into every image you deploy!</p>
-<p><a href="https://xkcd.com/1053/"><div class="image">
-  <figure>
-    <a href="ten_thousand.png" target="_blank">
-      <img src="ten_thousand.png" alt="Saying &amp;lsquo;what kind of an idiot doesn&amp;rsquo;t know about the Yellowstone supervolcano&amp;rsquo; is so much more boring than telling someone about the Yellowstone supervolcano for the first time.">
-    </a>
-    
-    <figcaption>Also stolen - https://xkcd.com/1053/ Did you know that if you hover over xkcd comics they have alt-text that compliments the comic?</figcaption>
-    
-  </figure>
+<h2 id=1337-hax0rz-ski11z>1337 hax0rz ski11z</h2>
+<p>I just stole that heading from the internet, just like I stole my &lsquo;solution&rsquo; from <a href=https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/>Johan</a> who apparently stole it from some other folks on the internet. This one&rsquo;s been around for a while. I&rsquo;ve used it several times and think it&rsquo;s a very useful tool, as long as you revert your changes and you don&rsquo;t bake this into every image you deploy!</p>
+<p><a href=https://xkcd.com/1053/><div class=image>
+<figure>
+<a href=ten_thousand.png target=_blank>
+<img src=ten_thousand.png alt="Saying &amp;lsquo;what kind of an idiot doesn&amp;rsquo;t know about the Yellowstone supervolcano&amp;rsquo; is so much more boring than telling someone about the Yellowstone supervolcano for the first time.">
+</a>
+<figcaption>Also stolen - https://xkcd.com/1053/ Did you know that if you hover over xkcd comics they have alt-text that compliments the comic?</figcaption>
+</figure>
 </div></a></p>
 <hr>
 <p>DISCLAIMER - This is a BIG security risk. Do not leave this in production.</p>
 <hr>
 <p>The hack is pretty simple. You replace either <strong>sethc.exe</strong> (hit left shift 5 times) or <strong>utilman.exe</strong> (the little icon next to the network icon on the Windows 10 logon screen) in <strong>C:\Windows\system32</strong> with a renamed copy of cmd.exe. You can do this via WinPE/WinRE or within Windows with Admin rights. I mounted my Hyper-V hard disk and followed the steps below .</p>
-<h4 id="from-windowshyper-v-mounted-disk">From Windows/Hyper-V Mounted Disk</h4>
+<h4 id=from-windowshyper-v-mounted-disk>From Windows/Hyper-V Mounted Disk</h4>
 <ol>
 <li>Navigate to c:\Windows\system32</li>
 <li>Find either sethc.exe or utilman.exe and take ownership</li>
 <li>Rename the file to sethc.exe.OLD or utilman.exe.old (This is important since you&rsquo;ll want to reverse this when you&rsquo;re done.)</li>
 </ol>
-<p><div class="image">
-  <figure>
-    <a href="image-8.png" target="_blank">
-      <img src="image-8.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-8.png target=_blank>
+<img src=image-8.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<p><div class="image">
-  <figure>
-    <a href="image-9.png" target="_blank">
-      <img src="image-9.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=image-9.png target=_blank>
+<img src=image-9.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Once you&rsquo;ve taken ownership, you can copy cmd.exe from the same location (c:\Windows\System32) then rename it to the file you just took ownership of. Double click the new file and a command window should open.</p>
-<p><div class="image">
-  <figure>
-    <a href="2020-05-12_22-14-46.png" target="_blank">
-      <img src="2020-05-12_22-14-46.png" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=2020-05-12_22-14-46.png target=_blank>
+<img src=2020-05-12_22-14-46.png alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Don&rsquo;t like reading? Just watch it.
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/ZJFz4ONWoQ4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src=https://www.youtube.com/embed/ZJFz4ONWoQ4 style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
 </div>
 </p>
-<h4 id="other-methods">Other Methods</h4>
-<p>I&rsquo;m sure someone has a script for this, I just haven&rsquo;t looked. If you want to do it within WinPE, just follow <a href="https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/">Johan&rsquo;s steps here</a>.</p>
-<h4 id="it-may-not-work">It May Not Work</h4>
-<p><div class="image">
-  <figure>
-    <a href="source.gif" target="_blank">
-      <img src="source.gif" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<h4 id=other-methods>Other Methods</h4>
+<p>I&rsquo;m sure someone has a script for this, I just haven&rsquo;t looked. If you want to do it within WinPE, just follow <a href=https://deploymentresearch.com/reset-the-domain-admin-password-in-windows-server-2012-r2/>Johan&rsquo;s steps here</a>.</p>
+<h4 id=it-may-not-work>It May Not Work</h4>
+<p><div class=image>
+<figure>
+<a href=source.gif target=_blank>
+<img src=source.gif alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>Apparently, this may not work if you have certain security tools - like Windows Defender - running on the machine, so go ahead and rip those things off while you&rsquo;re at it. I mean, you&rsquo;re already doing some bad stuff anyway, what&rsquo;s a little bit more insecurity?</p>
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Just spent an hour trying to hack my way into my old laptop because I forgot the password. Turns out Defender blocks sethc.exe and utilman.exe workarounds as AccessibilityEscalation attacks now!<br><br>Remembered the password in the end. <a href="https://twitter.com/hashtag/Fun?src=hash&amp;ref_src=twsrc%5Etfw">#Fun</a></p>&mdash; Brett Miller (@BrettMiller_IT) <a href="https://twitter.com/BrettMiller_IT/status/1085329542921797632?ref_src=twsrc%5Etfw">January 16, 2019</a></blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<h2 id="heading"></h2>
-<h2 id="checking-for-a-dead-cat">Checking for a Dead Cat</h2>
+<blockquote class=twitter-tweet><p lang=en dir=ltr>Just spent an hour trying to hack my way into my old laptop because I forgot the password. Turns out Defender blocks sethc.exe and utilman.exe workarounds as AccessibilityEscalation attacks now!<br><br>Remembered the password in the end. <a href="https://twitter.com/hashtag/Fun?src=hash&ref_src=twsrc%5Etfw">#Fun</a></p>&mdash; Brett Miller (@BrettMiller_IT) <a href="https://twitter.com/BrettMiller_IT/status/1085329542921797632?ref_src=twsrc%5Etfw">January 16, 2019</a></blockquote>
+<script async src=https://platform.twitter.com/widgets.js></script>
+<h2 id=heading></h2>
+<h2 id=checking-for-a-dead-cat>Checking for a Dead Cat</h2>
 <p>If you made it this far, you can start checking for a dead cat, er, connected VPN client. Simply boot up your machine and depending on which file you used, either hit SHIFT 5 times quickly or click on the Ease of Access icon in the lower right next to the network connectivity icon. Command Prompt will open and now you can run most Windows commands.</p>
 <p>The first step was to check to see if the VPN connection was up. It wasn&rsquo;t. I only had my internal network&rsquo;s IP address on my wired/wireless adapter. I checked with our VPN admin and she confirmed that I should have an IP address at that stage (which I assumed, but wasn&rsquo;t risking it).</p>
 <p>Next I opened services.msc and found the VPN service and confirmed that it was started.</p>
 <p>Then it was on to the VPN client Logs! When I looked at the logs, I found the issue. The VPN gateway configuration sends the client the internal PKI Offline Root CA and Intermediate CA(s) certs. In our case, we have 2 issuing CAs and our clients can get their domain computer auth certs from either one, but never the same cert template from both servers. In our config, we had only uploaded one of the Intermediate CAs on the gateway. This means that clients with certs issued by the missing CA could never validate their cert against the cert chain.</p>
 <p>The basics in action
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/tR6o63yfPuI" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src=https://www.youtube.com/embed/tR6o63yfPuI style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
 </div>
 </p>
-<h2 id="quantum-vpn">Quantum VPN</h2>
+<h2 id=quantum-vpn>Quantum VPN</h2>
 <p>In the end, I can finally be at peace with the quantum state of our VPN Client and I can answer the question &lsquo;When is your Always On VPN not Always On?&rsquo; with &lsquo;When the Intermediate issuing CA is missing from the certificate validation chain that&rsquo;s issued by the VPN gateway server to the clients upon initializing their VPN connection at device boot time.&rsquo;</p>
 <p>I need to get out of my house! Hope you found this helpful or at least cathartic. I know we&rsquo;ve all been there.</p>
-
-			</div>
-			
-			<div class="post-share">
-				<div class="post-share-box share-comments">
-					hello
-				</div>
-			</div>
-			<div class="post-author">
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<div class=post-share>
+<div class="post-share-box share-comments">
+hello
+</div>
+</div>
+<div class=post-author>
+</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>

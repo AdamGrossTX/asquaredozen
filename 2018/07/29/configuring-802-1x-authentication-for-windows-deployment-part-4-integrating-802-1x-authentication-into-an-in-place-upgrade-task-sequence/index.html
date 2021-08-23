@@ -1,512 +1,412 @@
-<!DOCTYPE html>
-<html lang="en-us">
-	    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="keyword"  content="ConfigMgr Microsoft MVP Gross Intune Windows">
-        <meta name="viewport" content="width=device-width">
-        <meta name="description" content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence-A Square Dozen | A. Gross Blog</title>
-        <link rel="canonical" href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">
-
-        
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/css/code.css">
-        <link rel="stylesheet" type="text/css" href="https://blog.asquaredozen.com/css/custom.css">
-        
-
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-        <script src="https://blog.asquaredozen.com/js/jquery.slicknav.js"></script>
-        <script src="https://blog.asquaredozen.com/js/asd_SlickNav_Mobile.js"></script>
-        <script src="https://blog.asquaredozen.com/js/custom.js"></script>
-
-        
-
-        
-        
-        
-
-        
-        
+<!doctype html><html lang=en-us>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
+<meta name=viewport content="width=device-width">
+<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
+<link rel="shortcut icon" href=/img/favicon.ico>
+<title>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence-A Square Dozen | A. Gross Blog</title>
+<link rel=canonical href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>
+<link rel=stylesheet href=/css/style.css>
+<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
+<script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
+<script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
+<script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-DYVXTRTXN4', { 'anonymize_ip': false });
-}
-</script>
-
-        <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.asquaredozen.com/105"/>
-
-<meta name="twitter:title" content="Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence"/>
-<meta name="twitter:description" content="This is Part 4 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
-Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word of caution. Make sure that your switch firmware is matched to the version required by ISE. I spent several weeks working with our Security and Networking guys to troubleshoot and discovered that our switches weren&rsquo;t at the required version for ISE 2."/>
-
-        
-
-    </head>
-		<body class="home blog">
-			<div id="asd-container">
-				
-				
-<div id="top-bar">
-    <div class="container">
-        <div id="nav-wrapper">
-                <ul class="menu" id="menu-top-menu">
-                    <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                        <a href="/">Home</a>
-                    </li>
-                    
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Feature Updates</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/">Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/">Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/">Windows 10 Feature Updates – Using Custom Action Scripts</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/">Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="/2019/02/12/the-system-center-configuration-manager-adminservice-guide/">
-                                    
-                                    <span>ConfigMgr AdminService</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>802.1x for OSD</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/">Part 1 – Building an 802.1x Computer Authentication Script</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/">Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/">Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/">Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/">Tips and Tricks</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>Task Sequence Hacks</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/11/29/building-a-better-task-sequence/">Building a Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2019/04/30/building-a-smarter-task-sequence/">Building a Smarter Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/12/14/building-an-even-better-task-sequence/">Building An Even Better Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/">Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/">Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/">Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/">Triggering ConfigMgr Client Actions from a Task Sequence</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/2018/08/27/using-sccm-task-sequence-variables-as-scripts/">Using SCCM Task Sequence Variables as Scripts</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                        
-                            <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="https://github.com/AdamGrossTX">
-                                    
-                                    <span>GitHub</span>
-                                </a>
-                            </li>
-                        
-                    
-                        
-                            <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                <a href="#">
-                                    
-                                    <span>MORE&gt;</span>
-                                </a>
-                                <ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/about/">About</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/consulting/">Consulting</a>
-                                        </li>
-                                    
-                                        <li class=" menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-                                            <a href="/contact/">Contact</a>
-                                        </li>
-                                    
-                                </ul>
-                            </li>
-                        
-                    
-                </ul>
-        </div>
-        <div class="menu" id="menu-mobile"></div>
-    </div>
-    <div id="top-search">
-        <a href="#" class="search"><i class="fa fa-search"></i></a>
-        <div class="show-search">
-            <form role="search" method="get" action="https://www.google.com/search" id="searchform">
-                <input type="search" placeholder="Search and hit enter..." value="" name="s" id="s" title="Search and hit enter...">
-                <input type="hidden" name="sitesearch" value="asquaredozen.com">
-                <button type="submit" value="Search"/>
-            </form>
-        </div>
-    </div>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://www.asquaredozen.com/105">
+<meta name=twitter:title content="Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence">
+<meta name=twitter:description content="This is Part 4 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
+Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word of caution. Make sure that your switch firmware is matched to the version required by ISE. I spent several weeks working with our Security and Networking guys to troubleshoot and discovered that our switches weren&rsquo;t at the required version for ISE 2.">
+</head>
+<body class="home blog">
+<div id=asd-container>
+<div id=top-bar>
+<div class=container>
+<div id=nav-wrapper>
+<ul class=menu id=menu-top-menu>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/>Home</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Feature Updates</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
+<span>ConfigMgr AdminService</span>
+</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>802.1x for OSD</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
+</li>
+<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>Task Sequence Hacks</span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=https://github.com/AdamGrossTX>
+<span>GitHub</span>
+</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=#>
+<span>MORE></span>
+</a>
+<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/about/>About</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/consulting/>Consulting</a>
+</li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
+<a href=/contact/>Contact</a>
+</li>
+</ul>
+</li>
+</ul>
 </div>
-
-				<header id="header" class="noslider">
-	<div class="container">
-		<div id="logo">
-			<h1><a href="https://blog.asquaredozen.com"><img src="/img/A-Square-Dozen-Logo-BlogHeader-1.png" alt="A Square Dozen" /></a></h1>
-		</div>
-	</div>
+<div id=top-search>
+<a href=# class=search><i class="fa fa-search"></i></a>
+<div class=show-search>
+<form role=search method=get action=https://www.google.com/search id=searchform>
+<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<input type=hidden name=sitesearch value=https://www.asquaredozen.com>
+<button type=submit value=Search>
+</form>
+</div>
+</div>
+<div class=menu id=menu-mobile></div>
+</div>
+</div>
+<header id=header class=noslider>
+<div class=container>
+<div id=logo>
+<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
+</div>
+</div>
 </header>
-				<div class="container">
-					<div id="content">
-						
-<div id="main" class="fullwidth">
-		<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-			<div class="post-header">
-				<h1>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</h1>
-				<span class="post-date">July 30, 2018</span>
-			</div>
-			<div class="post-entry">
-				<p>This is Part 4 in my <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">Configuring 802.1x Authentication for Windows Deployment</a> series. Be sure to check out all of the other parts <a href="http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/">here</a>.</p>
-<h1 id="quick-note-about-cisco-switch-firmware">Quick Note About Cisco Switch Firmware</h1>
+<div class=container>
+<div id=content>
+<div id=main class=fullwidth>
+<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
+<div class=post-header>
+<h1>Configuring 802.1x Authentication for Windows Deployment – Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</h1>
+<span class=post-date>July 30, 2018</span>
+</div>
+<div class=post-entry>
+<p>This is Part 4 in my <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>Configuring 802.1x Authentication for Windows Deployment</a> series. Be sure to check out all of the other parts <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>here</a>.</p>
+<h1 id=quick-note-about-cisco-switch-firmware>Quick Note About Cisco Switch Firmware</h1>
 <p>If you&rsquo;ve made it this far, a word of caution. Make sure that your switch firmware is matched to the version required by ISE. I spent several weeks working with our Security and Networking guys to troubleshoot and discovered that our switches weren&rsquo;t at the required version for ISE 2.2. An device plugged in through an IP phone would get blocked by the switch during an In-Place Upgrade and could only reset the port by rebooting the phone. Applying the latest firmware resolved this issue.</p>
 <hr>
 <p>If you are using a ConfigMgr Task Sequence to manage In-Place upgrades or Windows 10 Feature Updates, you will want to take a look at this.</p>
 <p>A Windows In-Place Upgrade or Feature Update perform in much the same way. The setup media is staged on the machine, then the existing OS is moved to a new Windows.old folder. The new OS, updates and drivers are all applied. Then any apps/data/settings that you chose to migrate are applied. According to the Windows 10 Product Group (via Microsoft Premier Support), an In-Place upgrade should migrate 802.1x settings. However, in my experience, this has not been the case, at least during an In-Place Upgrade Task Sequence.</p>
-<h1 id="heres-whats-supposed-to-happen">Here&rsquo;s what&rsquo;s supposed to happen</h1>
+<h1 id=heres-whats-supposed-to-happen>Here&rsquo;s what&rsquo;s supposed to happen</h1>
 <p>802.1x local profiles as well as 802.1x policies are picked up and moved to a staging location called <strong>C:\ProgramData\Microsoft\dot3vc\MigrationData</strong>. There are corresponding registry keys as well under <strong>HKLM\Software\Microsoft\dot3svc\MigrationData</strong>. If you had a GPO Profile applied, it will be converted to a Local Profile and applied until GPO&rsquo;s can process once the Task Sequence if complete. If you don&rsquo;t have a GPO, then any Local Profile will be applied. If no Local Profile exists, then why did you turn on 802.1x to begin with?? Actually, you will always have a local profile. If you were to delete your profile and restart <strong>dot3svc</strong>, a new default profile will be applied. So, that&rsquo;s what&rsquo;s <strong>SUPPOSED</strong> to happen.</p>
-<h1 id="heres-what-really-happens">Here&rsquo;s what really happens</h1>
+<h1 id=heres-what-really-happens>Here&rsquo;s what really happens</h1>
 <p>The OS migration completes, and your 802.1x profile has been set back to default. When Windows setup finishes, the computer doesn&rsquo;t reboot, but just calls the Task Sequence environment to resume at the next step. You will see your Task Sequence timeout as it attempts to send a status back to the server. If your next step requires access to the network, it would just fail. You can check your adapter or your 802.1x admin console and see that the computer will have failed to authenticate.</p>
-<h1 id="the-problem">The Problem</h1>
+<h1 id=the-problem>The Problem</h1>
 <p>The 802.1x migration process doesn&rsquo;t complete it&rsquo;s migration until the Wired Authconfig (dot3svc) service is restarted either manually or via reboot. You can reproduce with using standalone upgrade media. When you log in, your authentication profile will be reset to default until you restart dot3svc.</p>
-<h1 id="possible-solutions">Possible Solutions</h1>
+<h1 id=possible-solutions>Possible Solutions</h1>
 <p>There are several options to consider here.</p>
 <ol>
 <li><strong>Ignore initial authentication failures</strong> when the Task Sequence resumes and restart dot3svc as the first step after Upgrade Operating System. - This option is bad because you run the risk of having ports blocked after repeated failed authentication attempts. Many of our computers are connected to the LAN through their VOIP phones. If a computer fails authentication twice, that device will be blocked from any further traffic until the phone is rebooted. (This could be environmental for us or a bug, but why risk a bunch of unnecessary failures?)</li>
 <li><strong>Edit the upgrade_bulk.XML file</strong> in the Sources directory of your Upgrade media to add the Profile or GPO files to the Include sections. - I have tested and this does work, but it seems less than ideal. the Product Group has a specific process in place to perform this migration in a specific way and I don&rsquo;t like hacking things up (too much) if I don&rsquo;t have to. This was a great workaround, but not the best option.</li>
 <li><strong>Edit the SetupCompleteTemplate.cmd and SetupRollbackTemplate.cmd</strong> files to restart the service DURING the OS upgrade process so the Task Sequence never fails to authenticate. - This is the option that I&rsquo;m going go over here. It seems to be the most robust option given the alternatives.</li>
 </ol>
-<h1 id="setupcompletetemplatecmd-and-setuprollbacktemplatecmd-files">SetupCompleteTemplate.cmd and SetupRollbackTemplate.cmd Files</h1>
-<p>Thanks for the info <a href="https://garytown.com/customize-setupcomplete">Gary Blok</a>!<br>
+<h1 id=setupcompletetemplatecmd-and-setuprollbacktemplatecmd-files>SetupCompleteTemplate.cmd and SetupRollbackTemplate.cmd Files</h1>
+<p>Thanks for the info <a href=https://garytown.com/customize-setupcomplete>Gary Blok</a>!<br>
 If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 files sitting there. They are part of your client install payload and the sources can be found on your SCCM Primary server (Though I wouldn&rsquo;t recommend editing them directly). Make a copy of these files and add them to a new ConfigMgr Package - don&rsquo;t distribute them yet, we need to edit them. Make 2 folders <strong>Original</strong> and <strong>Modified</strong>. Add both files to both folders. Now open the copies from the <strong>Modified</strong> folder. They should look like this:</p>
 <p><code>SetupCompleteTemplate.cmd</code></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">@ECHO</span> OFF
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>REM SCCMClientPath should be <span style="color:#0086b3">set </span>before we get here
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#0086b3">set </span>_SMSTSSetupRollback=FALSE
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Running <span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style="color:#a61717;background-color:#e3d2d2">:</span>Gina /configpath<span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#000;font-weight:bold">%</span>_SMSTSMDataPath% /bootcount<span style="color:#a61717;background-color:#e3d2d2">:</span>2 /reloadenv
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#000;font-weight:bold">IF</span> <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Rebooting now &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>) <span style="color:#000;font-weight:bold">else</span> (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>) <span style=color:#000;font-weight:700>else</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
 </code></pre></div><p><code>SetupRollbackTemplate.cmd</code></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">@ECHO</span> OFF
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>REM SCCMClientPath should be <span style="color:#0086b3">set </span>before we get here
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#0086b3">set </span>_SMSTSSetupRollback=TRUE
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Running <span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style="color:#a61717;background-color:#e3d2d2">:</span>Gina /configpath<span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#000;font-weight:bold">%</span>_SMSTSMDataPath% /bootcount<span style="color:#a61717;background-color:#e3d2d2">:</span>2 /reloadenv
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span><span style="color:#000;font-weight:bold">IF</span> <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Rebooting now &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>) <span style="color:#000;font-weight:bold">else</span> (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>) <span style=color:#000;font-weight:700>else</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
 </code></pre></div><p>These files are used by the <strong>OSDUpgrade.exe</strong> process during the Task Sequence to manage reboots and resume the Task Sequence as needed during the upgrade process. They run with every reboot AFTER Windows Setup completes, so they are the perfect place for us to add our service restart. If you look at the <strong>Upgrade Operating System</strong> step in the <strong>SMSTS.log</strong>, you will see an entry like this:</p>
-<p><div class="image">
-  <figure>
-    <a href="2018-07-29_22-22-46.jpg" target="_blank">
-      <img src="2018-07-29_22-22-46.jpg" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<p><div class=image>
+<figure>
+<a href=2018-07-29_22-22-46.jpg target=_blank>
+<img src=2018-07-29_22-22-46.jpg alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>These files are appended to your Windows setup command line like this:</p>
-<p><code>&quot;C:\_SMSTaskSequence\Packages\XXXXXXXXXX\SETUP.EXE&quot; /ImageIndex 1 /auto Upgrade /quiet /noreboot /postoobe &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&quot; /postrollback &quot;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&quot;</code></p>
-<h1 id="modifications-for-8021x">Modifications for 802.1x</h1>
+<p><code>"C:\_SMSTaskSequence\Packages\XXXXXXXXXX\SETUP.EXE" /ImageIndex 1 /auto Upgrade /quiet /noreboot /postoobe "C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd" /postrollback "C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd"</code></p>
+<h1 id=modifications-for-8021x>Modifications for 802.1x</h1>
 <p>Here&rsquo;s the block of code that I added to my files. You can choose to do more or less. The only one you REALLY need is the restart-service step.</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>//Custom Configuration
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Custom Configuration&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3">3</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4">4</a></span>powershell.exe -command <span style="color:#d14">&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5">5</a></span>ping localhost -n 15
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6">6</a></span>netsh lan show interfaces &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7">7</a></span>netsh lan show Profiles &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8">8</a></span>//<span style="color:#000;font-weight:bold">End</span> Custom Configuration
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>//Custom Configuration
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span>ping localhost -n 15
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a></span>//<span style=color:#000;font-weight:700>End</span> Custom Configuration
 </code></pre></div><p>These commands will restart the dot3svc then ping local host for 15 seconds (easy way to add a sleep) then log the output of netsh commands for review later if something fails. I made a point previously of mentioning that I&rsquo;m using a Batch file instead of Powershell for ease of support, yet here I&rsquo;m using PowerShell to restart the service. What I found was that the alternative commands like NET or SC must be called as separate STOP and START commands and I had issues with the script waiting for the service to fully stop before attempting to start. PowerShell&rsquo;s Restart-Service handles all of this nicely. Just trying to use the right tool for the job.</p>
 <p>Here&rsquo;s what your files should look like:</p>
 <p><code>SetupCompleteTemplate.cmd</code></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">@ECHO</span> OFF
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>REM SCCMClientPath should be <span style="color:#0086b3">set </span>before we get here
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#0086b3">set </span>_SMSTSSetupRollback=FALSE
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>:: //Custom Configuration
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Custom Configuration&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>powershell.exe -command <span style="color:#d14">&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>ping localhost -n 15
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>netsh lan show interfaces &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>netsh lan show Profiles &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>:: // <span style="color:#000;font-weight:bold">End</span> Custom Configuration
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Running <span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style="color:#a61717;background-color:#e3d2d2">:</span>Gina /configpath<span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#000;font-weight:bold">%</span>_SMSTSMDataPath% /bootcount<span style="color:#a61717;background-color:#e3d2d2">:</span>2 /reloadenv
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span><span style="color:#000;font-weight:bold">IF</span> <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Rebooting now &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>) <span style="color:#000;font-weight:bold">else</span> (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>:: //Custom Configuration
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>ping localhost -n 15
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>) <span style=color:#000;font-weight:700>else</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
 </code></pre></div><p><code>SetupRollbackTemplate.cmd</code></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1"> 1</a></span><span style="color:#008080">@ECHO</span> OFF
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2"> 2</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="3"><a style="outline: none; text-decoration:none; color:inherit" href="#3"> 3</a></span>REM SCCMClientPath should be <span style="color:#0086b3">set </span>before we get here
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="4"><a style="outline: none; text-decoration:none; color:inherit" href="#4"> 4</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="5"><a style="outline: none; text-decoration:none; color:inherit" href="#5"> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="6"><a style="outline: none; text-decoration:none; color:inherit" href="#6"> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="7"><a style="outline: none; text-decoration:none; color:inherit" href="#7"> 7</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="8"><a style="outline: none; text-decoration:none; color:inherit" href="#8"> 8</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="9"><a style="outline: none; text-decoration:none; color:inherit" href="#9"> 9</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="10"><a style="outline: none; text-decoration:none; color:inherit" href="#10">10</a></span><span style="color:#0086b3">set </span>_SMSTSSetupRollback=TRUE
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="11"><a style="outline: none; text-decoration:none; color:inherit" href="#11">11</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="12"><a style="outline: none; text-decoration:none; color:inherit" href="#12">12</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="13"><a style="outline: none; text-decoration:none; color:inherit" href="#13">13</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="14"><a style="outline: none; text-decoration:none; color:inherit" href="#14">14</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="15"><a style="outline: none; text-decoration:none; color:inherit" href="#15">15</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="16"><a style="outline: none; text-decoration:none; color:inherit" href="#16">16</a></span>//Custom Configuration
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="17"><a style="outline: none; text-decoration:none; color:inherit" href="#17">17</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Custom Configuration&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="18"><a style="outline: none; text-decoration:none; color:inherit" href="#18">18</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% <span style="color:#d14">&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="19"><a style="outline: none; text-decoration:none; color:inherit" href="#19">19</a></span>powershell.exe -command <span style="color:#d14">&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="20"><a style="outline: none; text-decoration:none; color:inherit" href="#20">20</a></span>ping localhost -n 15
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="21"><a style="outline: none; text-decoration:none; color:inherit" href="#21">21</a></span>netsh lan show interfaces &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="22"><a style="outline: none; text-decoration:none; color:inherit" href="#22">22</a></span>netsh lan show Profiles &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="23"><a style="outline: none; text-decoration:none; color:inherit" href="#23">23</a></span>:: // <span style="color:#000;font-weight:bold">End</span> Custom Configuration
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="24"><a style="outline: none; text-decoration:none; color:inherit" href="#24">24</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="25"><a style="outline: none; text-decoration:none; color:inherit" href="#25">25</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Running <span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="26"><a style="outline: none; text-decoration:none; color:inherit" href="#26">26</a></span><span style="color:#000;font-weight:bold">%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style="color:#a61717;background-color:#e3d2d2">:</span>Gina /configpath<span style="color:#a61717;background-color:#e3d2d2">:</span><span style="color:#000;font-weight:bold">%</span>_SMSTSMDataPath% /bootcount<span style="color:#a61717;background-color:#e3d2d2">:</span>2 /reloadenv
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="27"><a style="outline: none; text-decoration:none; color:inherit" href="#27">27</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="28"><a style="outline: none; text-decoration:none; color:inherit" href="#28">28</a></span><span style="color:#000;font-weight:bold">IF</span> <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="29"><a style="outline: none; text-decoration:none; color:inherit" href="#29">29</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="30"><a style="outline: none; text-decoration:none; color:inherit" href="#30">30</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="31"><a style="outline: none; text-decoration:none; color:inherit" href="#31">31</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Rebooting now &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="32"><a style="outline: none; text-decoration:none; color:inherit" href="#32">32</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="33"><a style="outline: none; text-decoration:none; color:inherit" href="#33">33</a></span>) <span style="color:#000;font-weight:bold">else</span> (
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="34"><a style="outline: none; text-decoration:none; color:inherit" href="#34">34</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% ERRORLEVEL = <span style="color:#000;font-weight:bold">%</span>ERRORLEVEL%  &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="35"><a style="outline: none; text-decoration:none; color:inherit" href="#35">35</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="36"><a style="outline: none; text-decoration:none; color:inherit" href="#36">36</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="37"><a style="outline: none; text-decoration:none; color:inherit" href="#37">37</a></span>reg add <span style="color:#d14">&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style="color:#d14">&#34;&#34;</span> /f
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="38"><a style="outline: none; text-decoration:none; color:inherit" href="#38">38</a></span>)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="39"><a style="outline: none; text-decoration:none; color:inherit" href="#39">39</a></span><span style="color:#0086b3">echo </span><span style="color:#000;font-weight:bold">%</span>DATE%-<span style="color:#000;font-weight:bold">%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style="color:#000;font-weight:bold">%</span>WINDIR%\setuprollback.log
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="40"><a style="outline: none; text-decoration:none; color:inherit" href="#40">40</a></span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="41"><a style="outline: none; text-decoration:none; color:inherit" href="#41">41</a></span><span style="color:#0086b3">set </span>SCCMClientPath=
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>//Custom Configuration
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>ping localhost -n 15
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>) <span style=color:#000;font-weight:700>else</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
 </code></pre></div><p>Note: Make sure your command lines are BEFORE this line or the Task Sequence will be re-initialized before the service is restarted and you will still see some timeouts.</p>
 <p><code>%SCCMClientPath%\TSMBootstrap.exe /env:Gina /configpath:%_SMSTSMDataPath% /bootcount:2 /reloadenv</code></p>
-<h1 id="update-your-in-place-upgrade-task-sequence">Update Your In-Place Upgrade Task Sequence</h1>
+<h1 id=update-your-in-place-upgrade-task-sequence>Update Your In-Place Upgrade Task Sequence</h1>
 <p>You should now have 4 files, 2 Modified and 2 Original. We will add these files to your In-Place Upgrade Task Sequence. The Modified files will be copied down to replace the current files then the Original files will be copied down post-upgrade so we aren&rsquo;t leaving behind non-default files.</p>
 <p>Add Run Command Line steps before and after your Upgrade Task Sequence step using the following command lines:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-</code></pre></div><p><div class="image">
-  <figure>
-    <a href="2018-07-29_23-00-24.jpg" target="_blank">
-      <img src="2018-07-29_23-00-24.jpg" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+</code></pre></div><p><div class=image>
+<figure>
+<a href=2018-07-29_23-00-24.jpg target=_blank>
+<img src=2018-07-29_23-00-24.jpg alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="1"><a style="outline: none; text-decoration:none; color:inherit" href="#1">1</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f" id="2"><a style="outline: none; text-decoration:none; color:inherit" href="#2">2</a></span>xcopy.exe <span style="color:#d14">&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style="color:#000;font-weight:bold">%</span>WINDIR%\CCM\ /C /<span style="color:#0086b3">R </span>/Y
-</code></pre></div><p><div class="image">
-  <figure>
-    <a href="2018-07-29_23-00-45.jpg" target="_blank">
-      <img src="2018-07-29_23-00-45.jpg" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>xcopy.exe <span style=color:#d14>&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>xcopy.exe <span style=color:#d14>&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+</code></pre></div><p><div class=image>
+<figure>
+<a href=2018-07-29_23-00-45.jpg target=_blank>
+<img src=2018-07-29_23-00-45.jpg alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>It should look something like this:<br>
-<div class="image">
-  <figure>
-    <a href="2018-07-29_22-59-51.jpg" target="_blank">
-      <img src="2018-07-29_22-59-51.jpg" alt="A Square Dozen Image">
-    </a>
-    
-  </figure>
+<div class=image>
+<figure>
+<a href=2018-07-29_22-59-51.jpg target=_blank>
+<img src=2018-07-29_22-59-51.jpg alt="A Square Dozen Image">
+</a>
+</figure>
 </div></p>
 <p>That&rsquo;s it! If you went through all 4 parts with me, you should be able to image machines anywhere that has 802.1x network authentication in place.</p>
-<p>Check out <a href="http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/">Part 5</a> for how to skip all of this and just use a web service to whitelist!!</p>
-
-			</div>
-			
-			 <comments id="comments">
-    <script 
-        src="https://utteranc.es/client.js"
-        repo="AdamGrossTX/asquaredozen"
-        issue-term="title"
-        label="blog comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
-</comments>
-		</article>
+<p>Check out <a href=http://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5</a> for how to skip all of this and just use a web service to whitelist!!</p>
 </div>
-
-					</div>
-				</div>
-				<footer id="footer">
-	<div class="container">
-		<div id="footer-copyright">
-			<p class="copyright">&copy; 2021 Adam Gross - https://blog.asquaredozen.com - A Square Dozen</a></p>
-		</div>
-	</div>
+<comments id=comments>
+<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
+</comments>
+</article>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=container>
+<div id=footer-copyright>
+<p class=copyright>&copy; 2021 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
+</div>
+</div>
 </footer>
-			</div>
-		</body>
+</div>
+</body>
 </html>
