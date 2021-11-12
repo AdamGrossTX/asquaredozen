@@ -183,100 +183,229 @@
 <p>The DLL is <strong><code>SrsResources.dll</code></strong> and can be found in the <strong><code>bin</code></strong> folder of you ConfigMgr console installation directory. I was intrigued. As I began searching the web for this DLL, I found several posts which used it in PowerShell, so I started testing with it. It turns out, this file has a lot of power. Not only can it look up error codes, but it can look up a number of items including <strong>Status Messages</strong>.</p>
 <h2 id=using-powershell-to-return-error-messages>Using PowerShell to Return Error Messages</h2>
 <p>You can load the DLL into PowerShell and list the available methods. Some of them are for internal use of the DLL (or so it seems). Run this code block at the top of your script to load the dll into PowerShell.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$DllPath</span> = <span style=color:#d14>&#34;E:\Program Files\Microsoft Configuration Manager\AdminConsole\bin\SrsResources.dll&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DllPath</span>
-</code></pre></div><p>You can load the DLL into PowerShell and list the available methods. Some of them are for internal use of the DLL (or so it seems).</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>[SrsResources.Localization]</span>.DeclaredMethods.Name
-</code></pre></div><p>The list of available methods:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>PS </span>C:\&gt; <span style=color:teal>[SrsResources.Localization]</span>.DeclaredMethods.Name
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>Initialize
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>SetResourceLocation
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>GetDBString
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>GetDBString
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>GetErrorMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>GetStatusMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>GetString
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>GetStringEscaped
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>GetMigrationJobEntityMessageString
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>GetGuidString
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>GetGuidStringShort
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>GetCcmEvalDetail
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>GetStateMessageShort
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>GetStateMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>GetCustomErrorMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>GetLocalTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>FormatTimeSpanFromMinutes
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>FormatTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>FormatTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>FormatTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>FormatShortTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>FormatShortDate
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>FormatShortDate
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>FormatShortDateTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>FormatTime
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>GetSettingUserUnits
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>ConvertToUserUnits
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>GetAppRequirementName
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>GetAlertDisplayName
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>GetDBStringInternal
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>GetDBStrings
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>GetErrorMessageInternal
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span>GetStatusMessageInternal
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>LocalizeInsertionStrings
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>GetSettingUnits
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>GetStateMessageInternal
-</code></pre></div><p>To get the parameter options for each method, you can simply reference the Method name without () like: <strong><code>[SrsResources.Localization]::GetErrorMessage</code></strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>##############################</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#998;font-style:italic>#GetErrorMessage</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#998;font-style:italic>#Result#</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#998;font-style:italic>#OverloadDefinitions</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#998;font-style:italic>#-------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#998;font-style:italic>#static string GetErrorMessage(string errorId, string language)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#998;font-style:italic>##############################</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#998;font-style:italic>#GetStatusMessage</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#998;font-style:italic>#Result#</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#998;font-style:italic>#OverloadDefinitions</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#998;font-style:italic>#-------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#998;font-style:italic>#static string GetStatusMessage(int messageId, int severity, string dllName, #string language, Params string[] insertionStrings)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#998;font-style:italic>##############################</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#998;font-style:italic>#FormatShortDate</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:teal>[SrsResources.Localization]</span>::FormatShortDate
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:#998;font-style:italic>#Result#</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#998;font-style:italic>#OverloadDefinitions</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#998;font-style:italic>#-------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:#998;font-style:italic>#static string FormatShortDate(int year, int month, int day, string language)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#998;font-style:italic>#static string FormatShortDate(datetime dt, string language)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#998;font-style:italic>##############################</span>
-</code></pre></div><p>The method this post will focus on mostly is <strong><code>GetErrorMessage</code></strong>, but the <strong><code>GetStatusMessage</code></strong> method is pretty sweet too. If you pass values to these two methods, you will get something like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$ErrorCode</span> = 0x87D00664
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$ErrorCode</span>,<span style=color:#d14>&#34;en-US&#34;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#998;font-style:italic>#Result</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span><span style=color:#998;font-style:italic>#Updates handler job was cancelled</span>
-</code></pre></div><p>A quick note about <strong><code>GetStatusMessages</code></strong>. If you run it without it&rsquo;s last parameter, you will get something like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#998;font-style:italic>#Result</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#998;font-style:italic>#%11User &#34;%1&#34; created a package named &#34;%5 %3 %4 %6&#34; (%2).%12</span>
-</code></pre></div><p>The % values are expecting values from the status message Insertion Strings. Run this SQL query <code>SELECT * FROM v_StatMsgWithInsStrings</code> and you will see the columns InsString4 through InsString10. The values in this view all can be passed to the GetStatusMessages method to populate the placeholder % values like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>,<span style=color:#d14>&#34;ASD\Adam&#34;</span>,<span style=color:#d14>&#34;0&#34;</span>,<span style=color:#d14>&#34;1&#34;</span>,<span style=color:#d14>&#34;2&#34;</span>,<span style=color:#d14>&#34;3&#34;</span>,<span style=color:#d14>&#34;4&#34;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#998;font-style:italic>#Result</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#998;font-style:italic>#User &#34;ASD\Adam&#34; created a package named &#34;3 1 2 4&#34; (0).</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>,<span style=color:#d14>&#34;ASD\Adam&#34;</span>,<span style=color:#d14>&#34;Source&#34;</span>,<span style=color:#d14>&#34;Is&#34;</span>,<span style=color:#d14>&#34;A&#34;</span>,<span style=color:#d14>&#34;This&#34;</span>,<span style=color:#d14>&#34;Test&#34;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a></span><span style=color:#998;font-style:italic>#Result</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a></span><span style=color:#998;font-style:italic>#User &#34;ASD\Adam&#34; created a package named &#34;This Is A Test&#34; (Source).</span>
-</code></pre></div><h2 id=sourcing-the-files><strong>Sourcing the Files</strong></h2>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$DllPath</span> = <span style=color:#d14>&#34;E:\Program Files\Microsoft Configuration Manager\AdminConsole\bin\SrsResources.dll&#34;</span>
+<span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DllPath</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can load the DLL into PowerShell and list the available methods. Some of them are for internal use of the DLL (or so it seems).</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>[SrsResources.Localization]</span>.DeclaredMethods.Name
+</code></pre></td></tr></table>
+</div>
+</div><p>The list of available methods:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>PS </span>C:\&gt; <span style=color:teal>[SrsResources.Localization]</span>.DeclaredMethods.Name
+Initialize
+SetResourceLocation
+GetDBString
+GetDBString
+GetErrorMessage
+GetStatusMessage
+GetString
+GetStringEscaped
+GetMigrationJobEntityMessageString
+GetGuidString
+GetGuidStringShort
+GetCcmEvalDetail
+GetStateMessageShort
+GetStateMessage
+GetCustomErrorMessage
+GetLocalTime
+FormatTimeSpanFromMinutes
+FormatTime
+FormatTime
+FormatTime
+FormatShortTime
+FormatShortDate
+FormatShortDate
+FormatShortDateTime
+FormatTime
+GetSettingUserUnits
+ConvertToUserUnits
+GetAppRequirementName
+GetAlertDisplayName
+GetDBStringInternal
+GetDBStrings
+GetErrorMessageInternal
+GetStatusMessageInternal
+LocalizeInsertionStrings
+GetSettingUnits
+GetStateMessageInternal
+</code></pre></td></tr></table>
+</div>
+</div><p>To get the parameter options for each method, you can simply reference the Method name without () like: <strong><code>[SrsResources.Localization]::GetErrorMessage</code></strong></p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>##############################</span>
+<span style=color:#998;font-style:italic>#GetErrorMessage</span>
+<span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage
+
+<span style=color:#998;font-style:italic>#Result#</span>
+<span style=color:#998;font-style:italic>#OverloadDefinitions</span>
+<span style=color:#998;font-style:italic>#-------------------</span>
+<span style=color:#998;font-style:italic>#static string GetErrorMessage(string errorId, string language)</span>
+
+<span style=color:#998;font-style:italic>##############################</span>
+<span style=color:#998;font-style:italic>#GetStatusMessage</span>
+<span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage
+
+<span style=color:#998;font-style:italic>#Result#</span>
+<span style=color:#998;font-style:italic>#OverloadDefinitions</span>
+<span style=color:#998;font-style:italic>#-------------------</span>
+<span style=color:#998;font-style:italic>#static string GetStatusMessage(int messageId, int severity, string dllName, #string language, Params string[] insertionStrings)</span>
+
+<span style=color:#998;font-style:italic>##############################</span>
+<span style=color:#998;font-style:italic>#FormatShortDate</span>
+
+<span style=color:teal>[SrsResources.Localization]</span>::FormatShortDate
+
+<span style=color:#998;font-style:italic>#Result#</span>
+<span style=color:#998;font-style:italic>#OverloadDefinitions</span>
+<span style=color:#998;font-style:italic>#-------------------</span>
+<span style=color:#998;font-style:italic>#static string FormatShortDate(int year, int month, int day, string language)</span>
+<span style=color:#998;font-style:italic>#static string FormatShortDate(datetime dt, string language)</span>
+<span style=color:#998;font-style:italic>##############################</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The method this post will focus on mostly is <strong><code>GetErrorMessage</code></strong>, but the <strong><code>GetStatusMessage</code></strong> method is pretty sweet too. If you pass values to these two methods, you will get something like this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$ErrorCode</span> = 0x87D00664
+<span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$ErrorCode</span>,<span style=color:#d14>&#34;en-US&#34;</span>)
+
+<span style=color:#998;font-style:italic>#Result</span>
+<span style=color:#998;font-style:italic>#Updates handler job was cancelled</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>A quick note about <strong><code>GetStatusMessages</code></strong>. If you run it without it&rsquo;s last parameter, you will get something like this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>)
+
+<span style=color:#998;font-style:italic>#Result</span>
+<span style=color:#998;font-style:italic>#%11User &#34;%1&#34; created a package named &#34;%5 %3 %4 %6&#34; (%2).%12</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The % values are expecting values from the status message Insertion Strings. Run this SQL query <code>SELECT * FROM v_StatMsgWithInsStrings</code> and you will see the columns InsString4 through InsString10. The values in this view all can be passed to the GetStatusMessages method to populate the placeholder % values like this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>,<span style=color:#d14>&#34;ASD\Adam&#34;</span>,<span style=color:#d14>&#34;0&#34;</span>,<span style=color:#d14>&#34;1&#34;</span>,<span style=color:#d14>&#34;2&#34;</span>,<span style=color:#d14>&#34;3&#34;</span>,<span style=color:#d14>&#34;4&#34;</span>)
+
+<span style=color:#998;font-style:italic>#Result</span>
+<span style=color:#998;font-style:italic>#User &#34;ASD\Adam&#34; created a package named &#34;3 1 2 4&#34; (0).</span>
+
+<span style=color:teal>[SrsResources.Localization]</span>::GetStatusMessage(30000,1073741824,<span style=color:#d14>&#34;&#34;</span>,<span style=color:#d14>&#34;en-US&#34;</span>,<span style=color:#d14>&#34;ASD\Adam&#34;</span>,<span style=color:#d14>&#34;Source&#34;</span>,<span style=color:#d14>&#34;Is&#34;</span>,<span style=color:#d14>&#34;A&#34;</span>,<span style=color:#d14>&#34;This&#34;</span>,<span style=color:#d14>&#34;Test&#34;</span>)
+
+<span style=color:#998;font-style:italic>#Result</span>
+<span style=color:#998;font-style:italic>#User &#34;ASD\Adam&#34; created a package named &#34;This Is A Test&#34; (Source).</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=sourcing-the-files><strong>Sourcing the Files</strong></h2>
 <p>I want to use this on machines where I don&rsquo;t have the ConfigMgr console installed but I discovered that SrsResources.dll doesn&rsquo;t work on it&rsquo;s own. It references a number of other files and these files must be present with the DLL anywhere you want to run it that doesn&rsquo;t have the ConfigMgr Reporting Services role or ConfigMgr admin console installed. Copy all of the files from these locations to the same location as your PowerShell script. I am using a <code>C:\Temp</code>. Be sure to retain the folder structures for the source files.</p>
 <hr>
 <p>It&rsquo;s also worth noting that if you don&rsquo;t need multiple languages, you can just grab the folders corresponding to your language code. It may take some trial and error to find the right ones, so I just grabbed them all. I also noticed that in my env, Some language codes didn&rsquo;t work with the DLL. Your results may vary.</p>
@@ -345,40 +474,79 @@ This folder and all contents<br>
 </div></p>
 <h2 id=custom-error-lookup-script>Custom Error Lookup Script</h2>
 <p>Now that we have all of the files, we just need an easy to call script that will give us the error message text. This script will be the basis for the Azure Function in my next post.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>Param</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>    <span style=color:teal>[string]</span><span style=color:teal>$ExitCode</span> = 0x87D00664,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>    <span style=color:teal>[string]</span><span style=color:teal>$Language</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#998;font-style:italic>#Default Path</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#998;font-style:italic>#$DLLPath = &#34;C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin\SrsResources.dll&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#998;font-style:italic>#Custom Path</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>$DLLPath</span> = <span style=color:#d14>&#34;C:\Temp\bin\SrsResources.dll&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DLLPath</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Language</span>)) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>    <span style=color:teal>$Language</span> = <span style=color:#d14>&#34;en-US&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$ExitCode</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>    <span style=color:teal>[int]</span><span style=color:teal>$intCode</span> = <span style=color:teal>$ExitCode</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>    <span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$intCode</span> <span style=color:#000;font-weight:700>-eq</span> 0 <span style=color:#000;font-weight:700>-or</span> <span style=color:teal>$intCode</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>        <span style=color:teal>$Message</span> = <span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$intCode</span>,<span style=color:teal>$Language</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>        <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Message</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>            <span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$Message</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>        }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>        <span style=color:#000;font-weight:700>Else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>            <span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;No Result.&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>        }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>    }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>    <span style=color:#000;font-weight:700>Else</span> {<span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;Bad Exit Code.&#34;</span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#000;font-weight:700>Else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>    <span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;No exit code was specified.&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>}
-</code></pre></div><p>Save the file into the root of the directory where your source files are and call it from the PowerShell command line.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>Param</span> (
+    <span style=color:teal>[string]</span><span style=color:teal>$ExitCode</span> = 0x87D00664,
+    <span style=color:teal>[string]</span><span style=color:teal>$Language</span>
+)
+
+<span style=color:#998;font-style:italic>#Default Path</span>
+<span style=color:#998;font-style:italic>#$DLLPath = &#34;C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin\SrsResources.dll&#34;</span>
+
+<span style=color:#998;font-style:italic>#Custom Path</span>
+<span style=color:teal>$DLLPath</span> = <span style=color:#d14>&#34;C:\Temp\bin\SrsResources.dll&#34;</span>
+
+<span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DLLPath</span>
+
+<span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Language</span>)) {
+    <span style=color:teal>$Language</span> = <span style=color:#d14>&#34;en-US&#34;</span>
+}
+
+<span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$ExitCode</span>) {
+    <span style=color:teal>[int]</span><span style=color:teal>$intCode</span> = <span style=color:teal>$ExitCode</span>
+    <span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$intCode</span> <span style=color:#000;font-weight:700>-eq</span> 0 <span style=color:#000;font-weight:700>-or</span> <span style=color:teal>$intCode</span>) {
+        <span style=color:teal>$Message</span> = <span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$intCode</span>,<span style=color:teal>$Language</span>)
+        <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Message</span>) {
+            <span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$Message</span>
+        }
+        <span style=color:#000;font-weight:700>Else</span> {
+            <span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;No Result.&#34;</span>
+        }
+    }
+    <span style=color:#000;font-weight:700>Else</span> {<span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;Bad Exit Code.&#34;</span>}
+}
+<span style=color:#000;font-weight:700>Else</span> {
+    <span style=color:#000;font-weight:700>Return</span> <span style=color:#d14>&#34;No exit code was specified.&#34;</span>
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Save the file into the root of the directory where your source files are and call it from the PowerShell command line.</p>
 <p><code>.\Get-ErrorMessage.ps1 -ExitCode '0x87D00664' -Language 'en-US'</code></p>
 <p><div class=image>
 <figure>

@@ -182,33 +182,69 @@ Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.
 </a>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ImportComputerAuthProfile.bat&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>  <span style=color:navy>&lt;Source&gt;</span>Custom<span style=color:navy>&lt;/Source&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>  <span style=color:navy>&lt;Destination&gt;</span>Custom<span style=color:navy>&lt;/Destination&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:navy>&lt;/File&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ComputerAuthProfile.xml&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>  <span style=color:navy>&lt;Source&gt;</span>Custom<span style=color:navy>&lt;/Source&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>  <span style=color:navy>&lt;Destination&gt;</span>Custom<span style=color:navy>&lt;/Destination&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:navy>&lt;/File&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Root.cer&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>  <span style=color:navy>&lt;Source&gt;</span>Custom\Certs<span style=color:navy>&lt;/Source&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>  <span style=color:navy>&lt;Destination&gt;</span>Custom\Certs<span style=color:navy>&lt;/Destination&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:navy>&lt;/File&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ComputerAuthCert.pfx&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>  <span style=color:navy>&lt;Source&gt;</span>Custom\Certs<span style=color:navy>&lt;/Source&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>  <span style=color:navy>&lt;Destination&gt;</span>Custom\Certs<span style=color:navy>&lt;/Destination&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:navy>&lt;/File&gt;</span>
-</code></pre></div><h1 id=winpeshlini>Winpeshl.ini</h1>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ImportComputerAuthProfile.bat&#34;</span><span style=color:navy>&gt;</span>
+  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
+  <span style=color:navy>&lt;Source&gt;</span>Custom<span style=color:navy>&lt;/Source&gt;</span>
+  <span style=color:navy>&lt;Destination&gt;</span>Custom<span style=color:navy>&lt;/Destination&gt;</span>
+<span style=color:navy>&lt;/File&gt;</span>
+<span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ComputerAuthProfile.xml&#34;</span><span style=color:navy>&gt;</span>
+  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
+  <span style=color:navy>&lt;Source&gt;</span>Custom<span style=color:navy>&lt;/Source&gt;</span>
+  <span style=color:navy>&lt;Destination&gt;</span>Custom<span style=color:navy>&lt;/Destination&gt;</span>
+<span style=color:navy>&lt;/File&gt;</span>
+<span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Root.cer&#34;</span><span style=color:navy>&gt;</span>
+  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
+  <span style=color:navy>&lt;Source&gt;</span>Custom\Certs<span style=color:navy>&lt;/Source&gt;</span>
+  <span style=color:navy>&lt;Destination&gt;</span>Custom\Certs<span style=color:navy>&lt;/Destination&gt;</span>
+<span style=color:navy>&lt;/File&gt;</span>
+<span style=color:navy>&lt;File</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;ComputerAuthCert.pfx&#34;</span><span style=color:navy>&gt;</span>
+  <span style=color:navy>&lt;LocaleNeeded&gt;</span>false<span style=color:navy>&lt;/LocaleNeeded&gt;</span>
+  <span style=color:navy>&lt;Source&gt;</span>Custom\Certs<span style=color:navy>&lt;/Source&gt;</span>
+  <span style=color:navy>&lt;Destination&gt;</span>Custom\Certs<span style=color:navy>&lt;/Destination&gt;</span>
+<span style=color:navy>&lt;/File&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=winpeshlini>Winpeshl.ini</h1>
 <p>You won&rsquo;t find a <strong>winpeshl.ini</strong> file on your server (unless you&rsquo;ve done this before) and will need to create one. This file is referenced by WinPE as it is starting up and tells PE what to launch. If we add our 802.1x authentication script to this file, we can force authentication to happen before any other process, even your boot image Pre-Start commands (we never could get them to work for 802.1x pre-auth, but they may be an option here - not sure honestly). Here&rsquo;s the contents of mine.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>[LaunchApps]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>wpeinit.exe</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:teal>X:\Custom\ImportComputerAuthProfile.bat</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:teal>%SYSTEMDRIVE%\sms\bin\x64\TsBootShell.exe</span>
-</code></pre></div><p>The bat file listed should be the name of your 802.1x authentication script. The last step tells PE to launch the Task Sequence wizard. If you didn&rsquo;t create this file, you could watch the <strong>SMSProv.log</strong> on your primary and see when this file is created dynamically during your boot image import process.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#000;font-weight:700>[LaunchApps]</span>
+<span style=color:teal>wpeinit.exe</span>
+<span style=color:teal>X:\Custom\ImportComputerAuthProfile.bat</span>
+<span style=color:teal>%SYSTEMDRIVE%\sms\bin\x64\TsBootShell.exe</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The bat file listed should be the name of your 802.1x authentication script. The last step tells PE to launch the Task Sequence wizard. If you didn&rsquo;t create this file, you could watch the <strong>SMSProv.log</strong> on your primary and see when this file is created dynamically during your boot image import process.</p>
 <p>Save the <strong>winpeshl.ini</strong> file to <strong>[SCCM Install directory]\OSD\bin\x64\winpeshl.ini</strong>. You will notice that the file isn&rsquo;t included in the <strong>OSDInjection.xml</strong> file. That&rsquo;s because <strong>SCCM</strong> uses the injection file first, then creates or imports (if it exists in the correct folder) the <strong>winpeshl.ini</strong> file afterwards, so whatever you copied with the injection process gets overwritten. (Ask me how I know that one!)</p>
 <h1 id=the-big-finish>The big finish!</h1>
 <p>At this point, you should have the following files in the following locations</p>

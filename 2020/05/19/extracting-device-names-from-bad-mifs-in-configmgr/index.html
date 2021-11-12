@@ -175,8 +175,15 @@ Here&rsquo;s an example of the beginning of a MIF file. As you can see, NetBIOS 
 </a>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$DeviceName</span> = (<span style=color:teal>$File</span> | <span style=color:#0086b3>Get-Content</span> -ReadCount 1 -TotalCount 6 -ErrorAction Stop  | <span style=color:#0086b3>Select-String</span> -Pattern <span style=color:#d14>&#34;//KeyAttribute&lt;NetBIOS\sName&gt;&lt;(?&lt;ComputerName&gt;.*)&gt;&#34;</span> -ErrorAction Stop).Matches.Groups[-1].Value
-</code></pre></div><p>The output will show you the Device Name, Type of &lsquo;badness&rsquo; and the Path to the bad MIF.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$DeviceName</span> = (<span style=color:teal>$File</span> | <span style=color:#0086b3>Get-Content</span> -ReadCount 1 -TotalCount 6 -ErrorAction Stop  | <span style=color:#0086b3>Select-String</span> -Pattern <span style=color:#d14>&#34;//KeyAttribute&lt;NetBIOS\sName&gt;&lt;(?&lt;ComputerName&gt;.*)&gt;&#34;</span> -ErrorAction Stop).Matches.Groups[-1].Value
+</code></pre></td></tr></table>
+</div>
+</div><p>The output will show you the Device Name, Type of &lsquo;badness&rsquo; and the Path to the bad MIF.</p>
 <p><a href=image-11.png>A Square Dozen Image</a></p>
 <hr>
 <p><strong>Warning:</strong> You may want to make a copy of the BADMIFS directory and change the path to use your copy so you aren&rsquo;t reading in live MIF files and potentially causing issues on your production server. You&rsquo;ve been warned.</p>

@@ -216,9 +216,17 @@ I don&rsquo;t mean to imply that we don&rsquo;t have any application compatibili
 <li>Logs/Reporting = Setupcomplete.cmd/Failure.cmd/<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>SetupDiag</a>/Custom Inventory</li>
 </ol>
 <p>I will also included a guide in the repo (soon-ish) for how to manage the included scripts if they aren&rsquo;t intuitive. At a minimum, to get started with Feature Update servicing, you should deploy Setupconfig.ini to your clients with the Compat option set to Ignore Dismissable Warnings. This setting alone will reduce your Feature Update issues greatly. Everything else just adds nice-to-have features to be more like the Task Sequence experience.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>[Setupconfig]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>Compat</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>IgnoreWarning</span>
-</code></pre></div><h2 id=looking-back>Looking Back</h2>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#000;font-weight:700>[Setupconfig]</span>
+<span style=color:teal>Compat</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>IgnoreWarning</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=looking-back>Looking Back</h2>
 <p>It has been over a month since I built the solutions above (and wrote the post honestly). In that time, I&rsquo;ve had time to fine tune some things in our environment and assess the effectiveness/necessity of the toolset. (I have some updates to the scripts that I need to publish to the repo - nothing major, just a few minor bug fixes/tweaks. You <a href=https://github.com/AdamGrossTX/Windows10FeatureUpdates>can find everything here</a> - if you Watch the repo, you will get alerted when I publish updated scripts.).</p>
 <ul>
 <li>Currently, we run the copy logs routine for success and failure. I think I may update it to only copy logs on failure since I don&rsquo;t think I even looked at any logs that were copied.</li>

@@ -196,20 +196,39 @@ During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start 
 </figure>
 </div></p>
 <p>This is what the resulting XML should look like.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:navy>&lt;unattend</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>    <span style=color:navy>&lt;settings</span> <span style=color:teal>pass=</span><span style=color:#d14>&#34;specialize&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>        <span style=color:navy>&lt;component</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Microsoft-Windows-Deployment&#34;</span> <span style=color:teal>processorArchitecture=</span><span style=color:#d14>&#34;amd64&#34;</span> <span style=color:teal>publicKeyToken=</span><span style=color:#d14>&#34;31bf3856ad364e35&#34;</span> <span style=color:teal>language=</span><span style=color:#d14>&#34;neutral&#34;</span> <span style=color:teal>versionScope=</span><span style=color:#d14>&#34;nonSxS&#34;</span> <span style=color:teal>xmlns:wcm=</span><span style=color:#d14>&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style=color:teal>xmlns:xsi=</span><span style=color:#d14>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>            <span style=color:navy>&lt;RunAsynchronous&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>                <span style=color:navy>&lt;RunAsynchronousCommand</span> <span style=color:teal>wcm:action=</span><span style=color:#d14>&#34;add&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>                    <span style=color:navy>&lt;Path&gt;</span>cmd /c C:\Temp\ImportComputerAuthProfile.bat<span style=color:navy>&lt;/Path&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>                    <span style=color:navy>&lt;Order&gt;</span>2<span style=color:navy>&lt;/Order&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>                    <span style=color:navy>&lt;Description&gt;</span>Import Computer Auth Profile<span style=color:navy>&lt;/Description&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>                <span style=color:navy>&lt;/RunAsynchronousCommand&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>            <span style=color:navy>&lt;/RunAsynchronous&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>        <span style=color:navy>&lt;/component&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>    <span style=color:navy>&lt;/settings&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:navy>&lt;/unattend&gt;</span>
-</code></pre></div><h1 id=adding-everything-to-your-bare-metal-task-sequence>Adding everything to your Bare Metal Task Sequence</h1>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=color:navy>&lt;unattend</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style=color:navy>&gt;</span>
+    <span style=color:navy>&lt;settings</span> <span style=color:teal>pass=</span><span style=color:#d14>&#34;specialize&#34;</span><span style=color:navy>&gt;</span>
+        <span style=color:navy>&lt;component</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Microsoft-Windows-Deployment&#34;</span> <span style=color:teal>processorArchitecture=</span><span style=color:#d14>&#34;amd64&#34;</span> <span style=color:teal>publicKeyToken=</span><span style=color:#d14>&#34;31bf3856ad364e35&#34;</span> <span style=color:teal>language=</span><span style=color:#d14>&#34;neutral&#34;</span> <span style=color:teal>versionScope=</span><span style=color:#d14>&#34;nonSxS&#34;</span> <span style=color:teal>xmlns:wcm=</span><span style=color:#d14>&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style=color:teal>xmlns:xsi=</span><span style=color:#d14>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style=color:navy>&gt;</span>
+            <span style=color:navy>&lt;RunAsynchronous&gt;</span>
+                <span style=color:navy>&lt;RunAsynchronousCommand</span> <span style=color:teal>wcm:action=</span><span style=color:#d14>&#34;add&#34;</span><span style=color:navy>&gt;</span>
+                    <span style=color:navy>&lt;Path&gt;</span>cmd /c C:\Temp\ImportComputerAuthProfile.bat<span style=color:navy>&lt;/Path&gt;</span>
+                    <span style=color:navy>&lt;Order&gt;</span>2<span style=color:navy>&lt;/Order&gt;</span>
+                    <span style=color:navy>&lt;Description&gt;</span>Import Computer Auth Profile<span style=color:navy>&lt;/Description&gt;</span>
+                <span style=color:navy>&lt;/RunAsynchronousCommand&gt;</span>
+            <span style=color:navy>&lt;/RunAsynchronous&gt;</span>
+        <span style=color:navy>&lt;/component&gt;</span>
+    <span style=color:navy>&lt;/settings&gt;</span>
+<span style=color:navy>&lt;/unattend&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=adding-everything-to-your-bare-metal-task-sequence>Adding everything to your Bare Metal Task Sequence</h1>
 <p>Create a new Package in ConfgMgr and include all of your script files in the package. Then add a new <strong>Run Command Line</strong> Task Sequence step before <strong>Install Operating System</strong> step. Set the Package source to the new package your created.</p>
 <p><div class=image>
 <figure>

@@ -188,72 +188,148 @@ Quick Note About Cisco Switch Firmware If you&rsquo;ve made it this far, a word 
 <p>Thanks for the info <a href=https://garytown.com/customize-setupcomplete>Gary Blok</a>!<br>
 If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 files sitting there. They are part of your client install payload and the sources can be found on your SCCM Primary server (Though I wouldn&rsquo;t recommend editing them directly). Make a copy of these files and add them to a new ConfigMgr Package - don&rsquo;t distribute them yet, we need to edit them. Make 2 folders <strong>Original</strong> and <strong>Modified</strong>. Add both files to both folders. Now open the copies from the <strong>Modified</strong> folder. They should look like this:</p>
 <p><code>SetupCompleteTemplate.cmd</code></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>) <span style=color:#000;font-weight:700>else</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
-</code></pre></div><p><code>SetupRollbackTemplate.cmd</code></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>) <span style=color:#000;font-weight:700>else</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
-</code></pre></div><p>These files are used by the <strong>OSDUpgrade.exe</strong> process during the Task Sequence to manage reboots and resume the Task Sequence as needed during the upgrade process. They run with every reboot AFTER Windows Setup completes, so they are the perfect place for us to add our service restart. If you look at the <strong>Upgrade Operating System</strong> step in the <strong>SMSTS.log</strong>, you will see an entry like this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>@ECHO</span> OFF
+
+REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+
+REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+
+<span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+) <span style=color:#000;font-weight:700>else</span> (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+)
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+
+<span style=color:#0086b3>set </span>SCCMClientPath=
+</code></pre></td></tr></table>
+</div>
+</div><p><code>SetupRollbackTemplate.cmd</code></p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>@ECHO</span> OFF
+
+REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+
+REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+
+<span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+) <span style=color:#000;font-weight:700>else</span> (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+)
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+
+<span style=color:#0086b3>set </span>SCCMClientPath=
+</code></pre></td></tr></table>
+</div>
+</div><p>These files are used by the <strong>OSDUpgrade.exe</strong> process during the Task Sequence to manage reboots and resume the Task Sequence as needed during the upgrade process. They run with every reboot AFTER Windows Setup completes, so they are the perfect place for us to add our service restart. If you look at the <strong>Upgrade Operating System</strong> step in the <strong>SMSTS.log</strong>, you will see an entry like this:</p>
 <p><div class=image>
 <figure>
 <a href=2018-07-29_22-22-46.jpg target=_blank>
@@ -265,117 +341,241 @@ If you check your <strong>C:\Windows\CCM</strong> folder, you will find these 2 
 <p><code>"C:\_SMSTaskSequence\Packages\XXXXXXXXXX\SETUP.EXE" /ImageIndex 1 /auto Upgrade /quiet /noreboot /postoobe "C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd" /postrollback "C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd"</code></p>
 <h1 id=modifications-for-8021x>Modifications for 802.1x</h1>
 <p>Here&rsquo;s the block of code that I added to my files. You can choose to do more or less. The only one you REALLY need is the restart-service step.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>//Custom Configuration
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span>ping localhost -n 15
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a></span>//<span style=color:#000;font-weight:700>End</span> Custom Configuration
-</code></pre></div><p>These commands will restart the dot3svc then ping local host for 15 seconds (easy way to add a sleep) then log the output of netsh commands for review later if something fails. I made a point previously of mentioning that I&rsquo;m using a Batch file instead of Powershell for ease of support, yet here I&rsquo;m using PowerShell to restart the service. What I found was that the alternative commands like NET or SC must be called as separate STOP and START commands and I had issues with the script waiting for the service to fully stop before attempting to start. PowerShell&rsquo;s Restart-Service handles all of this nicely. Just trying to use the right tool for the job.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>//Custom Configuration
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+ping localhost -n 15
+netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+//<span style=color:#000;font-weight:700>End</span> Custom Configuration
+</code></pre></td></tr></table>
+</div>
+</div><p>These commands will restart the dot3svc then ping local host for 15 seconds (easy way to add a sleep) then log the output of netsh commands for review later if something fails. I made a point previously of mentioning that I&rsquo;m using a Batch file instead of Powershell for ease of support, yet here I&rsquo;m using PowerShell to restart the service. What I found was that the alternative commands like NET or SC must be called as separate STOP and START commands and I had issues with the script waiting for the service to fully stop before attempting to start. PowerShell&rsquo;s Restart-Service handles all of this nicely. Just trying to use the right tool for the job.</p>
 <p>Here&rsquo;s what your files should look like:</p>
 <p><code>SetupCompleteTemplate.cmd</code></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>:: //Custom Configuration
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>ping localhost -n 15
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>) <span style=color:#000;font-weight:700>else</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
-</code></pre></div><p><code>SetupRollbackTemplate.cmd</code></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>@ECHO</span> OFF
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>//Custom Configuration
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>ping localhost -n 15
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>) <span style=color:#000;font-weight:700>else</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span><span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span><span style=color:#0086b3>set </span>SCCMClientPath=
-</code></pre></div><p>Note: Make sure your command lines are BEFORE this line or the Task Sequence will be re-initialized before the service is restarted and you will still see some timeouts.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>@ECHO</span> OFF
+
+REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+
+REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+REM SetupComplete.cmd -- Upgrade Complete, calling TSMBootstrap to resume task sequence 
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=FALSE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>set </span>_SMSTSSetupRollback=FALSE
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setupcomplete.cmd&#34;</span> /f
+
+:: //Custom Configuration
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+ping localhost -n 15
+netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+
+<span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+) <span style=color:#000;font-weight:700>else</span> (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+)
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setupcomplete.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+
+<span style=color:#0086b3>set </span>SCCMClientPath=
+</code></pre></td></tr></table>
+</div>
+</div><p><code>SetupRollbackTemplate.cmd</code></p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>@ECHO</span> OFF
+
+REM SCCMClientPath should be <span style=color:#0086b3>set </span>before we get here
+
+REM This script is written by ConfigMgr Task Sequence Upgrade Operating System action 
+REM SetupRollback.cmd -- Upgrade Rolled back, calling TSMBootstrap to resume task sequence 
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Entering setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting env var _SMSTSSetupRollback=TRUE &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>set </span>_SMSTSSetupRollback=TRUE
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Setting registry to resume task sequence after reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 2 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;%WINDIR%\SMSTSPostUpgrade\setuprollback.cmd&#34;</span> /f
+
+//Custom Configuration
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Custom Configuration&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% <span style=color:#d14>&#34;Restarting Wired Autoconfig Services&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+powershell.exe -command <span style=color:#d14>&#34;restart-service dot3svc -PassThru -verbose;&#34;</span> &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+ping localhost -n 15
+netsh lan show interfaces &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+netsh lan show Profiles &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setupcomplete.log
+:: // <span style=color:#000;font-weight:700>End</span> Custom Configuration
+
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Running <span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe to resume task sequence &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#000;font-weight:700>%</span>SCCMClientPath%\TSMBootstrap.exe /env<span style=color:#a61717;background-color:#e3d2d2>:</span>Gina /configpath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#000;font-weight:700>%</span>_SMSTSMDataPath% /bootcount<span style=color:#a61717;background-color:#e3d2d2>:</span>2 /reloadenv
+
+<span style=color:#000;font-weight:700>IF</span> <span style=color:#000;font-weight:700>%</span>ERRORLEVEL% EQU -2147021886 (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap requested reboot &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Rebooting now &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupShutdownRequired /t REG_DWORD /d 1 /f
+) <span style=color:#000;font-weight:700>else</span> (
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% ERRORLEVEL = <span style=color:#000;font-weight:700>%</span>ERRORLEVEL%  &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% TSMBootstrap did not request reboot, resetting registry &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v SetupType /t REG_DWORD /d 0 /f
+reg add <span style=color:#d14>&#34;HKEY_LOCAL_MACHINE\SYSTEM\Setup&#34;</span> /v CmdLine /t REG_SZ /d <span style=color:#d14>&#34;&#34;</span> /f
+)
+<span style=color:#0086b3>echo </span><span style=color:#000;font-weight:700>%</span>DATE%-<span style=color:#000;font-weight:700>%</span>TIME% Exiting setuprollback.cmd &gt;&gt; <span style=color:#000;font-weight:700>%</span>WINDIR%\setuprollback.log
+
+<span style=color:#0086b3>set </span>SCCMClientPath=
+</code></pre></td></tr></table>
+</div>
+</div><p>Note: Make sure your command lines are BEFORE this line or the Task Sequence will be re-initialized before the service is restarted and you will still see some timeouts.</p>
 <p><code>%SCCMClientPath%\TSMBootstrap.exe /env:Gina /configpath:%_SMSTSMDataPath% /bootcount:2 /reloadenv</code></p>
 <h1 id=update-your-in-place-upgrade-task-sequence>Update Your In-Place Upgrade Task Sequence</h1>
 <p>You should now have 4 files, 2 Modified and 2 Original. We will add these files to your In-Place Upgrade Task Sequence. The Modified files will be copied down to replace the current files then the Original files will be copied down post-upgrade so we aren&rsquo;t leaving behind non-default files.</p>
 <p>Add Run Command Line steps before and after your Upgrade Task Sequence step using the following command lines:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+xcopy.exe <span style=color:#d14>&#34;.\Modified\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2018-07-29_23-00-24.jpg target=_blank>
 <img src=2018-07-29_23-00-24.jpg alt="A Square Dozen Image">
 </a>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>xcopy.exe <span style=color:#d14>&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>xcopy.exe <span style=color:#d14>&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>xcopy.exe <span style=color:#d14>&#34;.\Original\SetupCompleteTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+xcopy.exe <span style=color:#d14>&#34;.\Original\SetupRollbackTemplate.cmd&#34;</span> <span style=color:#000;font-weight:700>%</span>WINDIR%\CCM\ /C /<span style=color:#0086b3>R </span>/Y
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2018-07-29_23-00-45.jpg target=_blank>
 <img src=2018-07-29_23-00-45.jpg alt="A Square Dozen Image">

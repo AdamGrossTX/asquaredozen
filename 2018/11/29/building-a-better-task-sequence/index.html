@@ -171,18 +171,35 @@ I&rsquo;ve had this post in the queue for a while now and have been working on a
 <p>No matter how well you build your ConfigMgr Task Sequences, you will encounter failures. When you are testing in your lab, no big deal, but what about failures at a user&rsquo;s desk during an In-Place Upgrade? Adding structure to your Task Sequences that can properly handle the failures will add an extra layer of protection against incomplete deployments going unnoticed.</p>
 <h2 id=try---catch---finally>Try - Catch - Finally</h2>
 <p>If you&rsquo;ve ever done any programming, you will likely be familiar with concept of Try-Catch-Finally. The general idea is that Try is your block of code. As it executes, if an error occurs, you can allow the code to continue to execute (non-fatal error) or you can Catch the error (fatal-error). In the Catch block, you can execute additional code to process the error. Then, regardless of what else happens, the Finally block will run to process any additional code that you ALWAYS want to run, no matter the outcome of the previous code. If you structure your Task Sequence using similar logic, you can improve the chances of capturing and remediating failures and reduce the number of failed deployments that make it out into production.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>Try</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>  <span style=color:#000;font-weight:700>Do</span> Some Thing.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>  Stop (Go to <span style=color:#000;font-weight:700>Catch</span>) <span style=color:#000;font-weight:700>if</span> there<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s an error.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>  <span style=color:#000;font-weight:700>If</span> no error, skip <span style=color:#000;font-weight:700>Catch</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#000;font-weight:700>Catch</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>  Evaluate the error and take action as needed.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#000;font-weight:700>Finally</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>  No matter what happened above, <span style=color:#000;font-weight:700>do</span> these steps too.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>}
-</code></pre></div><h2 id=basic-framework>Basic Framework</h2>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>Try</span> {
+  <span style=color:#000;font-weight:700>Do</span> Some Thing.
+  Stop (Go to <span style=color:#000;font-weight:700>Catch</span>) <span style=color:#000;font-weight:700>if</span> there<span style=color:#a61717;background-color:#e3d2d2>&#39;</span>s an error.
+  <span style=color:#000;font-weight:700>If</span> no error, skip <span style=color:#000;font-weight:700>Catch</span>
+}
+<span style=color:#000;font-weight:700>Catch</span> {
+  Evaluate the error and take action as needed.
+}
+<span style=color:#000;font-weight:700>Finally</span> {
+  No matter what happened above, <span style=color:#000;font-weight:700>do</span> these steps too.
+}
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=basic-framework>Basic Framework</h2>
 <p>Inside your Task Sequence, always create a top level group. I like doing this so it&rsquo;s easier to copy and paste the entire task sequence. Inside this group, create 4 groups at the same level. Main, Failure, Success, Cleanup.</p>
 <p><div class=image>
 <figure>

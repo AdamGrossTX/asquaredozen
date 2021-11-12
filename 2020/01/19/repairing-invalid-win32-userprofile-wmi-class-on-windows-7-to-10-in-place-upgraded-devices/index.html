@@ -184,26 +184,51 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 </figure>
 </div></p>
 <p>The WMI query that CMPivot attempts to run on the client is:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>SELECT </span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>  HealthStatus,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>  LastAttemptedProfileDownloadTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>  LastAttemptedProfileUploadTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>  LastBackgroundRegistryUploadTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>  LastDownloadTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>  LastUploadTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>  LastUseTime,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>  Loaded,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>  LocalPath,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>  RefCount,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>  RoamingConfigured,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>  RoamingPath,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>  RoamingPreference,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>  SID,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>  Special,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>  Status 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>FROM 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>	Win32_UserProfile
-</code></pre></div><p>In CMPivot, click on <strong>Query Summary</strong> to view Success, Failed and Offline totals and click through to see details for each category.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>SELECT </span>
+  HealthStatus,
+  LastAttemptedProfileDownloadTime,
+  LastAttemptedProfileUploadTime,
+  LastBackgroundRegistryUploadTime,
+  LastDownloadTime,
+  LastUploadTime,
+  LastUseTime,
+  Loaded,
+  LocalPath,
+  RefCount,
+  RoamingConfigured,
+  RoamingPath,
+  RoamingPreference,
+  SID,
+  Special,
+  Status 
+FROM 
+	Win32_UserProfile
+</code></pre></td></tr></table>
+</div>
+</div><p>In CMPivot, click on <strong>Query Summary</strong> to view Success, Failed and Offline totals and click through to see details for each category.</p>
 <p><div class=image>
 <figure>
 <a href=image-3.png target=_blank>
@@ -223,67 +248,153 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 <p>As you can see, my Failed Devices details show &lsquo;<strong>Invalid query&mldr;</strong>&rsquo;.</p>
 <h2 id=manually-validating-the-query>Manually Validating the Query</h2>
 <p>I exported the list of failures from CMPivot and was able to get the full query posted above. I connected to a failed machine directly and ran the query in PowerShell:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile
-</span></code></pre></div><p>And got these results:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>PS </span>C:\WINDOWS\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile&#34;</span>           <span style=color:#0086b3>Get-CIMInstance</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> Invalid query
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>At line<span style=color:#a61717;background-color:#e3d2d2>:</span>1 char<span style=color:#a61717;background-color:#e3d2d2>:</span>1
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>+ <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,L ...
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#d14>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span><span style=color:#d14>    + CategoryInfo          : InvalidArgument: (:) [Get-CimInstance], CimException
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span><span style=color:#d14>    + FullyQualifiedErrorId : HRESULT 0x80041017,Microsoft.Management.Infrastructure.CimCmdlets.GetCimInstanceCommand
-</span></code></pre></div><p>Then I ran tried with <code>SELECT *</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT * FROM Win32_UserProfile
-</span></code></pre></div><p>And got results!!:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>PS </span>C:\WINDOWS\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT * FROM Win32_UserProfile&#34;</span>                
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>LastDownloadTime  <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>LastUploadTime    <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>LastUseTime       <span style=color:#a61717;background-color:#e3d2d2>:</span> 1/19/2020 1<span style=color:#a61717;background-color:#e3d2d2>:</span>44<span style=color:#a61717;background-color:#e3d2d2>:</span>54 PM
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>Loaded            <span style=color:#a61717;background-color:#e3d2d2>:</span> True
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>LocalPath         <span style=color:#a61717;background-color:#e3d2d2>:</span> C:\Users\Gross
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>RefCount          <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>RoamingConfigured <span style=color:#a61717;background-color:#e3d2d2>:</span> False
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>RoamingPath       <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>RoamingPreference <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>SID               <span style=color:#a61717;background-color:#e3d2d2>:</span> S-1-5-21-3437610054-3136568823-3853729785-1003
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>Special           <span style=color:#a61717;background-color:#e3d2d2>:</span> False
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>Status            <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>PSComputerName    <span style=color:#a61717;background-color:#e3d2d2>:</span>
-</code></pre></div><p>By looking at the results, I could see that a lot of the properties listed in the CMPivot query aren&rsquo;t listed. Then I checked a device that successfully reported results in CMPivot and the results were much better.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>PS </span>C:\Windows\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>AppDataRoaming                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>Contacts                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>Desktop                          <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>Documents                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>Downloads                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>Favorites                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>HealthStatus                     <span style=color:#a61717;background-color:#e3d2d2>:</span> 3
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>LastAttemptedProfileDownloadTime <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>LastAttemptedProfileUploadTime   <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>LastBackgroundRegistryUploadTime <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>LastDownloadTime                 <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>LastUploadTime                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>LastUseTime                      <span style=color:#a61717;background-color:#e3d2d2>:</span> 1/19/2020 1<span style=color:#a61717;background-color:#e3d2d2>:</span>49<span style=color:#a61717;background-color:#e3d2d2>:</span>06 PM
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>Links                            <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>Loaded                           <span style=color:#a61717;background-color:#e3d2d2>:</span> True
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>LocalPath                        <span style=color:#a61717;background-color:#e3d2d2>:</span> C:\Users\Adam
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>Music                            <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>Pictures                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>RefCount                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>RoamingConfigured                <span style=color:#a61717;background-color:#e3d2d2>:</span> False
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>RoamingPath                      <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>RoamingPreference                <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>SavedGames                       <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>Searches                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>SID                              <span style=color:#a61717;background-color:#e3d2d2>:</span> S-1-5-21-86492988-3276933293-758329271-1001
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>Special                          <span style=color:#a61717;background-color:#e3d2d2>:</span> False
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>StartMenu                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>Status                           <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>Videos                           <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>PSComputerName                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
-</code></pre></div><p>As you can see, there are a lot more properties listed.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile
+</span></code></pre></td></tr></table>
+</div>
+</div><p>And got these results:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>PS </span>C:\WINDOWS\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile&#34;</span>           <span style=color:#0086b3>Get-CIMInstance</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> Invalid query
+At line<span style=color:#a61717;background-color:#e3d2d2>:</span>1 char<span style=color:#a61717;background-color:#e3d2d2>:</span>1
++ <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,L ...
+</span><span style=color:#d14>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span style=color:#d14>    + CategoryInfo          : InvalidArgument: (:) [Get-CimInstance], CimException
+</span><span style=color:#d14>    + FullyQualifiedErrorId : HRESULT 0x80041017,Microsoft.Management.Infrastructure.CimCmdlets.GetCimInstanceCommand
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Then I ran tried with <code>SELECT *</code>:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT * FROM Win32_UserProfile
+</span></code></pre></td></tr></table>
+</div>
+</div><p>And got results!!:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>PS </span>C:\WINDOWS\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT * FROM Win32_UserProfile&#34;</span>                
+
+LastDownloadTime  <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastUploadTime    <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastUseTime       <span style=color:#a61717;background-color:#e3d2d2>:</span> 1/19/2020 1<span style=color:#a61717;background-color:#e3d2d2>:</span>44<span style=color:#a61717;background-color:#e3d2d2>:</span>54 PM
+Loaded            <span style=color:#a61717;background-color:#e3d2d2>:</span> True
+LocalPath         <span style=color:#a61717;background-color:#e3d2d2>:</span> C:\Users\Gross
+RefCount          <span style=color:#a61717;background-color:#e3d2d2>:</span>
+RoamingConfigured <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+RoamingPath       <span style=color:#a61717;background-color:#e3d2d2>:</span>
+RoamingPreference <span style=color:#a61717;background-color:#e3d2d2>:</span>
+SID               <span style=color:#a61717;background-color:#e3d2d2>:</span> S-1-5-21-3437610054-3136568823-3853729785-1003
+Special           <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+Status            <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+PSComputerName    <span style=color:#a61717;background-color:#e3d2d2>:</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>By looking at the results, I could see that a lot of the properties listed in the CMPivot query aren&rsquo;t listed. Then I checked a device that successfully reported results in CMPivot and the results were much better.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>PS </span>C:\Windows\system32&gt; <span style=color:#0086b3>Get-CIMInstance</span> -Namespace <span style=color:#d14>&#34;root\cimv2&#34;</span> -Query <span style=color:#d14>&#34;SELECT HealthStatus,LastAttemptedProfileDownloadTime,LastAttemptedProfileUploadTime,LastBackgroundRegistryUploadTime,LastDownloadTime,LastUploadTime,LastUseTime,Loaded,LocalPath,RefCount,RoamingConfigured,RoamingPath,RoamingPreference,SID,Special,Status FROM Win32_UserProfile&#34;</span>
+
+
+AppDataRoaming                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Contacts                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Desktop                          <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Documents                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Downloads                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Favorites                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+HealthStatus                     <span style=color:#a61717;background-color:#e3d2d2>:</span> 3
+LastAttemptedProfileDownloadTime <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastAttemptedProfileUploadTime   <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastBackgroundRegistryUploadTime <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastDownloadTime                 <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastUploadTime                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
+LastUseTime                      <span style=color:#a61717;background-color:#e3d2d2>:</span> 1/19/2020 1<span style=color:#a61717;background-color:#e3d2d2>:</span>49<span style=color:#a61717;background-color:#e3d2d2>:</span>06 PM
+Links                            <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Loaded                           <span style=color:#a61717;background-color:#e3d2d2>:</span> True
+LocalPath                        <span style=color:#a61717;background-color:#e3d2d2>:</span> C:\Users\Adam
+Music                            <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Pictures                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
+RefCount                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
+RoamingConfigured                <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+RoamingPath                      <span style=color:#a61717;background-color:#e3d2d2>:</span>
+RoamingPreference                <span style=color:#a61717;background-color:#e3d2d2>:</span>
+SavedGames                       <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Searches                         <span style=color:#a61717;background-color:#e3d2d2>:</span>
+SID                              <span style=color:#a61717;background-color:#e3d2d2>:</span> S-1-5-21-86492988-3276933293-758329271-1001
+Special                          <span style=color:#a61717;background-color:#e3d2d2>:</span> False
+StartMenu                        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Status                           <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+Videos                           <span style=color:#a61717;background-color:#e3d2d2>:</span>
+PSComputerName                   <span style=color:#a61717;background-color:#e3d2d2>:</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see, there are a lot more properties listed.</p>
 <h2 id=further-investigation>Further Investigation</h2>
 <p>One thing that I knew about our environment was that we had In-Place Upgraded about 50% of our devices from Windows 7 to Windows 10. The number of failure was close to 50%, so on a hunch I began comparing results from known upgraded devices to new builds and discovered that ALL of my upgraded devices had Win32_UserProfile classes with missing properties when compared to Windows 10 new builds!</p>
 <p>I reached out to some folks over on the <a href=http://aka.ms/winadmins>WinAdmins Discord</a> to help get some validation of what I was seeing (thanks guys!) and they were able to duplicate the results. I also spun up some Hyper-V VMs to test and proved that a clean (build from MSDN ISO media) Windows 7 SP1 device, upgraded to Windows 10 (1809/1903/1909 were tested) all ended up with missing properties for Win32_UserProfile.</p>
@@ -303,68 +414,139 @@ In this case, I selected the USMUserProfile entity from CMPivot and clicked Run 
 </ol>
 <p>This got me wondering if there were more classes in WMI that were incomplete so I wrote a quick PowerShell script (sorry, I don&rsquo;t have the code - not sure what I did with it) to query the classes and property names from WMI then I just dropped the results into <a href=https://code.visualstudio.com/>VSCode</a> and did a comparison between the results. The Win32_UserProfile class was the only one that had extra properties between a 7-10 upgrade vs a new build.</p>
 <p>I also copied the <code>c:\Windows\System32\wbem</code> folders from the 3 machine states Win7, Win10-post upgrade and Win10 new build and compared them in VSCode and determined that the MOF files for the Upgraded machine matched the New build. This appears to indicate that there may be a process that performs a MOFCOMP on the files post-upgrade that is failing to process this particular class. These are the files that I looked at:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span> <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileWmiProvider.mof&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span> <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileConfigurationWmiProvider.mof&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span> <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileWmiProvider.mfl&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span> <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileConfigurationWmiProvider.mfl
-</span></code></pre></div><h2 id=repairing-wmi>Repairing WMI</h2>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell> <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileWmiProvider.mof&#34;</span>,
+ <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileConfigurationWmiProvider.mof&#34;</span>
+ <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileWmiProvider.mfl&#34;</span>,
+ <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileConfigurationWmiProvider.mfl
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=repairing-wmi>Repairing WMI</h2>
 <p>After determining that there wasn&rsquo;t a larger issue at play here, I decided that I just needed to repair the WMI class. If you&rsquo;ve been working with Windows for any length of time, you&rsquo;ve likely run across scripts to repair WMI. Unfortunately, they are often brute force and possibly cause more damage than they fix. Given the fact that I don&rsquo;t even know the impact of this class being incomplete, I just wanted to fix it, but not break more things. This will impact about 3000 production devices and I don' think that running <code>WINMGMT /ResetRepository</code> would be the best route. After digging and testing, I finally settled on a script that appears to do the trick. I&rsquo;ve written it so that it can be re-used to repair other WMI classes and can be pushed as a Configuration Baseline in ConfigMgr. It simply checks to see if the class is missing the HealthStatus property and if so, uses MOFCOMP to recompile the MOFs for the class.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>#In a ConfigMgr CI, Use $Remediate = $False for the detection script and $Remediate = $True for the remediation script. This keeps you from needing to maintain 2 scripts.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#000;font-weight:700>param</span>(
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>    <span style=color:teal>[string]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>    <span style=color:teal>$InputParam</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>    <span style=color:teal>[switch]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>    <span style=color:teal>$Remediate</span> = <span style=color:teal>$False</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>    <span style=color:teal>[string]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>    <span style=color:teal>$NameSpace</span> = <span style=color:#d14>&#34;root\cimv2&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>    <span style=color:teal>[string]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>    <span style=color:teal>$ClassName</span> = <span style=color:#d14>&#34;Win32_UserProfile&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>    <span style=color:teal>[string]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>    <span style=color:teal>$ValidProperty</span> = <span style=color:#d14>&#34;HealthStatus&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>    [<span style=color:#000;font-weight:700>Parameter</span>()]
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>    <span style=color:teal>[string[]]</span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>    <span style=color:teal>$FileList</span> = @(
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>        <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileWmiProvider.mof&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>        <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileConfigurationWmiProvider.mof&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>        <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileWmiProvider.mfl&#34;</span>,
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>        <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileConfigurationWmiProvider.mfl&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>    )
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#000;font-weight:700>Try</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>    <span style=color:teal>$Class</span> = <span style=color:#0086b3>Get-CimInstance</span> -Namespace <span style=color:teal>$NameSpace</span> -ClassName <span style=color:teal>$ClassName</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>    <span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Class</span>[0].PSObject.Properties.Name <span style=color:#000;font-weight:700>-contains</span> <span style=color:teal>$ValidProperty</span>)) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>        <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Remediate</span>.IsPresent) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>            <span style=color:#000;font-weight:700>ForEach</span>(<span style=color:teal>$File</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$FileList</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span>                <span style=color:#000;font-weight:700>If</span>(<span style=color:#0086b3>Get-Item</span> -Path <span style=color:teal>$File</span> -ErrorAction Stop) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>                    mofcomp.exe <span style=color:teal>$File</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span>                }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a></span>                <span style=color:#000;font-weight:700>Else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a></span>                    <span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;File </span>$(<span style=color:teal>$File</span>)<span style=color:#d14> not found.&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a></span>                }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a></span>            }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a></span>        }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a></span>        <span style=color:#000;font-weight:700>Return</span> 1
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a></span>    }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a></span>    <span style=color:#000;font-weight:700>Else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50>50</a></span>        <span style=color:#000;font-weight:700>Return</span> 0
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51>51</a></span>    }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52>52</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53>53</a></span><span style=color:#000;font-weight:700>Catch</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54>54</a></span>    <span style=color:#000;font-weight:700>Return</span> 0
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=55><a style=outline:none;text-decoration:none;color:inherit href=#55>55</a></span>}
-</code></pre></div><p>Simply add this to a Configuration Item and deploy in a Configuration Baseline in ConfigMgr and you should be able to repair any broken Win32_UserProfile classes. Obviously, test first. I&rsquo;d start with the CMPivot steps listed above to help identify broken devices.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50>50</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51>51</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52>52</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53>53</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54>54</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=55><a style=outline:none;text-decoration:none;color:inherit href=#55>55</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>#In a ConfigMgr CI, Use $Remediate = $False for the detection script and $Remediate = $True for the remediation script. This keeps you from needing to maintain 2 scripts.</span>
+
+<span style=color:#000;font-weight:700>param</span>(
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[string]</span>
+    <span style=color:teal>$InputParam</span>,
+
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[switch]</span>
+    <span style=color:teal>$Remediate</span> = <span style=color:teal>$False</span>,
+
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[string]</span>
+    <span style=color:teal>$NameSpace</span> = <span style=color:#d14>&#34;root\cimv2&#34;</span>,
+
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[string]</span>
+    <span style=color:teal>$ClassName</span> = <span style=color:#d14>&#34;Win32_UserProfile&#34;</span>,
+
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[string]</span>
+    <span style=color:teal>$ValidProperty</span> = <span style=color:#d14>&#34;HealthStatus&#34;</span>,
+
+    [<span style=color:#000;font-weight:700>Parameter</span>()]
+    <span style=color:teal>[string[]]</span> 
+    <span style=color:teal>$FileList</span> = @(
+        <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileWmiProvider.mof&#34;</span>,
+        <span style=color:#d14>&#34;C:\Windows\System32\wbem\UserProfileConfigurationWmiProvider.mof&#34;</span>
+        <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileWmiProvider.mfl&#34;</span>,
+        <span style=color:#d14>&#34;C:\Windows\System32\wbem\en-us\UserProfileConfigurationWmiProvider.mfl&#34;</span>
+    )
+)
+
+<span style=color:#000;font-weight:700>Try</span> {
+    <span style=color:teal>$Class</span> = <span style=color:#0086b3>Get-CimInstance</span> -Namespace <span style=color:teal>$NameSpace</span> -ClassName <span style=color:teal>$ClassName</span>
+    <span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Class</span>[0].PSObject.Properties.Name <span style=color:#000;font-weight:700>-contains</span> <span style=color:teal>$ValidProperty</span>)) {
+        <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Remediate</span>.IsPresent) {
+            <span style=color:#000;font-weight:700>ForEach</span>(<span style=color:teal>$File</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$FileList</span>) {
+                <span style=color:#000;font-weight:700>If</span>(<span style=color:#0086b3>Get-Item</span> -Path <span style=color:teal>$File</span> -ErrorAction Stop) {
+                    mofcomp.exe <span style=color:teal>$File</span>
+                }
+                <span style=color:#000;font-weight:700>Else</span> {
+                    <span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;File </span>$(<span style=color:teal>$File</span>)<span style=color:#d14> not found.&#34;</span>
+                }
+            }
+        }
+        <span style=color:#000;font-weight:700>Return</span> 1
+    }
+    <span style=color:#000;font-weight:700>Else</span> {
+        <span style=color:#000;font-weight:700>Return</span> 0
+    }
+}
+<span style=color:#000;font-weight:700>Catch</span> {
+    <span style=color:#000;font-weight:700>Return</span> 0
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Simply add this to a Configuration Item and deploy in a Configuration Baseline in ConfigMgr and you should be able to repair any broken Win32_UserProfile classes. Obviously, test first. I&rsquo;d start with the CMPivot steps listed above to help identify broken devices.</p>
 <hr>
 <p><strong>Note:</strong> I also verified that performing a Feature Update from 1809 to 1903/1909 doesn&rsquo;t fix the class. Also, creating a new user profile doesn&rsquo;t seem to help either.</p>
 <hr>

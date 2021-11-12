@@ -258,22 +258,43 @@ to<br>
 <p>So now you&rsquo;ll have a really long serial number for VMware and an almost-too-long-in-some-instances serial number for Microsoft.</p>
 <p>The next step is to truncate them. For VMware, I have had good luck just taking the last 8 characters. For Microsoft, I use the first 8 (since the last 4 aren&rsquo;t unique anyway, it doesn&rsquo;t matter).</p>
 <p>So, here&rsquo;s a simple script that I&rsquo;ve been using to take care of all of this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$WMIBIOS</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class win32_BIOS
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>$WMIComputerSystem</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class Win32_ComputerSystem
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$Manufacturer</span> = <span style=color:teal>$WMIComputerSystem</span>.Manufacturer
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>$SerialNumber</span> = <span style=color:teal>$WMIBIOS</span>.SerialNumber
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Manufacturer</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>
-</code></pre></div><p>Simply drop the script into a Run PowerShell Script step in your task Sequence and set the output to a new variable name. Now, you could remove all of the lookups and just pass <code>_SMSTSMake</code> and <code>_SMSTSModel</code> to the script or use them as Options on the steps, but keeping it all in one simple script makes it easy to re-use later.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$WMIBIOS</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class win32_BIOS
+<span style=color:teal>$WMIComputerSystem</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class Win32_ComputerSystem
+
+<span style=color:teal>$Manufacturer</span> = <span style=color:teal>$WMIComputerSystem</span>.Manufacturer
+<span style=color:teal>$SerialNumber</span> = <span style=color:teal>$WMIBIOS</span>.SerialNumber
+
+<span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Manufacturer</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
+    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
+}
+<span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
+    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
+}
+<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Simply drop the script into a Run PowerShell Script step in your task Sequence and set the output to a new variable name. Now, you could remove all of the lookups and just pass <code>_SMSTSMake</code> and <code>_SMSTSModel</code> to the script or use them as Options on the steps, but keeping it all in one simple script makes it easy to re-use later.</p>
 <p><div class=image>
 <figure>
 <a href=image-4.png target=_blank>
@@ -318,23 +339,45 @@ to<br>
 <figcaption>Get the serial number</figcaption>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>Param</span> (
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>    <span style=color:teal>[String]</span><span style=color:teal>$Make</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$BIOS</span> = <span style=color:#0086b3>Get-CimInstance</span> -Class Win32_BIOS
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>$SerialNumber</span> = <span style=color:teal>$BIOS</span>.SerialNumber.Replace(<span style=color:#d14>&#39; &#39;</span>,<span style=color:#d14>&#39;&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Make</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>.ToUpper()
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>Param</span> (
+    <span style=color:teal>[String]</span><span style=color:teal>$Make</span>
+)
+<span style=color:teal>$BIOS</span> = <span style=color:#0086b3>Get-CimInstance</span> -Class Win32_BIOS
+
+<span style=color:teal>$SerialNumber</span> = <span style=color:teal>$BIOS</span>.SerialNumber.Replace(<span style=color:#d14>&#39; &#39;</span>,<span style=color:#d14>&#39;&#39;</span>)
+
+<span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Make</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
+    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
+}
+<span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
+    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
+}
+<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>.ToUpper()
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=image-9.png target=_blank>
 <img src=image-9.png alt="Script to look up chassis types from WMI and output a clean name to use.">
@@ -350,20 +393,39 @@ to<br>
 <figcaption>Default is NoChassisTypeDetected. You'll see this for VMware and likely other VMs.</figcaption>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$Laptop</span> = @(8, 9, 10, 11, 12, 14, 18, 21, 30, 31, 32)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>$Desktop</span> = @(3, 4, 5, 6, 7, 13, 15, 16, 35, 36)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>$Server</span> = @(23, 28)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$CIMChassisType</span> = (<span style=color:#0086b3>Get-CIMInstance</span> Win32_SystemEnclosure).ChassisTypes
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>$ChassisType</span> = <span style=color:#000;font-weight:700>Switch</span>(<span style=color:teal>$CIMChassisType</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>    {<span style=color:teal>$Laptop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Laptop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>    {<span style=color:teal>$Desktop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Desktop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>    {<span style=color:teal>$Server</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Server&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>    <span style=color:#000;font-weight:700>default</span> {<span style=color:#d14>&#34;NoChassisTypeDetected&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$ChassisType</span>
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$Laptop</span> = @(8, 9, 10, 11, 12, 14, 18, 21, 30, 31, 32)
+<span style=color:teal>$Desktop</span> = @(3, 4, 5, 6, 7, 13, 15, 16, 35, 36)
+<span style=color:teal>$Server</span> = @(23, 28)
+<span style=color:teal>$CIMChassisType</span> = (<span style=color:#0086b3>Get-CIMInstance</span> Win32_SystemEnclosure).ChassisTypes
+
+<span style=color:teal>$ChassisType</span> = <span style=color:#000;font-weight:700>Switch</span>(<span style=color:teal>$CIMChassisType</span>) {
+    {<span style=color:teal>$Laptop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Laptop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+    {<span style=color:teal>$Desktop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Desktop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+    {<span style=color:teal>$Server</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Server&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+    <span style=color:#000;font-weight:700>default</span> {<span style=color:#d14>&#34;NoChassisTypeDetected&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+}
+
+<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$ChassisType</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=image-10.png target=_blank>
 <img src=image-10.png alt="Setting the Gather variables based on the values we found.">
@@ -390,8 +452,15 @@ to<br>
 <figcaption>Echo out the values to the command line so that they show up in smsts.log.</figcaption>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>cmd /c <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;ChassisType: %ChassisType%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsVM: %IsVM%&#34;</span> &amp;&amp;  <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsLaptop: %IsLaptop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsDesktop: %IsDesktop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsServer: %IsServer%&#34;</span>
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>cmd /c <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;ChassisType: %ChassisType%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsVM: %IsVM%&#34;</span> &amp;&amp;  <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsLaptop: %IsLaptop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsDesktop: %IsDesktop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsServer: %IsServer%&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2020-02-21_15-56-38.gif target=_blank>
 <img src=2020-02-21_15-56-38.gif alt="A gif using Task Sequence Debugger to show how the variables get set!">

@@ -170,47 +170,110 @@
 <h2 id=the-setup>The Setup</h2>
 <p>For these examples, I&rsquo;m going to use <strong>Get-CimClass Win32_OperatingSystem</strong> to return Operating System version information. <strong>Note:</strong> If I was doing this in production, I would use more shorthand code, but I want it to easy to understand the examples, so they are less than optimal, but hopefully easier to follow. Also note, I&rsquo;m much more comfortable in PowerShell. If you want to see examples of doing similar things with generating batch files on the fly, check out <a href=https://garytown.com/customize-setupcomplete>Gary&rsquo;s SetupComplete post</a>. <a href=https://stackoverflow.com/questions/48290568/run-multiple-lines-of-powershell-script-in-cmd></a></p>
 <p>To get started, run this in PowerShell ISE.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>Write-Host</span> Getting <span style=color:#0086b3>PS </span>Variables
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#0086b3>Write-Host</span> Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSCaption</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>Write-Host</span> Version<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSVersion</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>Write-Host</span> Build<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSBuild</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#0086b3>Write-Host</span> Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSArchitecture</span>
-</code></pre></div><p>Your output should be something like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>Getting <span style=color:#0086b3>PS </span>Variables
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>Version<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>Build<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span>Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
-</code></pre></div><p>If we add the TSEnvironment object to the script, we get this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>Write-Host</span> Getting TS Variables 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
-</code></pre></div><p>If we launch a Task Sequence and add a Debug command line (See below for steps to add Debug to as Task Sequence), we can run this manually and get this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>Getting TS Variables
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span>OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span>OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span>OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span>OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
-</code></pre></div><p>Amazing right? It&rsquo;s almost as if this worked!!</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
+<span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
+<span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
+<span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
+<span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
+
+<span style=color:#0086b3>Write-Host</span> Getting <span style=color:#0086b3>PS </span>Variables
+<span style=color:#0086b3>Write-Host</span> Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSCaption</span>
+<span style=color:#0086b3>Write-Host</span> Version<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSVersion</span>
+<span style=color:#0086b3>Write-Host</span> Build<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSBuild</span>
+<span style=color:#0086b3>Write-Host</span> Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSArchitecture</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Your output should be something like this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Getting <span style=color:#0086b3>PS </span>Variables
+Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
+Version<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
+Build<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
+Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
+</code></pre></td></tr></table>
+</div>
+</div><p>If we add the TSEnvironment object to the script, we get this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
+
+<span style=color:#0086b3>Write-Host</span> Getting TS Variables 
+<span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><p>If we launch a Task Sequence and add a Debug command line (See below for steps to add Debug to as Task Sequence), we can run this manually and get this:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Getting TS Variables
+OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
+OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
+OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
+OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
+</code></pre></td></tr></table>
+</div>
+</div><p>Amazing right? It&rsquo;s almost as if this worked!!</p>
 <p>At this point, you would normally save this to a script then use the Run PowerShell Script step in the Task Sequence to launch it. But that would require you to maintain a script in a file and replicating content each time you needed to change the script (debugging or future updates). Keep reading for some cool alternatives.</p>
 <h2 id=option-1---run-command-line>Option 1 - Run Command Line</h2>
 <p>Your first option for running in-line code would be to simply take a working script block, then remove all line breaks and replace them with semicolons. Then make sure you don&rsquo;t have any double quotes in the script. Then add it to a Run Command Line step and run it. Using the script above, your command line would look like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;&amp; { $OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;) }&#34;</span>
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;&amp; { $OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;) }&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2018-08-26_23-47-29.jpg target=_blank>
 <img src=2018-08-26_23-47-29.jpg alt="A Square Dozen Image">
@@ -226,8 +289,15 @@
 <p><strong>Type:</strong> Run Command Line<br>
 <strong>Name:</strong> Export Script<br>
 <strong>Command Line:</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>cmd.exe /c <span style=color:#0086b3>ECHO </span>| <span style=color:#0086b3>Set </span>/p =<span style=color:#d14>&#34;$OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;)&#34;</span> &gt;&gt; c:\Temp\GetOSInfo.PS1
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>cmd.exe /c <span style=color:#0086b3>ECHO </span>| <span style=color:#0086b3>Set </span>/p =<span style=color:#d14>&#34;$OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;)&#34;</span> &gt;&gt; c:\Temp\GetOSInfo.PS1
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2018-08-26_23-47-35-2.jpg target=_blank>
 <img src=2018-08-26_23-47-35-2.jpg alt="A Square Dozen Image">
@@ -275,24 +345,47 @@
 <strong>Name:</strong> Set Variable - GetOSInfo<br>
 <strong>Task Sequence Variable:</strong> GetOSInfo<br>
 <strong>Value:</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#0086b3>Write-Host</span> Getting TS Variables 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
-</code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
+<span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
+<span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
+<span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
+<span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
+
+<span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
+<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
+
+<span style=color:#0086b3>Write-Host</span> Getting TS Variables 
+<span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
+<span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2018-08-26_23-48-30.jpg target=_blank>
 <img src=2018-08-26_23-48-30.jpg alt="Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break.">

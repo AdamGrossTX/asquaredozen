@@ -251,53 +251,133 @@
 <p>Following the steps above, you can simply download the Dynamic Updates then apply them at the proper step when servicing your WIM. I honestly don&rsquo;t know whether it matters if you apply them before cleaning and resetting the WIM (Mike Terrill doesn&rsquo;t even clean and reset - we are all doing what seems best for our scenario). Either way, just use the same commands you are using to add your other updates. Here are some samples:</p>
 <p>Each of these process a single update at a time, so you&rsquo;d need to add one line per KB.<br>
 <strong>PowerShell</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates\KB12345566.CAB&#34;</span> -Path <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
-</code></pre></div><p><strong>Command Prompt (DISM.exe)</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>DISM /Image<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span> /<span style=color:#0086b3>Add-Package</span> /PackagePath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates\KB12345566.CAB&#34;</span>
-</code></pre></div><p>You can also use this command in PowerShell to get the contents of your update folder then loop through each one for a more dynamic approach.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>$ImageMountFolder</span> = <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>$DUCU</span> = <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span> <span style=color:#998;font-style:italic>#Path you stored the Updates in.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:teal>$DUCU</span> = <span style=color:#0086b3>Get-ChildItem</span> -Path <span style=color:#d14>&#34;</span>$(<span style=color:teal>$DUCUPath</span>)<span style=color:#d14>&#34;</span> -Filter <span style=color:#d14>&#34;*.CAB&#34;</span> | <span style=color:#0086b3>Select </span>-ExpandProperty FullName
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#000;font-weight:700>ForEach</span>(<span style=color:teal>$CAB</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$DUCU</span>) { <span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:teal>$CAB</span> -Path <span style=color:teal>$ImageMountFolder</span> }
-</code></pre></div><h3 id=errors>ERRORS</h3>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates\KB12345566.CAB&#34;</span> -Path <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Command Prompt (DISM.exe)</strong></p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>DISM /Image<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span> /<span style=color:#0086b3>Add-Package</span> /PackagePath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates\KB12345566.CAB&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can also use this command in PowerShell to get the contents of your update folder then loop through each one for a more dynamic approach.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$ImageMountFolder</span> = <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
+<span style=color:teal>$DUCU</span> = <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span> <span style=color:#998;font-style:italic>#Path you stored the Updates in.</span>
+<span style=color:teal>$DUCU</span> = <span style=color:#0086b3>Get-ChildItem</span> -Path <span style=color:#d14>&#34;</span>$(<span style=color:teal>$DUCUPath</span>)<span style=color:#d14>&#34;</span> -Filter <span style=color:#d14>&#34;*.CAB&#34;</span> | <span style=color:#0086b3>Select </span>-ExpandProperty FullName
+<span style=color:#000;font-weight:700>ForEach</span>(<span style=color:teal>$CAB</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$DUCU</span>) { <span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:teal>$CAB</span> -Path <span style=color:teal>$ImageMountFolder</span> }
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=errors>ERRORS</h3>
 <p>The commands below caused Mike Terrill and I a lot of headache. They are equivalent commands in PowerShell and with DISM.exe to recurse through a folder and apply each update found in the folder. These are the same as the much longer ForEach PowerShell approach above. However, no matter how we tried to apply the updates, if we used the commands below, when we got to the last KB for 1709 x64, DISM would report that the WIM was corrupt and that we should start over.</p>
 <p><strong>PowerShell</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span> -Path <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
-</code></pre></div><p><strong>Command Prompt (DISM.exe)</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>DISM /Image<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span> /<span style=color:#0086b3>Add-Package</span> /PackagePath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span>
-</code></pre></div><p>Here&rsquo;s the full error we got:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>E:\&gt;dism /image:e:\win10\1709\mount /add-package /packagepath:e:\win10\1709\DynamicUpdates\Component\</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>Deployment Image Servicing and Management tool</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>Version: 10.0.17134.1</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>Image Version: 10.0.16299.611</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>Processing 1 of 5 - Adding package Package_for_KB4055237~31bf3856ad364e35~amd64~~10.0.1.3</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>Processing 2 of 5 - Adding package Package_for_KB4055994~31bf3856ad364e35~amd64~~10.0.1.0</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:teal>Processing 3 of 5 - Adding package Package_for_KB4078408~31bf3856ad364e35~amd64~~16299.245.1.0</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:teal>Processing 4 of 5 - Adding package Package_for_KB4094276~31bf3856ad364e35~amd64~~10.0.1.0</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:teal>Processing 5 of 5 - Adding package Package_for_KB4293700~31bf3856ad364e35~amd64~~10.0.1.0</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:teal>Package_for_KB4293700: The specified image is no longer serviceable and may be corrupted.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:teal>Discard the modified image and start again.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:teal>Error: 0x80070490</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:teal>Error: 1168</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:teal>The specified image is no longer serviceable and may be corrupted.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:teal>Discard the modified image and start again.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:teal>The command completed with errors.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:teal>For more information, refer to the log file.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span> 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:teal>The DISM log file can be found at C:\WINDOWS\Logs\DISM\dism.log</span>
-</code></pre></div><p>Also, be sure to get the Setup Update and extract the cab contents to your Sources folder using:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>Expand FileName.CAB <span style=color:#000;font-weight:700>-f</span><span style=color:#a61717;background-color:#e3d2d2>:</span>* c:\Media\1709\Sources
-</code></pre></div><h1 id=putting-it-all-together>Putting It All Together</h1>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Add-WindowsPackage</span> -PackagePath <span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span> -Path <span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Command Prompt (DISM.exe)</strong></p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>DISM /Image<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\ImageMountFolder&#34;</span> /<span style=color:#0086b3>Add-Package</span> /PackagePath<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;C:\ImageServicing\DynamicUpdateCumulativeUpdates&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s the full error we got:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:teal>E:\&gt;dism /image:e:\win10\1709\mount /add-package /packagepath:e:\win10\1709\DynamicUpdates\Component\</span>
+ 
+<span style=color:teal>Deployment Image Servicing and Management tool</span>
+<span style=color:teal>Version: 10.0.17134.1</span>
+ 
+<span style=color:teal>Image Version: 10.0.16299.611</span>
+ 
+<span style=color:teal>Processing 1 of 5 - Adding package Package_for_KB4055237~31bf3856ad364e35~amd64~~10.0.1.3</span>
+<span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
+<span style=color:teal>Processing 2 of 5 - Adding package Package_for_KB4055994~31bf3856ad364e35~amd64~~10.0.1.0</span>
+<span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
+<span style=color:teal>Processing 3 of 5 - Adding package Package_for_KB4078408~31bf3856ad364e35~amd64~~16299.245.1.0</span>
+<span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
+<span style=color:teal>Processing 4 of 5 - Adding package Package_for_KB4094276~31bf3856ad364e35~amd64~~10.0.1.0</span>
+<span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
+<span style=color:teal>Processing 5 of 5 - Adding package Package_for_KB4293700~31bf3856ad364e35~amd64~~10.0.1.0</span>
+<span style=color:#000;font-weight:700>[==========================100.0%==========================]</span>
+<span style=color:teal>Package_for_KB4293700: The specified image is no longer serviceable and may be corrupted.</span>
+<span style=color:teal>Discard the modified image and start again.</span>
+<span style=color:teal>Error: 0x80070490</span>
+ 
+<span style=color:teal>Error: 1168</span>
+ 
+<span style=color:teal>The specified image is no longer serviceable and may be corrupted.</span>
+<span style=color:teal>Discard the modified image and start again.</span>
+<span style=color:teal>The command completed with errors.</span>
+<span style=color:teal>For more information, refer to the log file.</span>
+ 
+<span style=color:teal>The DISM log file can be found at C:\WINDOWS\Logs\DISM\dism.log</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Also, be sure to get the Setup Update and extract the cab contents to your Sources folder using:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Expand FileName.CAB <span style=color:#000;font-weight:700>-f</span><span style=color:#a61717;background-color:#e3d2d2>:</span>* c:\Media\1709\Sources
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=putting-it-all-together>Putting It All Together</h1>
 <p>As I said at the beginning, this has been a huge effort by the community to pull together the optimal process for updating our Windows media. Everything in this script was <a href=https://deploymentresearch.com/Research/Post/376/Announcement-The-most-advanced-OSD-book-yet>Stolen With Pride (© Johan Arwidmark)</a> from the community. Please read through it and ask questions and send me feedback (or even push PR&rsquo;s on GitHub).</p>
 <p>NOTE: I used to have a copy of the script inline here but since I&rsquo;ve updated it a few times, I&rsquo;ve decided to just host it on GitHub. You can find the latest version the script and related files there. <strong><a href=https://github.com/AdamGrossTX/PowershellScripts/tree/master/Windows%2010%20Servicing>Get the latest copy from GitHub here.</a></strong></p>
 <p>So, that&rsquo;s it for now. We all still have more testing to do but I believe we are in the home stretch. Please try this out and let us know how we can improve things. I know that David Segura is planning to update <a href=https://www.osdeploy.com/osbuilder/overview>OSBuilder</a> to add these features in, so be on the lookout for that. Mike Terrill was also going to do more testing and let me know how imaging goes. I&rsquo;m sure I&rsquo;ve missed some things or left some bugs in my code, so please be kind and let me know if you find anything. Happy Imaging!</p>

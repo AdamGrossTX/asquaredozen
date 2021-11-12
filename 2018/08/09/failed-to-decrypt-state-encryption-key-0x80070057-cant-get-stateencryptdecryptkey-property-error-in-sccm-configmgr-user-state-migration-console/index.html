@@ -178,12 +178,28 @@ Failed to decrypt state encryption key (0x80070057) Failed to run the action: Re
 </figure>
 </div></p>
 <p>Looking at the <strong>User State Migration</strong> node in the SCCM console, I couldn&rsquo;t find any computer associations for this computer (it should have an In-place relationship created). I checked the <strong>StateMigration</strong> table in the DB found 3 entries for this device and <strong>none of them had an encryption key</strong> in the DB. When I SQL below, I found about 30 more records with no key (along with about 90 valid records).</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>[dbo].[StateMigration]<span style=color:#bbb> </span>sm<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> </span>StateEncryptDecryptKey<span style=color:#bbb> </span><span style=color:#000;font-weight:700>is</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>null</span><span style=color:#bbb>
-</span></code></pre></div><p>I then checked WMI on the SCCM Primary using <a href=https://github.com/vinaypamnani/wmie2/releases>WMIExplorer</a> to run the query below and was unable to find a record for the device in question. I spot checked several more of the machines that I found with SQL and they were all missing from WMI.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>SMS_StateMigration<span style=color:#bbb> </span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> </span>SourceClientResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>12345678</span><span style=color:#bbb>
-</span></code></pre></div><p>At this point, I&rsquo;ve got an incomplete/invalid record in the DB that I can&rsquo;t access through WMI to delete using the <strong>DeleteAssociation</strong> method on the <strong>SMS_StateMigration</strong> object and I don&rsquo;t want to make direct change to the DB. Next I tried creating a new <strong>Computer Association</strong> in the ConfigMgr console. When I used the machine in question as either the source or destination machine, then opened the <strong>Recovery Information</strong> pane for the device, I received this error:</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>[dbo].[StateMigration]<span style=color:#bbb> </span>sm<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> </span>StateEncryptDecryptKey<span style=color:#bbb> </span><span style=color:#000;font-weight:700>is</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>null</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>I then checked WMI on the SCCM Primary using <a href=https://github.com/vinaypamnani/wmie2/releases>WMIExplorer</a> to run the query below and was unable to find a record for the device in question. I spot checked several more of the machines that I found with SQL and they were all missing from WMI.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>SMS_StateMigration<span style=color:#bbb> </span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> </span>SourceClientResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>12345678</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>At this point, I&rsquo;ve got an incomplete/invalid record in the DB that I can&rsquo;t access through WMI to delete using the <strong>DeleteAssociation</strong> method on the <strong>SMS_StateMigration</strong> object and I don&rsquo;t want to make direct change to the DB. Next I tried creating a new <strong>Computer Association</strong> in the ConfigMgr console. When I used the machine in question as either the source or destination machine, then opened the <strong>Recovery Information</strong> pane for the device, I received this error:</p>
 <p><div class=image>
 <figure>
 <a href=2018-08-09_16-46-26.jpg target=_blank>
@@ -191,56 +207,111 @@ Failed to decrypt state encryption key (0x80070057) Failed to run the action: Re
 </a>
 </figure>
 </div></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>ConfigMgr Error Object:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>instance of SMS_ExtendedStatus</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>{</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>    <span style=color:teal>CauseInfo</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#d14>    Description = &#34;Can&#39;t get StateEncryptDecryptKey property.&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#d14>    ErrorCode = 3242528002;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#d14>    File = &#34;..\\sspstatemigration.cpp&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#d14>    Line = 1049;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#d14>    Operation = &#34;ExecMethod&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#d14>    ParameterInfo = &#34;SMS_StateMigration.RestoreClientResourceID=11223344,SourceClientResourceID=12345678&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#d14>    ProviderName = &#34;WinMgmt&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#d14>    StatusCode = 2147749889;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:teal>};</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:teal>-------------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:teal>Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlQueryException</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:teal>The SMS Provider reported an error.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:teal>Stack Trace:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters, Boolean traceParameters)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>   <span style=color:teal>at Microsoft.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:teal>ConfigurationManagement</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:teal>.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.MachineAssociation.RecoverUserStateDialog.Initialize(Assembly assembly, SmsFormData propertySheet, SmsPageData pageData)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SmsCustomDialog.Initialize()</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ShowDialogTaskHandler.DoTask(NavigationModelNodeBase node, SccmTaskConfiguration sccmTask, PropertyDataUpdated dataUpdatedDelegate, Boolean readOnly)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SccmTaskHandlerBase.DoTask(IList`1 navigationNodes, NavigationModelNodeTask task)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>   <span style=color:teal>at Microsoft.EnterpriseManagement.ConsoleFramework.WindowTaskHandler.WindowTaskOperation.ExecuteTaskJob(Object sender, ConsoleJobEventArgs jobArguments)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ConsoleJobExceptionHandler.ExecuteJob(IComponent component, EventHandler`1 job, Object sender, ConsoleJobEventArgs args)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:teal>-------------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:teal>System.Management.ManagementException</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:teal>Generic failure </span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span><span style=color:teal>Stack Trace:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters, Boolean traceParameters)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.MachineAssociation.RecoverUserStateDialog.Initialize(Assembly assembly, SmsFormData propertySheet, SmsPageData pageData)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SmsCustomDialog.Initialize()</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ShowDialogTaskHandler.DoTask(NavigationModelNodeBase node, SccmTaskConfiguration sccmTask, PropertyDataUpdated dataUpdatedDelegate, Boolean readOnly)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SccmTaskHandlerBase.DoTask(IList`1 navigationNodes, NavigationModelNodeTask task)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a></span>   <span style=color:teal>at Microsoft.EnterpriseManagement.ConsoleFramework.WindowTaskHandler.WindowTaskOperation.ExecuteTaskJob(Object sender, ConsoleJobEventArgs jobArguments)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a></span>   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ConsoleJobExceptionHandler.ExecuteJob(IComponent component, EventHandler`1 job, Object sender, ConsoleJobEventArgs args)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a></span><span style=color:teal>-------------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a></span>
-</code></pre></div><h2 id=workaround>Workaround</h2>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:teal>ConfigMgr Error Object:</span>
+<span style=color:teal>instance of SMS_ExtendedStatus</span>
+<span style=color:teal>{</span>
+    <span style=color:teal>CauseInfo</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;&#34;;
+</span><span style=color:#d14>    Description = &#34;Can&#39;t get StateEncryptDecryptKey property.&#34;;
+</span><span style=color:#d14>    ErrorCode = 3242528002;
+</span><span style=color:#d14>    File = &#34;..\\sspstatemigration.cpp&#34;;
+</span><span style=color:#d14>    Line = 1049;
+</span><span style=color:#d14>    Operation = &#34;ExecMethod&#34;;
+</span><span style=color:#d14>    ParameterInfo = &#34;SMS_StateMigration.RestoreClientResourceID=11223344,SourceClientResourceID=12345678&#34;;
+</span><span style=color:#d14>    ProviderName = &#34;WinMgmt&#34;;
+</span><span style=color:#d14>    StatusCode = 2147749889;</span>
+<span style=color:teal>};</span>
+
+<span style=color:teal>-------------------------------</span>
+<span style=color:teal>Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlQueryException</span>
+<span style=color:teal>The SMS Provider reported an error.</span>
+
+<span style=color:teal>Stack Trace:</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters, Boolean traceParameters)</span>
+   <span style=color:teal>at Microsoft.</span>
+<span style=color:teal>ConfigurationManagement</span>
+
+<span style=color:teal>.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.MachineAssociation.RecoverUserStateDialog.Initialize(Assembly assembly, SmsFormData propertySheet, SmsPageData pageData)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SmsCustomDialog.Initialize()</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ShowDialogTaskHandler.DoTask(NavigationModelNodeBase node, SccmTaskConfiguration sccmTask, PropertyDataUpdated dataUpdatedDelegate, Boolean readOnly)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SccmTaskHandlerBase.DoTask(IList`1 navigationNodes, NavigationModelNodeTask task)</span>
+   <span style=color:teal>at Microsoft.EnterpriseManagement.ConsoleFramework.WindowTaskHandler.WindowTaskOperation.ExecuteTaskJob(Object sender, ConsoleJobEventArgs jobArguments)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ConsoleJobExceptionHandler.ExecuteJob(IComponent component, EventHandler`1 job, Object sender, ConsoleJobEventArgs args)</span>
+
+<span style=color:teal>-------------------------------</span>
+
+<span style=color:teal>System.Management.ManagementException</span>
+<span style=color:teal>Generic failure </span>
+
+
+<span style=color:teal>Stack Trace:</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters, Boolean traceParameters)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine.WqlResultObject.ExecuteMethod(String methodName, Dictionary`2 methodParameters)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.MachineAssociation.RecoverUserStateDialog.Initialize(Assembly assembly, SmsFormData propertySheet, SmsPageData pageData)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SmsCustomDialog.Initialize()</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ShowDialogTaskHandler.DoTask(NavigationModelNodeBase node, SccmTaskConfiguration sccmTask, PropertyDataUpdated dataUpdatedDelegate, Boolean readOnly)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.SccmTaskHandlerBase.DoTask(IList`1 navigationNodes, NavigationModelNodeTask task)</span>
+   <span style=color:teal>at Microsoft.EnterpriseManagement.ConsoleFramework.WindowTaskHandler.WindowTaskOperation.ExecuteTaskJob(Object sender, ConsoleJobEventArgs jobArguments)</span>
+   <span style=color:teal>at Microsoft.ConfigurationManagement.AdminConsole.ConsoleJobExceptionHandler.ExecuteJob(IComponent component, EventHandler`1 job, Object sender, ConsoleJobEventArgs args)</span>
+
+<span style=color:teal>-------------------------------</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=workaround>Workaround</h2>
 <p>To remove the invalid entries from the DB without directly editing the DB turned out to be pretty simple.</p>
 <ol>
 <li>Create a new <strong>Computer Association</strong> in the console using an invalid computer from the DB as the source and a random computer as the destination.</li>

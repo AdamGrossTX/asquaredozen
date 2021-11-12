@@ -189,56 +189,116 @@ For more on MIFs, check out <a href=https://blogs.technet.microsoft.com/umairkha
 </figure>
 </div></p>
 <p>Since I didn&rsquo;t know anything about the the table, I validated a few things first. I ran <code>SELECT DISTINCT ResourceID FROM vInventoryLog WHERE Name IS NOT NULL</code> and the total count matched up with my total device count (within reason). I also opened up the view in SSMS to see which tables/views it was using. Here&rsquo;s the view contents. As you can see, it&rsquo;s doing some cool math and using <code>InventoryLog</code> and <code>System_DISC</code>. This is perfect.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ResourceID,<span style=color:#bbb> </span>sd.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#bbb>        </span>dbo.fnConvertUTCToLocal(il.LogTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>AS</span><span style=color:#bbb> </span>LogLocalTime,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#bbb>        </span>il.LogTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogUtcTime,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#bbb>        </span>il.LogSource,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ServerReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMajor,<span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#bbb>		</span>il.ServerReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMinor,<span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ClientReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMajor,<span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#bbb>		</span>il.ClientReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMinor,<span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#bbb>		</span>il.LogText,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#bbb>		</span>il.LogDetail<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>InventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb> </span><span style=color:#000;font-weight:700>left</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Join</span><span style=color:#bbb> </span>System_DISC<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ItemKey<span style=color:#bbb>
-</span></code></pre></div><p>Next I used these 2 queries to show me how bad things may be. The first shows the count by LogText value to give us the total of each type of inventory is being reported. It also gives us a list of possible values to work with. The second adds in <code>ResourceID</code> to show devices that have had repeated failures. The third shows the oldest record in the log - which is about 90 days old.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>--Total Inventory Type
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Total Inventory Type by Device
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Oldest Log Entry
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MIN</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>OldestDateTime<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span></code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ResourceID,<span style=color:#bbb> </span>sd.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> 
+</span><span style=color:#bbb>        </span>dbo.fnConvertUTCToLocal(il.LogTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>AS</span><span style=color:#bbb> </span>LogLocalTime,<span style=color:#bbb> 
+</span><span style=color:#bbb>        </span>il.LogTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogUtcTime,<span style=color:#bbb> 
+</span><span style=color:#bbb>        </span>il.LogSource,<span style=color:#bbb> 
+</span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ServerReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMajor,<span style=color:#bbb>  
+</span><span style=color:#bbb>		</span>il.ServerReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMinor,<span style=color:#bbb>  
+</span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ClientReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMajor,<span style=color:#bbb>  
+</span><span style=color:#bbb>		</span>il.ClientReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMinor,<span style=color:#bbb>  
+</span><span style=color:#bbb>		</span>il.LogText,<span style=color:#bbb> 
+</span><span style=color:#bbb>		</span>il.LogDetail<span style=color:#bbb> 
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>InventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb> </span><span style=color:#000;font-weight:700>left</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Join</span><span style=color:#bbb> </span>System_DISC<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ItemKey<span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Next I used these 2 queries to show me how bad things may be. The first shows the count by LogText value to give us the total of each type of inventory is being reported. It also gives us a list of possible values to work with. The second adds in <code>ResourceID</code> to show devices that have had repeated failures. The third shows the oldest record in the log - which is about 90 days old.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#998;font-style:italic>--Total Inventory Type
+</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Total Inventory Type by Device
+</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Oldest Log Entry
+</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MIN</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>OldestDateTime<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=image-16.png target=_blank>
 <img src=image-16.png alt="A Square Dozen Image">
@@ -246,77 +306,160 @@ For more on MIFs, check out <a href=https://blogs.technet.microsoft.com/umairkha
 </figure>
 </div></p>
 <p>From this data, I can see that within the past 90 days, I&rsquo;ve got several machines that are repeatedly sending in bad inventory. Next we need to find the max <code>LogUtcTime</code> for each device where the LogText is <code>full/resync report</code>. This will enable us to determine the last time a device reported a valid inventory.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span><span style=color:#bbb>	</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a></span><span style=color:#bbb>	</span>ResourceID<span style=color:#bbb>
-</span></code></pre></div><p>Now that we know the last time we had a good inventory reported, we can find all of the devices who&rsquo;s last inventory was NOT good. To do this, we can&rsquo;t just flip the previous query around and use <code>WHERE LogText &lt;> 'full/resync report'</code> because this just give us the last time inventory failed for the device but doesn&rsquo;t tell us if the failure was the last thing reported for the device.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb> 
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
+</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>ResourceID<span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Now that we know the last time we had a good inventory reported, we can find all of the devices who&rsquo;s last inventory was NOT good. To do this, we can&rsquo;t just flip the previous query around and use <code>WHERE LogText &lt;> 'full/resync report'</code> because this just give us the last time inventory failed for the device but doesn&rsquo;t tell us if the failure was the last thing reported for the device.</p>
 <p>This query will give you a list of every failed inventory log entry by device where the failed entry occurred AFTER the last successful inventory was reported for that device. It also includes the failure count since the last successful inventory (the total is included on each row for a given device).</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#bbb>	</span>il.Name<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#bbb>	</span>,il.LogLocalTime<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#bbb>	</span>,il.ServerMajor<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#bbb>	</span>,il.ServerMinor<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#bbb>	</span>,il.ClientMajor<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#bbb>	</span>,il.ClientMinor<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#bbb>	</span>,il.ResourceID<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#bbb>	</span>,il.logText<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#bbb>	</span>,il.LogDetail<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#bbb>	</span>,mil.LastFullSync<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#bbb>	</span>,<span style=color:#000;font-weight:700>COUNT</span>(il.ResourceID)<span style=color:#bbb> </span>OVER<span style=color:#bbb> </span>(PARTITION<span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> </span>il.ResourceID)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureCount<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>LEFT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>OUTER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#bbb>	</span>(<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#bbb>		</span>,<span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span><span style=color:#bbb>		</span>vInventoryLog<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:#bbb>		</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span><span style=color:#bbb>	</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>mil<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>mil.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>il.resourceID<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span><span style=color:#bbb>	</span>il.LogUtcTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span>mil.LastFullSync<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb> </span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span><span style=color:#bbb>	</span>FailureCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span><span style=color:#bbb>	</span>,Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>Desc</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span><span style=color:#bbb>	</span>,LogLocalTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span></code></pre></div><p>![A Square Dozen Image](image-17.png</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>il.Name<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.LogLocalTime<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.ServerMajor<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.ServerMinor<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.ClientMajor<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.ClientMinor<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.ResourceID<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.logText<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,il.LogDetail<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,mil.LastFullSync<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,<span style=color:#000;font-weight:700>COUNT</span>(il.ResourceID)<span style=color:#bbb> </span>OVER<span style=color:#bbb> </span>(PARTITION<span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> </span>il.ResourceID)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureCount<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>LEFT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>OUTER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>(<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb> 
+</span><span style=color:#bbb>		</span>,<span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
+</span><span style=color:#bbb>		</span>vInventoryLog<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span><span style=color:#bbb>		</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>mil<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>mil.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>il.resourceID<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>il.LogUtcTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span>mil.LastFullSync<span style=color:#bbb>
+</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb> </span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>FailureCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>Desc</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>,LogLocalTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>![A Square Dozen Image](image-17.png</p>
 <p>Also note the LogDetail column. This column should identify the inventory class that is the source of the inventory failure.
 Then I summarized this list (you could just do it in Excel from here) to give me a DISTINCT device list that I could drop into a collection in SCCM and target with remediation steps.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span>SELECT 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>	DISTINCT
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>	il.Name
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>	,COUNT(il.ResourceID) OVER (PARTITION BY il.ResourceID) as FailureCount
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>FROM 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>	vInventoryLog il
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>	LEFT OUTER JOIN
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>	(
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>	SELECT 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>		ResourceID 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>		,MAX(LogUtcTime) as LastFullSync
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>	FROM  
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>		vInventoryLog
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>	WHERE 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>		LogText = &#39;full/resync report&#39; 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>	GROUP BY
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>		ResourceID
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>	) as mil ON mil.ResourceID = il.resourceID
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>WHERE
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>	il.LogUtcTime &gt; mil.LastFullSync
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>	AND Name IS NOT NULL
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>ORDER BY
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>	FailureCount desc
-</code></pre></div><p>You&rsquo;ll notice the low failure counts on many of the machines listed. When I began, I had many more with much higher counts. The ones with 1-3 failures don&rsquo;t concern me since I&rsquo;m sure they will auto-remediate on their next inventory attempt, but the higher counts may require a bit more attention.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>SELECT 
+	DISTINCT
+	il.Name
+	,COUNT(il.ResourceID) OVER (PARTITION BY il.ResourceID) as FailureCount
+FROM 
+	vInventoryLog il
+	LEFT OUTER JOIN
+	(
+	SELECT 
+		ResourceID 
+		,MAX(LogUtcTime) as LastFullSync
+	FROM  
+		vInventoryLog
+	WHERE 
+		LogText = &#39;full/resync report&#39; 
+	GROUP BY
+		ResourceID
+	) as mil ON mil.ResourceID = il.resourceID
+WHERE
+	il.LogUtcTime &gt; mil.LastFullSync
+	AND Name IS NOT NULL
+ORDER BY
+	FailureCount desc
+</code></pre></td></tr></table>
+</div>
+</div><p>You&rsquo;ll notice the low failure counts on many of the machines listed. When I began, I had many more with much higher counts. The ones with 1-3 failures don&rsquo;t concern me since I&rsquo;m sure they will auto-remediate on their next inventory attempt, but the higher counts may require a bit more attention.</p>
 <p><div class=image>
 <figure>
 <a href=image-18.png target=_blank>

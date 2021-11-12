@@ -227,8 +227,15 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 <li>Task Sequence Progress UI will be stuck on the Upgrade Operating System Task Sequence step indefinitely</li>
 <li>The last step in smsts.log will show an entry with the Windows setup.exe command line but not show any progress after this entry</li>
 </ul>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-batch data-lang=batch><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>Executing command line: <span style=color:#d14>&#34;C:\_SMSTaskSequence\Packages\XXX00E99\SETUP.EXE&#34;</span> /ImageIndex 3 /auto Upgrade /quiet /noreboot /postoobe <span style=color:#d14>&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&#34;</span> /postrollback <span style=color:#d14>&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&#34;</span> /installdrivers <span style=color:#d14>&#34;C:\_SMSTaskSequence\Drivers&#34;</span> /DynamicUpdate Enable /pkey NPPR9-FWDCX-D2C8J-H872K-2YT43
-</code></pre></div><ul>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-batch data-lang=batch>Executing command line: <span style=color:#d14>&#34;C:\_SMSTaskSequence\Packages\XXX00E99\SETUP.EXE&#34;</span> /ImageIndex 3 /auto Upgrade /quiet /noreboot /postoobe <span style=color:#d14>&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupComplete.cmd&#34;</span> /postrollback <span style=color:#d14>&#34;C:\WINDOWS\SMSTSPostUpgrade\SetupRollback.cmd&#34;</span> /installdrivers <span style=color:#d14>&#34;C:\_SMSTaskSequence\Drivers&#34;</span> /DynamicUpdate Enable /pkey NPPR9-FWDCX-D2C8J-H872K-2YT43
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>The setupact.log under c:$WINDOWS.~BT\Sources\Panther will be ~200 KB (depends on the device) and won&rsquo;t get updated after the first few mins.<br>
 <div class=image>
 <figure>
@@ -260,8 +267,15 @@ UPDATE #2 - 5/24/2018 After posting this, I came across these https://twitter.co
 </div></li>
 <li>One of the last steps in setupact.log (you have to copy the file with admin rights to a different location before you can open it) will be</li>
 </ul>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span>CONX   Windows::Compat::Appraiser::DriverInventory::GetInventory (179):   Finished Driver Inventory.
-</code></pre></div><ul>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>CONX   Windows::Compat::Appraiser::DriverInventory::GetInventory (179):   Finished Driver Inventory.
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>You will the screen &lsquo;<strong>Making sure you&rsquo;re ready to install</strong>&rsquo;.<br>
 <div class=image>
 <figure>

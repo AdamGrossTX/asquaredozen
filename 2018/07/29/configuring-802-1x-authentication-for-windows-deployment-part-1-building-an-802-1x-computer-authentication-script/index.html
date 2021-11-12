@@ -178,43 +178,85 @@ The Anatomy of an 802.1x Configuration Script These are the basic steps need to 
 </ul>
 <p>You may be looking at this and wonder why I&rsquo;m creating a Batch file instead of using PowerShell. Well, I made one with PowerShell but found that our Windows 7 machines had PowerShell 3.0 installed and some of my cmdlets wouldn&rsquo;t work. The Batch file is robust enough to just work in all cases, so it wins. Plus, it&rsquo;s easier for anyone to edit/support without needing PowerShell skills. Who knows, I may post the PS code at the end of the series.</p>
 <p>Save this code as ImportComputerAuthProfile.bat</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span>REM this line will fail <span style=color:#000;font-weight:700>in</span> PE but is needed <span style=color:#000;font-weight:700>in</span> Windows
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>REM <span style=color:#0086b3>set </span>the Wired AutoConfig service to automatically <span style=color:#0086b3>start
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#0086b3>sc </span>config <span style=color:#d14>&#34;dot3svc&#34;</span> start= auto
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>REM <span style=color:#0086b3>start </span>the Wired AutoConfig service
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>Net <span style=color:#0086b3>Start </span>dot3svc
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>REM Import Root certificate
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>certutil.exe -addstore Root <span style=color:#d14>&#34;%~dp0Certs\root.cer&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>REM Import Computer Certificate
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>certutil.exe -ImportPFX <span style=color:#000;font-weight:700>-f</span> -p P<span style=color:teal>@ssword</span> <span style=color:#d14>&#34;%~dp0Certs\ComputerAuthCert.pfx&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>REM Import Computer Auth Profile to all LAN interfaces
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>netsh lan add profile filename=<span style=color:#d14>&#34;%~dp0ComputerAuthProfile.xml&#34;</span> interface=*
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>REM Force all interfaces to reconnect
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>netsh lan reconnect interface=*
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>REM change the interface name to match your interface name(s). We have 2 <span style=color:#000;font-weight:700>in</span> our environment.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>REM Disable then Enable the adapter named Ethernet
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;ethernet&#34;</span> admin=DISABLED
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;ethernet&#34;</span> admin=ENABLED
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>REM Disable then Enable the adapter named Local Area Connection
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;Local Area Connection&#34;</span> admin=DISABLED
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;Local Area Connection&#34;</span> admin=ENABLED
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>REM Pause the script <span style=color:#000;font-weight:700>for</span> 30 seconds to allow the adapter to Auth
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>ping localhost -n 30
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>REM Show the interface to see the status and show profiles to see which profile is applied.
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>netsh lan show interfaces
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span>netsh lan show profiles
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>REM Add &gt;&gt; C:\Temp\LogFileName.log to any line to pipe the results to a log file.
-</code></pre></div><h1 id=creating-a-computer-authentication-profile>Creating a Computer Authentication Profile</h1>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>REM this line will fail <span style=color:#000;font-weight:700>in</span> PE but is needed <span style=color:#000;font-weight:700>in</span> Windows
+REM <span style=color:#0086b3>set </span>the Wired AutoConfig service to automatically <span style=color:#0086b3>start
+</span><span style=color:#0086b3>sc </span>config <span style=color:#d14>&#34;dot3svc&#34;</span> start= auto
+
+REM <span style=color:#0086b3>start </span>the Wired AutoConfig service
+Net <span style=color:#0086b3>Start </span>dot3svc
+
+REM Import Root certificate
+certutil.exe -addstore Root <span style=color:#d14>&#34;%~dp0Certs\root.cer&#34;</span>
+
+REM Import Computer Certificate
+certutil.exe -ImportPFX <span style=color:#000;font-weight:700>-f</span> -p P<span style=color:teal>@ssword</span> <span style=color:#d14>&#34;%~dp0Certs\ComputerAuthCert.pfx&#34;</span>
+
+REM Import Computer Auth Profile to all LAN interfaces
+netsh lan add profile filename=<span style=color:#d14>&#34;%~dp0ComputerAuthProfile.xml&#34;</span> interface=*
+
+REM Force all interfaces to reconnect
+netsh lan reconnect interface=*
+
+REM change the interface name to match your interface name(s). We have 2 <span style=color:#000;font-weight:700>in</span> our environment.
+REM Disable then Enable the adapter named Ethernet
+netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;ethernet&#34;</span> admin=DISABLED
+netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;ethernet&#34;</span> admin=ENABLED
+
+REM Disable then Enable the adapter named Local Area Connection
+netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;Local Area Connection&#34;</span> admin=DISABLED
+netsh interface <span style=color:#0086b3>set </span>interface name=<span style=color:#d14>&#34;Local Area Connection&#34;</span> admin=ENABLED
+
+REM Pause the script <span style=color:#000;font-weight:700>for</span> 30 seconds to allow the adapter to Auth
+ping localhost -n 30
+
+REM Show the interface to see the status and show profiles to see which profile is applied.
+netsh lan show interfaces
+netsh lan show profiles
+
+REM Add &gt;&gt; C:\Temp\LogFileName.log to any line to pipe the results to a log file.
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=creating-a-computer-authentication-profile>Creating a Computer Authentication Profile</h1>
 <p>Each LAN interface can only have 1 Profile applied to it at any time. If you manually configure the profile then apply GPO, the GPO profile will take the place of the local profile. More on this in the Tips and Tricks post. When you are first configuring and testing your script, it may be helpful to take the working GPO profile and use it to start with, however, if you need to make any customizations or adjustments to the profile, be sure to work from a machine that doesn&rsquo;t have an 802.1x GPO applied. Also, your script will fail to import your custom profile if an 802.1x GPO is applied, so you will need a non-GPO machine to test with anyway.</p>
 <h3 id=group-policy-created-profile>Group Policy Created Profile</h3>
 <p>Skip to the Export steps below</p>
@@ -258,21 +300,41 @@ Show the interfaces on the system.</p>
 <p><code>netsh lan export profile folder=c:\temp interface="Ethernet"</code></p>
 <p>Grab the XML file and rename it to ComputerAuthProfile.xml and save it with your batch file.</p>
 <p>Here&rsquo;s a copy of a working WinPE Computer Authentication profile. Your mileage my vary.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:navy>&lt;LANProfile</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/networking/LAN/profile/v1&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>    <span style=color:navy>&lt;MSM&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>        <span style=color:navy>&lt;security&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>            <span style=color:navy>&lt;OneXEnforced&gt;</span>false<span style=color:navy>&lt;/OneXEnforced&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>            <span style=color:navy>&lt;OneXEnabled&gt;</span>true<span style=color:navy>&lt;/OneXEnabled&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>            <span style=color:navy>&lt;OneX</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/networking/OneX/v1&#34;</span><span style=color:navy>&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>                <span style=color:navy>&lt;cacheUserData&gt;</span>false<span style=color:navy>&lt;/cacheUserData&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>                <span style=color:navy>&lt;maxAuthFailures&gt;</span>3<span style=color:navy>&lt;/maxAuthFailures&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>                <span style=color:navy>&lt;authMode&gt;</span>machine<span style=color:navy>&lt;/authMode&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>                <span style=color:navy>&lt;EAPConfig&gt;&lt;EapHostConfig</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapHostConfig&#34;</span><span style=color:navy>&gt;&lt;EapMethod&gt;&lt;Type</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>25<span style=color:navy>&lt;/Type&gt;&lt;VendorId</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/VendorId&gt;&lt;VendorType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/VendorType&gt;&lt;AuthorId</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/AuthorId&gt;&lt;/EapMethod&gt;&lt;Config</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapHostConfig&#34;</span><span style=color:navy>&gt;&lt;Eap</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;Type&gt;</span>25<span style=color:navy>&lt;/Type&gt;&lt;EapType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;ServerValidation&gt;&lt;DisableUserPromptForServerValidation&gt;</span>false<span style=color:navy>&lt;/DisableUserPromptForServerValidation&gt;&lt;ServerNames&gt;&lt;/ServerNames&gt;&lt;/ServerValidation&gt;&lt;FastReconnect&gt;</span>true<span style=color:navy>&lt;/FastReconnect&gt;&lt;InnerEapOptional&gt;</span>false<span style=color:navy>&lt;/InnerEapOptional&gt;&lt;Eap</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;Type&gt;</span>13<span style=color:navy>&lt;/Type&gt;&lt;EapType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;CredentialsSource&gt;&lt;CertificateStore&gt;&lt;SimpleCertSelection&gt;</span>true<span style=color:navy>&lt;/SimpleCertSelection&gt;&lt;/CertificateStore&gt;&lt;/CredentialsSource&gt;&lt;ServerValidation&gt;&lt;DisableUserPromptForServerValidation&gt;</span>false<span style=color:navy>&lt;/DisableUserPromptForServerValidation&gt;&lt;ServerNames&gt;&lt;/ServerNames&gt;&lt;/ServerValidation&gt;&lt;DifferentUsername&gt;</span>false<span style=color:navy>&lt;/DifferentUsername&gt;&lt;PerformServerValidation</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/PerformServerValidation&gt;&lt;AcceptServerName</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/AcceptServerName&gt;&lt;/EapType&gt;&lt;/Eap&gt;&lt;EnableQuarantineChecks&gt;</span>false<span style=color:navy>&lt;/EnableQuarantineChecks&gt;&lt;RequireCryptoBinding&gt;</span>false<span style=color:navy>&lt;/RequireCryptoBinding&gt;&lt;PeapExtensions&gt;&lt;PerformServerValidation</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/PerformServerValidation&gt;&lt;AcceptServerName</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/AcceptServerName&gt;&lt;/PeapExtensions&gt;&lt;/EapType&gt;&lt;/Eap&gt;&lt;/Config&gt;&lt;/EapHostConfig&gt;&lt;/EAPConfig&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>            <span style=color:navy>&lt;/OneX&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>        <span style=color:navy>&lt;/security&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>    <span style=color:navy>&lt;/MSM&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:navy>&lt;/LANProfile&gt;</span>
-</code></pre></div><h1 id=gathering-your-certificates>Gathering your Certificates</h1>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=color:navy>&lt;LANProfile</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/networking/LAN/profile/v1&#34;</span><span style=color:navy>&gt;</span>
+    <span style=color:navy>&lt;MSM&gt;</span>
+        <span style=color:navy>&lt;security&gt;</span>
+            <span style=color:navy>&lt;OneXEnforced&gt;</span>false<span style=color:navy>&lt;/OneXEnforced&gt;</span>
+            <span style=color:navy>&lt;OneXEnabled&gt;</span>true<span style=color:navy>&lt;/OneXEnabled&gt;</span>
+            <span style=color:navy>&lt;OneX</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/networking/OneX/v1&#34;</span><span style=color:navy>&gt;</span>
+                <span style=color:navy>&lt;cacheUserData&gt;</span>false<span style=color:navy>&lt;/cacheUserData&gt;</span>
+                <span style=color:navy>&lt;maxAuthFailures&gt;</span>3<span style=color:navy>&lt;/maxAuthFailures&gt;</span>
+                <span style=color:navy>&lt;authMode&gt;</span>machine<span style=color:navy>&lt;/authMode&gt;</span>
+                <span style=color:navy>&lt;EAPConfig&gt;&lt;EapHostConfig</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapHostConfig&#34;</span><span style=color:navy>&gt;&lt;EapMethod&gt;&lt;Type</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>25<span style=color:navy>&lt;/Type&gt;&lt;VendorId</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/VendorId&gt;&lt;VendorType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/VendorType&gt;&lt;AuthorId</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapCommon&#34;</span><span style=color:navy>&gt;</span>0<span style=color:navy>&lt;/AuthorId&gt;&lt;/EapMethod&gt;&lt;Config</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapHostConfig&#34;</span><span style=color:navy>&gt;&lt;Eap</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;Type&gt;</span>25<span style=color:navy>&lt;/Type&gt;&lt;EapType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;ServerValidation&gt;&lt;DisableUserPromptForServerValidation&gt;</span>false<span style=color:navy>&lt;/DisableUserPromptForServerValidation&gt;&lt;ServerNames&gt;&lt;/ServerNames&gt;&lt;/ServerValidation&gt;&lt;FastReconnect&gt;</span>true<span style=color:navy>&lt;/FastReconnect&gt;&lt;InnerEapOptional&gt;</span>false<span style=color:navy>&lt;/InnerEapOptional&gt;&lt;Eap</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;Type&gt;</span>13<span style=color:navy>&lt;/Type&gt;&lt;EapType</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV1&#34;</span><span style=color:navy>&gt;&lt;CredentialsSource&gt;&lt;CertificateStore&gt;&lt;SimpleCertSelection&gt;</span>true<span style=color:navy>&lt;/SimpleCertSelection&gt;&lt;/CertificateStore&gt;&lt;/CredentialsSource&gt;&lt;ServerValidation&gt;&lt;DisableUserPromptForServerValidation&gt;</span>false<span style=color:navy>&lt;/DisableUserPromptForServerValidation&gt;&lt;ServerNames&gt;&lt;/ServerNames&gt;&lt;/ServerValidation&gt;&lt;DifferentUsername&gt;</span>false<span style=color:navy>&lt;/DifferentUsername&gt;&lt;PerformServerValidation</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/PerformServerValidation&gt;&lt;AcceptServerName</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/AcceptServerName&gt;&lt;/EapType&gt;&lt;/Eap&gt;&lt;EnableQuarantineChecks&gt;</span>false<span style=color:navy>&lt;/EnableQuarantineChecks&gt;&lt;RequireCryptoBinding&gt;</span>false<span style=color:navy>&lt;/RequireCryptoBinding&gt;&lt;PeapExtensions&gt;&lt;PerformServerValidation</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/PerformServerValidation&gt;&lt;AcceptServerName</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2&#34;</span><span style=color:navy>&gt;</span>false<span style=color:navy>&lt;/AcceptServerName&gt;&lt;/PeapExtensions&gt;&lt;/EapType&gt;&lt;/Eap&gt;&lt;/Config&gt;&lt;/EapHostConfig&gt;&lt;/EAPConfig&gt;</span>
+            <span style=color:navy>&lt;/OneX&gt;</span>
+        <span style=color:navy>&lt;/security&gt;</span>
+    <span style=color:navy>&lt;/MSM&gt;</span>
+<span style=color:navy>&lt;/LANProfile&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id=gathering-your-certificates>Gathering your Certificates</h1>
 <p>You will need to export your Root CA Certificate and a Computer certificate to use. I just went into my local certificate store and exported them. The root cert should be a .cer extension. The computer cert (Client Authentication) should contain the private key and be password protected (pick any password - you will need to add it to the batch file). Save the computer cert as a .pfx extension. Name them <strong>Root.cer</strong> and <strong>ComputerAuthCert.pfx</strong> and put them in a <strong>Certs</strong> folder with your batch file. If you need help with this step, please consult <em>The Googler</em>, there are plenty of great resources for this.</p>
 <h1 id=putting-it-all-together>Putting It All Together</h1>
 <p>At this point, you should have the following:</p>

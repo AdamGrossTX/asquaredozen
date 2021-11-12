@@ -231,47 +231,98 @@ The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\
 </figure>
 </div></p>
 <p>The contents of StateDetails is a snippet of the SetupDiag registry entry shown above.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:navy>&lt;SetupDiag&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>    <span style=color:navy>&lt;ProfileName&gt;</span>FindAbruptDownlevelFailure<span style=color:navy>&lt;/ProfileName&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>    <span style=color:navy>&lt;DateTime&gt;</span>8/11/2020 6:38:20 PM<span style=color:navy>&lt;/DateTime&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>    <span style=color:navy>&lt;FailureData&gt;</span>Error: SetupDiag reports abrupt down-level failure.Last Operation: FinalizeError: 0xC1900208 - 0x4000D LogEntry: 2020-08-11 18:37:56, Error                 MOUPG  CSetupManager::ExecuteInstallMode(868): Result = 0xC1900208 Refer to &#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34; for error information.<span style=color:navy>&lt;/FailureData&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>    <span style=color:navy>&lt;SetupDiagVersion&gt;</span>1.6.0.0<span style=color:navy>&lt;/SetupDiagVersion&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>    <span style=color:navy>&lt;ProfileGuid&gt;</span>55882B1A-DA3E-408A-9076-23B22A0472BD<span style=color:navy>&lt;/ProfileGuid&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>    <span style=color:navy>&lt;Remediation&gt;</span>null<span style=color:navy>&lt;/Remediation&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>    <span style=color:navy>&lt;FailureDetails&gt;</span>ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper = Finalize<span style=color:navy>&lt;/FailureDetails&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:navy>&lt;/SetupDiag&gt;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>
-</code></pre></div><p>You can get fancy and use PowerShell to query the values as well now that we know to look for TopicType 402.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#0086b3>PS </span>C:&gt; <span style=color:#0086b3>Get-CIMInstance</span> -NameSpace <span style=color:#d14>&#39;ROOT\ccm\StateMsg&#39;</span> -ClassName CCM_StateMsg -Filter <span style=color:#d14>&#34;TopicType = &#39;402&#39;&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>Criticality      <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span>MessageSent      <span style=color:#a61717;background-color:#e3d2d2>:</span> True
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>MessageTime      <span style=color:#a61717;background-color:#e3d2d2>:</span> 8/11/2020 6<span style=color:#a61717;background-color:#e3d2d2>:</span>38<span style=color:#a61717;background-color:#e3d2d2>:</span>21 PM
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>ParamCount       <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span>Priority         <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>Reserved1        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span>Reserved2        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>Reserved3        <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>StateDetails     <span style=color:#a61717;background-color:#e3d2d2>:</span> &lt;SetupDiag&gt;&lt;ProfileName&gt;FindAbruptDownlevelFailure&lt;/ProfileName&gt;&lt;DateTime&gt;8/11/2020 6<span style=color:#a61717;background-color:#e3d2d2>:</span>38<span style=color:#a61717;background-color:#e3d2d2>:</span>20
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span>                   PM&lt;/DateTime&gt;&lt;FailureData&gt;Error<span style=color:#a61717;background-color:#e3d2d2>:</span> SetupDiag reports abrupt <span style=color:#0086b3>down-level</span> failure.Last Operation<span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span>                   FinalizeError<span style=color:#a61717;background-color:#e3d2d2>:</span> 0xC1900208 - 0x4000D LogEntry<span style=color:#a61717;background-color:#e3d2d2>:</span> 2020-08-11 18<span style=color:#a61717;background-color:#e3d2d2>:</span>37<span style=color:#a61717;background-color:#e3d2d2>:</span>56, Error                 MOUPG
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span>                   CSetupManager::ExecuteInstallMode(868)<span style=color:#a61717;background-color:#e3d2d2>:</span> Result = 0xC1900208 Refer to
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>                   <span style=color:#d14>&#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34;</span> <span style=color:#000;font-weight:700>for</span> error information.&lt;/Failur
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>                   eData&gt;&lt;SetupDiagVersion&gt;1.6.0.0&lt;/SetupDiagVersion&gt;&lt;ProfileGuid&gt;55882B1A-DA3E-408A-9076-23B22A0472BD&lt;/Profi
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>                   leGuid&gt;&lt;Remediation&gt;null&lt;/Remediation&gt;&lt;FailureDetails&gt;ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper =
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span>                   Finalize&lt;/FailureDetails&gt;&lt;/SetupDiag&gt;
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>StateDetailsType <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>StateID          <span style=color:#a61717;background-color:#e3d2d2>:</span> 11
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>TopicID          <span style=color:#a61717;background-color:#e3d2d2>:</span> Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span>TopicIDType      <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>TopicType        <span style=color:#a61717;background-color:#e3d2d2>:</span> 402
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>User             <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>UserFlags        <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span>UserParameters   <span style=color:#a61717;background-color:#e3d2d2>:</span> {200, , 1, -1073730116...}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>UserSID          <span style=color:#a61717;background-color:#e3d2d2>:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span>PSComputerName   <span style=color:#a61717;background-color:#e3d2d2>:</span>
-</code></pre></div><p>You can also see the 402 messages get generated in <strong><code>StateMessage.log</code></strong> on the client.<br>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=color:navy>&lt;SetupDiag&gt;</span>
+    <span style=color:navy>&lt;ProfileName&gt;</span>FindAbruptDownlevelFailure<span style=color:navy>&lt;/ProfileName&gt;</span>
+    <span style=color:navy>&lt;DateTime&gt;</span>8/11/2020 6:38:20 PM<span style=color:navy>&lt;/DateTime&gt;</span>
+    <span style=color:navy>&lt;FailureData&gt;</span>Error: SetupDiag reports abrupt down-level failure.Last Operation: FinalizeError: 0xC1900208 - 0x4000D LogEntry: 2020-08-11 18:37:56, Error                 MOUPG  CSetupManager::ExecuteInstallMode(868): Result = 0xC1900208 Refer to &#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34; for error information.<span style=color:navy>&lt;/FailureData&gt;</span>
+    <span style=color:navy>&lt;SetupDiagVersion&gt;</span>1.6.0.0<span style=color:navy>&lt;/SetupDiagVersion&gt;</span>
+    <span style=color:navy>&lt;ProfileGuid&gt;</span>55882B1A-DA3E-408A-9076-23B22A0472BD<span style=color:navy>&lt;/ProfileGuid&gt;</span>
+    <span style=color:navy>&lt;Remediation&gt;</span>null<span style=color:navy>&lt;/Remediation&gt;</span>
+    <span style=color:navy>&lt;FailureDetails&gt;</span>ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper = Finalize<span style=color:navy>&lt;/FailureDetails&gt;</span>
+<span style=color:navy>&lt;/SetupDiag&gt;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>You can get fancy and use PowerShell to query the values as well now that we know to look for TopicType 402.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>PS </span>C:&gt; <span style=color:#0086b3>Get-CIMInstance</span> -NameSpace <span style=color:#d14>&#39;ROOT\ccm\StateMsg&#39;</span> -ClassName CCM_StateMsg -Filter <span style=color:#d14>&#34;TopicType = &#39;402&#39;&#34;</span>
+
+Criticality      <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
+MessageSent      <span style=color:#a61717;background-color:#e3d2d2>:</span> True
+MessageTime      <span style=color:#a61717;background-color:#e3d2d2>:</span> 8/11/2020 6<span style=color:#a61717;background-color:#e3d2d2>:</span>38<span style=color:#a61717;background-color:#e3d2d2>:</span>21 PM
+ParamCount       <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
+Priority         <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
+Reserved1        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Reserved2        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+Reserved3        <span style=color:#a61717;background-color:#e3d2d2>:</span>
+StateDetails     <span style=color:#a61717;background-color:#e3d2d2>:</span> &lt;SetupDiag&gt;&lt;ProfileName&gt;FindAbruptDownlevelFailure&lt;/ProfileName&gt;&lt;DateTime&gt;8/11/2020 6<span style=color:#a61717;background-color:#e3d2d2>:</span>38<span style=color:#a61717;background-color:#e3d2d2>:</span>20
+                   PM&lt;/DateTime&gt;&lt;FailureData&gt;Error<span style=color:#a61717;background-color:#e3d2d2>:</span> SetupDiag reports abrupt <span style=color:#0086b3>down-level</span> failure.Last Operation<span style=color:#a61717;background-color:#e3d2d2>:</span>
+                   FinalizeError<span style=color:#a61717;background-color:#e3d2d2>:</span> 0xC1900208 - 0x4000D LogEntry<span style=color:#a61717;background-color:#e3d2d2>:</span> 2020-08-11 18<span style=color:#a61717;background-color:#e3d2d2>:</span>37<span style=color:#a61717;background-color:#e3d2d2>:</span>56, Error                 MOUPG
+                   CSetupManager::ExecuteInstallMode(868)<span style=color:#a61717;background-color:#e3d2d2>:</span> Result = 0xC1900208 Refer to
+                   <span style=color:#d14>&#34;https://docs.microsoft.com/windows/desktop/Debug/system-error-codes&#34;</span> <span style=color:#000;font-weight:700>for</span> error information.&lt;/Failur
+                   eData&gt;&lt;SetupDiagVersion&gt;1.6.0.0&lt;/SetupDiagVersion&gt;&lt;ProfileGuid&gt;55882B1A-DA3E-408A-9076-23B22A0472BD&lt;/Profi
+                   leGuid&gt;&lt;Remediation&gt;null&lt;/Remediation&gt;&lt;FailureDetails&gt;ErrorCode = 0xC1900208, ExCode = 0x4000D, Oper =
+                   Finalize&lt;/FailureDetails&gt;&lt;/SetupDiag&gt;
+
+StateDetailsType <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
+StateID          <span style=color:#a61717;background-color:#e3d2d2>:</span> 11
+TopicID          <span style=color:#a61717;background-color:#e3d2d2>:</span> Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544
+TopicIDType      <span style=color:#a61717;background-color:#e3d2d2>:</span> 5
+TopicType        <span style=color:#a61717;background-color:#e3d2d2>:</span> 402
+User             <span style=color:#a61717;background-color:#e3d2d2>:</span>
+UserFlags        <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
+UserParameters   <span style=color:#a61717;background-color:#e3d2d2>:</span> {200, , 1, -1073730116...}
+UserSID          <span style=color:#a61717;background-color:#e3d2d2>:</span>
+PSComputerName   <span style=color:#a61717;background-color:#e3d2d2>:</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You can also see the 402 messages get generated in <strong><code>StateMessage.log</code></strong> on the client.<br>
 <code>Adding message with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 to WMI</code><br>
 <code>State message(State ID : 3) with TopicType 402 and TopicId Site_68DCD582-5CAE-4DC2-BFD4-4DA40B2452B5/SUM_1656cdd2-2e73-4fd8-9ab9-02097d5c7544 has been recorded for SYSTEM</code></p>
 <p><div class=image>
@@ -282,16 +333,31 @@ The default location for the SetupDiag registry key is <code>HKEY_LOCAL_MACHINE\
 </figure>
 </div></p>
 <p>If we check SQL, we will find that the XML data is stored in the <code>Update_ComplianceStatus</code> table. Notice that the <code>LastErrorCode</code> is the same as the error in our chart in the dashboard <code>-1047526904</code>.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#bbb>	</span>CI_ID,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a></span><span style=color:#bbb>	</span>MachineID,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a></span><span style=color:#bbb>	</span>LastErrorCode,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a></span><span style=color:#bbb>	</span>LastErrorDetail<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a></span><span style=color:#bbb>	</span>Update_ComplianceStatus<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a></span><span style=color:#bbb>	</span>LastErrorDetail<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span></code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>CI_ID,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>MachineID,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>LastErrorCode,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>LastErrorDetail<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>Update_ComplianceStatus<span style=color:#bbb> 
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>LastErrorDetail<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=image-35.png target=_blank>
 <img src=image-35.png alt="A Square Dozen Image">

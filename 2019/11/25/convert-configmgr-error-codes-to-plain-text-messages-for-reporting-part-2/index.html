@@ -275,56 +275,111 @@
 </figure>
 </div></p>
 <p>In the web console editor, replace the default function code with the following code. This code is similar to what I used in Part 1 of this series, but it has been modified to work as a web API function.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span>using namespace System.Net
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#998;font-style:italic># Input bindings are passed in via param block.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#000;font-weight:700>param</span>(<span style=color:teal>$Request</span>, <span style=color:teal>$TriggerMetadata</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>$DLLPath</span> = <span style=color:#0086b3>Join-Path</span> -Path <span style=color:teal>$PSScriptRoot</span> -ChildPath <span style=color:#d14>&#34;bin\SrsResources.dll&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DLLPath</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#998;font-style:italic># Write to the Azure Functions log stream.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;PowerShell HTTP trigger function processed a request.&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#998;font-style:italic># Interact with query parameters or the body of the request.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:teal>$ExitCode</span> = <span style=color:teal>$Request</span>.Query.ExitCode
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#000;font-weight:700>if</span> (<span style=color:#000;font-weight:700>-not</span> <span style=color:teal>$ExitCode</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span>    <span style=color:teal>$ExitCode</span> = <span style=color:teal>$Request</span>.Body.ExitCode
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a></span><span style=color:teal>$Language</span> = <span style=color:teal>$Request</span>.Query.Language
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a></span><span style=color:#000;font-weight:700>if</span> (<span style=color:#000;font-weight:700>-not</span> <span style=color:teal>$Language</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a></span>    <span style=color:teal>$Language</span> = <span style=color:teal>$Request</span>.Body.Language
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a></span><span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Language</span>)) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a></span>    <span style=color:teal>$Language</span> = <span style=color:#d14>&#34;en-US&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a></span><span style=color:teal>[int]</span><span style=color:teal>$intCode</span> = <span style=color:teal>$ExitCode</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a></span><span style=color:#000;font-weight:700>if</span> (<span style=color:teal>$intCode</span> <span style=color:#000;font-weight:700>-eq</span> 0 <span style=color:#000;font-weight:700>-or</span> <span style=color:teal>$intCode</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a></span>    <span style=color:teal>$Message</span> = <span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$intCode</span>,<span style=color:teal>$Language</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a></span>    <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Message</span>) {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a></span>        <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::OK
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a></span>        <span style=color:teal>$body</span> = (<span style=color:teal>$Message</span> <span style=color:#000;font-weight:700>-replace</span> <span style=color:#d14>&#34;</span><span style=color:#d14>`n</span><span style=color:#d14>&#34;</span>,<span style=color:#d14>&#34; &#34;</span>) <span style=color:#000;font-weight:700>-replace</span> <span style=color:#d14>&#34;</span><span style=color:#d14>`r</span><span style=color:#d14>&#34;</span>,<span style=color:#d14>&#34;&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a></span>    }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a></span>    <span style=color:#000;font-weight:700>else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a></span>        <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::OK
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a></span>        <span style=color:teal>$body</span> = <span style=color:#d14>&#34;No Result.&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a></span>    }
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a></span><span style=color:#000;font-weight:700>else</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a></span>    <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::BadRequest
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a></span>    <span style=color:teal>$body</span> = <span style=color:#d14>&#34;Please pass an ExitCode on the query string or in the request body. example: &lt;URL&gt;?ExitCode=0x87D00664&#34;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a></span>}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a></span><span style=color:#998;font-style:italic># Associate values to output bindings by calling &#39;Push-OutputBinding&#39;.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a></span><span style=color:#0086b3>Push-OutputBinding</span> -Name Response -Value (<span style=color:teal>[HttpResponseContext]</span>@{
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a></span>    StatusCode = <span style=color:teal>$status</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a></span>    Body = <span style=color:teal>$body</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a></span>})
-</code></pre></div><p>It should look like this whenever you are done.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>using namespace System.Net
+
+<span style=color:#998;font-style:italic># Input bindings are passed in via param block.</span>
+<span style=color:#000;font-weight:700>param</span>(<span style=color:teal>$Request</span>, <span style=color:teal>$TriggerMetadata</span>)
+
+<span style=color:teal>$DLLPath</span> = <span style=color:#0086b3>Join-Path</span> -Path <span style=color:teal>$PSScriptRoot</span> -ChildPath <span style=color:#d14>&#34;bin\SrsResources.dll&#34;</span>
+<span style=color:#0086b3>Add-Type</span> -Path <span style=color:teal>$DLLPath</span>
+
+<span style=color:#998;font-style:italic># Write to the Azure Functions log stream.</span>
+<span style=color:#0086b3>Write-Host</span> <span style=color:#d14>&#34;PowerShell HTTP trigger function processed a request.&#34;</span>
+
+<span style=color:#998;font-style:italic># Interact with query parameters or the body of the request.</span>
+<span style=color:teal>$ExitCode</span> = <span style=color:teal>$Request</span>.Query.ExitCode
+<span style=color:#000;font-weight:700>if</span> (<span style=color:#000;font-weight:700>-not</span> <span style=color:teal>$ExitCode</span>) {
+    <span style=color:teal>$ExitCode</span> = <span style=color:teal>$Request</span>.Body.ExitCode
+}
+
+<span style=color:teal>$Language</span> = <span style=color:teal>$Request</span>.Query.Language
+<span style=color:#000;font-weight:700>if</span> (<span style=color:#000;font-weight:700>-not</span> <span style=color:teal>$Language</span>) {
+    <span style=color:teal>$Language</span> = <span style=color:teal>$Request</span>.Body.Language
+}
+
+<span style=color:#000;font-weight:700>If</span>(!(<span style=color:teal>$Language</span>)) {
+    <span style=color:teal>$Language</span> = <span style=color:#d14>&#34;en-US&#34;</span>
+}
+
+<span style=color:teal>[int]</span><span style=color:teal>$intCode</span> = <span style=color:teal>$ExitCode</span>
+
+<span style=color:#000;font-weight:700>if</span> (<span style=color:teal>$intCode</span> <span style=color:#000;font-weight:700>-eq</span> 0 <span style=color:#000;font-weight:700>-or</span> <span style=color:teal>$intCode</span>) {
+    <span style=color:teal>$Message</span> = <span style=color:teal>[SrsResources.Localization]</span>::GetErrorMessage(<span style=color:teal>$intCode</span>,<span style=color:teal>$Language</span>)
+    <span style=color:#000;font-weight:700>If</span>(<span style=color:teal>$Message</span>) {
+        <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::OK
+        <span style=color:teal>$body</span> = (<span style=color:teal>$Message</span> <span style=color:#000;font-weight:700>-replace</span> <span style=color:#d14>&#34;</span><span style=color:#d14>`n</span><span style=color:#d14>&#34;</span>,<span style=color:#d14>&#34; &#34;</span>) <span style=color:#000;font-weight:700>-replace</span> <span style=color:#d14>&#34;</span><span style=color:#d14>`r</span><span style=color:#d14>&#34;</span>,<span style=color:#d14>&#34;&#34;</span>
+    }
+    <span style=color:#000;font-weight:700>else</span> {
+        <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::OK
+        <span style=color:teal>$body</span> = <span style=color:#d14>&#34;No Result.&#34;</span>
+    }
+}
+<span style=color:#000;font-weight:700>else</span> {
+    <span style=color:teal>$status</span> = <span style=color:teal>[HttpStatusCode]</span>::BadRequest
+    <span style=color:teal>$body</span> = <span style=color:#d14>&#34;Please pass an ExitCode on the query string or in the request body. example: &lt;URL&gt;?ExitCode=0x87D00664&#34;</span>
+}
+
+<span style=color:#998;font-style:italic># Associate values to output bindings by calling &#39;Push-OutputBinding&#39;.</span>
+<span style=color:#0086b3>Push-OutputBinding</span> -Name Response -Value (<span style=color:teal>[HttpResponseContext]</span>@{
+    StatusCode = <span style=color:teal>$status</span>
+    Body = <span style=color:teal>$body</span>
+})
+</code></pre></td></tr></table>
+</div>
+</div><p>It should look like this whenever you are done.</p>
 <p><div class=image>
 <figure>
 <a href=image-14.png target=_blank>

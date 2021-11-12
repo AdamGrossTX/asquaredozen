@@ -190,24 +190,47 @@
 <p>Working Client - Entry on SCClient_DOMAIN@USERNAME_2.LOG</p>
 <p><code>Using endpoint Url: http://CM01.asdlab.net:80/CMUserService_WindowsAuth, Windows authentication (Microsoft.SoftwareCenter.Client.Data.ACDataSource RefreshLocalSettingsAsync)</code></p>
 <p>Broken Client - Entries in SCClient_DOMAIN@USERNAME_2.LOG and PolicyAgent.log</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#998;font-style:italic>#SCClient_DOMAIN@USERNAME_2.LOG:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>GetCategoryValuesAsync: There was no endpoint listening at http://cm01/CMApplicationCatalog/applicationviewservice.asmx that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.. Unable to fetch user categories, no endpoint found. (Microsoft.SoftwareCenter.Client.ViewModels.SoftwareListViewModel+&lt;LoadAppCatalogApplicationsAsync&gt;d__145 at MoveNext)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#998;font-style:italic>#PolicyAgent.log:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>Failed to compile rule &#34;{Rule_WRC10000}&#34;: 0x8000ffff</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>Raising event:</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>instance of CCM_PolicyAgent_PolicyCompileFailed</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>{</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span>	<span style=color:teal>ClientID</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;GUID:FAD43163-1038-43B3-BB15-9837DEEE4404&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#d14>	DateTime = &#34;20181102204614.541000+000&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a></span><span style=color:#d14>	PolicyNamespace = &#34;\\\\.\\ROOT\\ccm\\policy\\machine\\requestedconfig&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a></span><span style=color:#d14>	PolicyPath = &#34;CCM_Policy_Policy5.PolicyID=\&#34;WRC10000\&#34;,PolicyVersion=\&#34;4.00\&#34;,PolicySource=\&#34;SMS:TST\&#34;&#34;;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a></span><span style=color:#d14>	ProcessID = 1684;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a></span><span style=color:#d14>	ThreadID = 8324;
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a></span><span style=color:#d14>	Win32ErrorCode = 2147549183;</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a></span><span style=color:teal>};</span>
-</code></pre></div><p>If you see the error entries, then read on, otherwise, you should be installing Applications from Software Center, not reading a blog!!</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#998;font-style:italic>#SCClient_DOMAIN@USERNAME_2.LOG:</span>
+<span style=color:teal>GetCategoryValuesAsync: There was no endpoint listening at http://cm01/CMApplicationCatalog/applicationviewservice.asmx that could accept the message. This is often caused by an incorrect address or SOAP action. See InnerException, if present, for more details.. Unable to fetch user categories, no endpoint found. (Microsoft.SoftwareCenter.Client.ViewModels.SoftwareListViewModel+&lt;LoadAppCatalogApplicationsAsync&gt;d__145 at MoveNext)</span>
+
+<span style=color:#998;font-style:italic>#PolicyAgent.log:</span>
+<span style=color:teal>Failed to compile rule &#34;{Rule_WRC10000}&#34;: 0x8000ffff</span>
+
+<span style=color:teal>Raising event:</span>
+<span style=color:teal>instance of CCM_PolicyAgent_PolicyCompileFailed</span>
+<span style=color:teal>{</span>
+	<span style=color:teal>ClientID</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;GUID:FAD43163-1038-43B3-BB15-9837DEEE4404&#34;;
+</span><span style=color:#d14>	DateTime = &#34;20181102204614.541000+000&#34;;
+</span><span style=color:#d14>	PolicyNamespace = &#34;\\\\.\\ROOT\\ccm\\policy\\machine\\requestedconfig&#34;;
+</span><span style=color:#d14>	PolicyPath = &#34;CCM_Policy_Policy5.PolicyID=\&#34;WRC10000\&#34;,PolicyVersion=\&#34;4.00\&#34;,PolicySource=\&#34;SMS:TST\&#34;&#34;;
+</span><span style=color:#d14>	ProcessID = 1684;
+</span><span style=color:#d14>	ThreadID = 8324;
+</span><span style=color:#d14>	Win32ErrorCode = 2147549183;</span>
+<span style=color:teal>};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If you see the error entries, then read on, otherwise, you should be installing Applications from Software Center, not reading a blog!!</p>
 <h2 id=remediating-client-issues>Remediating Client Issues</h2>
 <p>The fix that <a href=https://twitter.com/acjuelich>Adam Juelich </a>and I have settled is to make a change in the client settings policy (he toggled a setting in the Software Center settings) then try again on the client. You MAY need to update client policies, but in our testing, that wasn&rsquo;t necessary. Simply close and re-open Software Center and the apps reappeared and the errors went away.</p>
 <h2 id=summary>Summary</h2>

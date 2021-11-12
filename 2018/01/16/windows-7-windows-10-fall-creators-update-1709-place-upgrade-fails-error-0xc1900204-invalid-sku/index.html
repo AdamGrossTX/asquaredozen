@@ -169,141 +169,291 @@ Windows setup looks at the existing OS, install media and the command line image
 <p>Windows setup looks at the existing OS, install media and the command line image number to validate that the existing and desired versions are a match and can be upgraded. The new multi-version install media that came with Windows 10 Fall Creators requires more steps (behind the scenes) to make the match and seems to have issues with some systems. I&rsquo;m not sure how relevant this is, but we are using KMS keys for all of our devices.</p>
 <p>Let&rsquo;s take a look at the setupact.log from a failed client to see some snippets of these steps.</p>
 <p>Here we can see the command line that is dynamically generated from the Upgrade Operating System step in your TS (See image at the bottom of this post).</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG SetupHost::Initialize: CmdLine</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[/Install /Media /Quiet /InstallFile &#34;C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim&#34; &#34;/ImageIndex&#34; &#34;3&#34; &#34;/auto&#34; &#34;Upgrade&#34; &#34;/noreboot&#34; /MediaPath &#34;C:\_SMSTaskSequence\Packages\XXXXXXXX&#34;]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:teal>2017-12-14 16:32:55, Info MOUPG ImageExit: Initializing Mode: [2]</span>
-</code></pre></div><p>The existing OS is Windows 7 Enterprise.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG SetupHost: Setup build version is: 10.0.16299.15 (rs3_release.170928-1534)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:teal>2017-12-14 16:32:31, Info CONX Host OS version: 6.1.7601.1130 Service Pack 1 (1.0) Platform 0x2, SuiteMask 0x100, ProdType 0x1</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:teal>2017-12-14 16:32:31, Info CONX Source OS: Host SKU Info: Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#39;Enterprise&#39;, Edition Type = &#39;Client&#39;, Installation Type = &#39;Complete&#39;, Product Name = &#39;Windows 7 Enterprise&#39;, Arch = amd64, StationType = Client Workstation, Stage type = Staged Image</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS License State [ Genuine ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Architecture [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Language Id [ 1033 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG User UI Language Id [ 1033 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Edition [ Enterprise ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Version [ 6.1.7601 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Build String [ 7601.23915.amd64fre.win7sp1_ldr.170913-0600 ]</span>
-</code></pre></div><p>Here, the installer loops through the image indexes to find the one that matches the index specified in the setup command line.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>  1</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  SetupManager: Install file found: [C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>  2</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      WIM Path        [ C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>  3</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Image Count     [ 6 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>  4</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Count   [ 6 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>  5</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      WinPE Count     [ 0 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>  6</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>  7</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 1 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>  8</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>  9</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10> 10</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11> 11</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Education ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12> 12</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13> 13</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14> 14</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 2 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15> 15</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16> 16</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17> 17</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18> 18</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ EducationN ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19> 19</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20> 20</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21> 21</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 3 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22> 22</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23> 23</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24> 24</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25> 25</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Enterprise ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26> 26</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27> 27</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28> 28</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 4 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29> 29</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30> 30</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31> 31</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32> 32</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ EnterpriseN ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33> 33</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34> 34</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35> 35</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 5 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36> 36</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37> 37</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38> 38</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39> 39</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Professional ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40> 40</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41> 41</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42> 42</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 6 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43> 43</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44> 44</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45> 45</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46> 46</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ ProfessionalN ]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47> 47</a></span><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]```</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48> 48</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49> 49</a></span><span style=color:teal>Finally, we get to the part where we can see the issue.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50> 50</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51> 51</a></span><span style=color:teal>```ini</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52> 52</a></span><span style=color:teal>2017-12-14 16:32:35, Info                  MOUPG  ProductKey: Product key found in Host OS.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53> 53</a></span><span style=color:teal>2017-12-14 16:32:35, Info                  MOUPG  ProductKey: Populating Image info set.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54> 54</a></span><span style=color:teal>2017-12-14 16:32:36, Info                  MOUPG  Action progress: [0%]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=55><a style=outline:none;text-decoration:none;color:inherit href=#55> 55</a></span><span style=color:teal>2017-12-14 16:32:36, Info                  MOUPG  Setup SubPhase: [5]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=56><a style=outline:none;text-decoration:none;color:inherit href=#56> 56</a></span><span style=color:teal>2017-12-14 16:32:42, Info                         SPValidateProductKey: Calling PidGenX</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=57><a style=outline:none;text-decoration:none;color:inherit href=#57> 57</a></span><span style=color:teal>2017-12-14 16:32:43, Error                        CallPidGenX: PidGenX function failed on this product key. (hr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8a010101)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=58><a style=outline:none;text-decoration:none;color:inherit href=#58> 58</a></span><span style=color:teal>2017-12-14 16:32:43, Warning                      SPValidateProductKey: Failed to call PidGenX to validate product key</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=59><a style=outline:none;text-decoration:none;color:inherit href=#59> 59</a></span><span style=color:teal>2017-12-14 16:32:43, Error                 MOUPG  CDlpActionProductKeyValidate::ReportDownlevelInstallChannel(2975): Result</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8A010101</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=60><a style=outline:none;text-decoration:none;color:inherit href=#60> 60</a></span><span style=color:teal>2017-12-14 16:32:43, Error                 MOUPG  ProductKey: Failed to report Host OS channel to telemetry.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=61><a style=outline:none;text-decoration:none;color:inherit href=#61> 61</a></span><span style=color:teal>2017-12-14 16:32:43, Info                  MOUPG  ProductKey: Calling GatherOSState to generate GenuineTicket.xml</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=62><a style=outline:none;text-decoration:none;color:inherit href=#62> 62</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: GatherOsState Process returned   : [0x0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=63><a style=outline:none;text-decoration:none;color:inherit href=#63> 63</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Is Machine Active                : [TRUE]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=64><a style=outline:none;text-decoration:none;color:inherit href=#64> 64</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Genuine ticket generated         : [TRUE]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=65><a style=outline:none;text-decoration:none;color:inherit href=#65> 65</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Offer Default.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=66><a style=outline:none;text-decoration:none;color:inherit href=#66> 66</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Offer</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[TRUE].</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=67><a style=outline:none;text-decoration:none;color:inherit href=#67> 67</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Attempting to get a product key from the response layer.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=68><a style=outline:none;text-decoration:none;color:inherit href=#68> 68</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Using automation response.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=69><a style=outline:none;text-decoration:none;color:inherit href=#69> 69</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Automation response not found.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=70><a style=outline:none;text-decoration:none;color:inherit href=#70> 70</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Looking for product key in Pid.txt file.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=71><a style=outline:none;text-decoration:none;color:inherit href=#71> 71</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Pid.txt file not found.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=72><a style=outline:none;text-decoration:none;color:inherit href=#72> 72</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Looking for product key in Host OS.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=73><a style=outline:none;text-decoration:none;color:inherit href=#73> 73</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Product key found in Host OS.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=74><a style=outline:none;text-decoration:none;color:inherit href=#74> 74</a></span><span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Validating Product Key for Image.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=75><a style=outline:none;text-decoration:none;color:inherit href=#75> 75</a></span><span style=color:teal>2017-12-14 16:32:53, Info                         SPValidateProductKey: Calling PidGenX</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=76><a style=outline:none;text-decoration:none;color:inherit href=#76> 76</a></span><span style=color:teal>2017-12-14 16:32:54, Error                        CallPidGenX: PidGenX function failed on this product key. (hr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8a010101)</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=77><a style=outline:none;text-decoration:none;color:inherit href=#77> 77</a></span><span style=color:teal>2017-12-14 16:32:54, Warning                      SPValidateProductKey: Failed to call PidGenX to validate product key</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=78><a style=outline:none;text-decoration:none;color:inherit href=#78> 78</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key is invalid.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=79><a style=outline:none;text-decoration:none;color:inherit href=#79> 79</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Looking for product key in Digital Marker.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=80><a style=outline:none;text-decoration:none;color:inherit href=#80> 80</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key found in Digital Marker.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=81><a style=outline:none;text-decoration:none;color:inherit href=#81> 81</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Validating Product Key for Image.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=82><a style=outline:none;text-decoration:none;color:inherit href=#82> 82</a></span><span style=color:teal>2017-12-14 16:32:54, Info                         SPValidateProductKey: Calling PidGenX</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=83><a style=outline:none;text-decoration:none;color:inherit href=#83> 83</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key using pkey edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Professional].</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=84><a style=outline:none;text-decoration:none;color:inherit href=#84> 84</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim For Exact Editions</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=85><a style=outline:none;text-decoration:none;color:inherit href=#85> 85</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=86><a style=outline:none;text-decoration:none;color:inherit href=#86> 86</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim: Found [1] matching images.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=87><a style=outline:none;text-decoration:none;color:inherit href=#87> 87</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Extracting Eula</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=88><a style=outline:none;text-decoration:none;color:inherit href=#88> 88</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key was successfully validated.</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=89><a style=outline:none;text-decoration:none;color:inherit href=#89> 89</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product EditionID</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>Professional</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=90><a style=outline:none;text-decoration:none;color:inherit href=#90> 90</a></span><span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product InstallChannel</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>OEM</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=91><a style=outline:none;text-decoration:none;color:inherit href=#91> 91</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=92><a style=outline:none;text-decoration:none;color:inherit href=#92> 92</a></span><span style=color:teal>...</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=93><a style=outline:none;text-decoration:none;color:inherit href=#93> 93</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=94><a style=outline:none;text-decoration:none;color:inherit href=#94> 94</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Setup SubPhase: [6]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=95><a style=outline:none;text-decoration:none;color:inherit href=#95> 95</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Drive Letter:          [C]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=96><a style=outline:none;text-decoration:none;color:inherit href=#96> 96</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Wim Path:              [C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=97><a style=outline:none;text-decoration:none;color:inherit href=#97> 97</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Image Index:           [5]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=98><a style=outline:none;text-decoration:none;color:inherit href=#98> 98</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Image Name:            [Windows 10 Pro]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=99><a style=outline:none;text-decoration:none;color:inherit href=#99> 99</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Wim Ref Count:         [0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=100><a style=outline:none;text-decoration:none;color:inherit href=#100>100</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  ProgressHandlerAction: Sending initial progress message for action [5].</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=101><a style=outline:none;text-decoration:none;color:inherit href=#101>101</a></span><span style=color:teal>2017-12-14 16:32:55, Warning               MOUPG  CSetupDiagnostics::ReportData - Not reporting WINDLP data point [0x2002]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=102><a style=outline:none;text-decoration:none;color:inherit href=#102>102</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  CompatMigrationChoice: Entering Execute Method</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=103><a style=outline:none;text-decoration:none;color:inherit href=#103>103</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  CDlpActionCompat::ExecuteMigChoiceScan: Enter</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=104><a style=outline:none;text-decoration:none;color:inherit href=#104>104</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Professional]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=105><a style=outline:none;text-decoration:none;color:inherit href=#105>105</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Product Name</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Microsoft� Windows� Operating System]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=106><a style=outline:none;text-decoration:none;color:inherit href=#106>106</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Language</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[en-US]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=107><a style=outline:none;text-decoration:none;color:inherit href=#107>107</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Architecture</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[amd64]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=108><a style=outline:none;text-decoration:none;color:inherit href=#108>108</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Version</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[10.0.16299.0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=109><a style=outline:none;text-decoration:none;color:inherit href=#109>109</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: SPVersion</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[15.0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=110><a style=outline:none;text-decoration:none;color:inherit href=#110>110</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Enterprise]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=111><a style=outline:none;text-decoration:none;color:inherit href=#111>111</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Arch</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[amd64]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=112><a style=outline:none;text-decoration:none;color:inherit href=#112>112</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Version</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[6.1.7601.0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=113><a style=outline:none;text-decoration:none;color:inherit href=#113>113</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source SPVersion</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[1.0]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=114><a style=outline:none;text-decoration:none;color:inherit href=#114>114</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: UpgradeFlags</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[0x10003]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=115><a style=outline:none;text-decoration:none;color:inherit href=#115>115</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source DomainName</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[XX]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=116><a style=outline:none;text-decoration:none;color:inherit href=#116>116</a></span><span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source DomainJoined</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Yes]</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=117><a style=outline:none;text-decoration:none;color:inherit href=#117>117</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=118><a style=outline:none;text-decoration:none;color:inherit href=#118>118</a></span><span style=color:teal>...</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=119><a style=outline:none;text-decoration:none;color:inherit href=#119>119</a></span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=120><a style=outline:none;text-decoration:none;color:inherit href=#120>120</a></span><span style=color:teal>2017-12-14 16:32:56, Error                 MOUPG  CSetupHost::Execute(375): Result</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0xC1900204</span>
-</code></pre></div><p>After digging through this for a bit, I learned some things that I didn&rsquo;t know. The PidGenX and Digital Marker lines are where I found the root of the problem. I honestly could not find any real useful information about PidGenX, but I believe that it&rsquo;s a product ID checking utility. For some reason it fails. As I mentioned before, we are using a KMS key, so it&rsquo;s possible that it has issues communicating to my KMS server, but I&rsquo;m just not sure.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:teal>2017-12-14 16:32:31, Info MOUPG SetupHost::Initialize: CmdLine</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[/Install /Media /Quiet /InstallFile &#34;C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim&#34; &#34;/ImageIndex&#34; &#34;3&#34; &#34;/auto&#34; &#34;Upgrade&#34; &#34;/noreboot&#34; /MediaPath &#34;C:\_SMSTaskSequence\Packages\XXXXXXXX&#34;]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info MOUPG ImageExit: Initializing Mode: [2]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The existing OS is Windows 7 Enterprise.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:teal>2017-12-14 16:32:31, Info MOUPG SetupHost: Setup build version is: 10.0.16299.15 (rs3_release.170928-1534)</span>
+<span style=color:teal>2017-12-14 16:32:31, Info CONX Host OS version: 6.1.7601.1130 Service Pack 1 (1.0) Platform 0x2, SuiteMask 0x100, ProdType 0x1</span>
+<span style=color:teal>2017-12-14 16:32:31, Info CONX Source OS: Host SKU Info: Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#39;Enterprise&#39;, Edition Type = &#39;Client&#39;, Installation Type = &#39;Complete&#39;, Product Name = &#39;Windows 7 Enterprise&#39;, Arch = amd64, StationType = Client Workstation, Stage type = Staged Image</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS License State [ Genuine ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Architecture [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Language Id [ 1033 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG User UI Language Id [ 1033 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Edition [ Enterprise ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Version [ 6.1.7601 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info MOUPG Host OS Build String [ 7601.23915.amd64fre.win7sp1_ldr.170913-0600 ]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here, the installer loops through the image indexes to find the one that matches the index specified in the setup command line.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>  1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>  2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>  3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>  4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>  5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>  6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>  7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>  8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>  9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10> 10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11> 11</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12> 12</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13> 13</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14> 14</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15> 15</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16> 16</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17> 17</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18> 18</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19> 19</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20> 20</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21> 21</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22> 22</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23> 23</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24> 24</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25> 25</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26> 26</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27> 27</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28> 28</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29> 29</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30> 30</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31> 31</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32> 32</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33> 33</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34> 34</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35> 35</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36> 36</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37> 37</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38> 38</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39> 39</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40> 40</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41> 41</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42> 42</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43> 43</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44> 44</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45> 45</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46> 46</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47> 47</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48> 48</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49> 49</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50> 50</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51> 51</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52> 52</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53> 53</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54> 54</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=55><a style=outline:none;text-decoration:none;color:inherit href=#55> 55</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=56><a style=outline:none;text-decoration:none;color:inherit href=#56> 56</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=57><a style=outline:none;text-decoration:none;color:inherit href=#57> 57</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=58><a style=outline:none;text-decoration:none;color:inherit href=#58> 58</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=59><a style=outline:none;text-decoration:none;color:inherit href=#59> 59</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=60><a style=outline:none;text-decoration:none;color:inherit href=#60> 60</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=61><a style=outline:none;text-decoration:none;color:inherit href=#61> 61</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=62><a style=outline:none;text-decoration:none;color:inherit href=#62> 62</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=63><a style=outline:none;text-decoration:none;color:inherit href=#63> 63</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=64><a style=outline:none;text-decoration:none;color:inherit href=#64> 64</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=65><a style=outline:none;text-decoration:none;color:inherit href=#65> 65</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=66><a style=outline:none;text-decoration:none;color:inherit href=#66> 66</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=67><a style=outline:none;text-decoration:none;color:inherit href=#67> 67</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=68><a style=outline:none;text-decoration:none;color:inherit href=#68> 68</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=69><a style=outline:none;text-decoration:none;color:inherit href=#69> 69</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=70><a style=outline:none;text-decoration:none;color:inherit href=#70> 70</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=71><a style=outline:none;text-decoration:none;color:inherit href=#71> 71</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=72><a style=outline:none;text-decoration:none;color:inherit href=#72> 72</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=73><a style=outline:none;text-decoration:none;color:inherit href=#73> 73</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=74><a style=outline:none;text-decoration:none;color:inherit href=#74> 74</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=75><a style=outline:none;text-decoration:none;color:inherit href=#75> 75</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=76><a style=outline:none;text-decoration:none;color:inherit href=#76> 76</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=77><a style=outline:none;text-decoration:none;color:inherit href=#77> 77</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=78><a style=outline:none;text-decoration:none;color:inherit href=#78> 78</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=79><a style=outline:none;text-decoration:none;color:inherit href=#79> 79</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=80><a style=outline:none;text-decoration:none;color:inherit href=#80> 80</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=81><a style=outline:none;text-decoration:none;color:inherit href=#81> 81</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=82><a style=outline:none;text-decoration:none;color:inherit href=#82> 82</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=83><a style=outline:none;text-decoration:none;color:inherit href=#83> 83</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=84><a style=outline:none;text-decoration:none;color:inherit href=#84> 84</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=85><a style=outline:none;text-decoration:none;color:inherit href=#85> 85</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=86><a style=outline:none;text-decoration:none;color:inherit href=#86> 86</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=87><a style=outline:none;text-decoration:none;color:inherit href=#87> 87</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=88><a style=outline:none;text-decoration:none;color:inherit href=#88> 88</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=89><a style=outline:none;text-decoration:none;color:inherit href=#89> 89</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=90><a style=outline:none;text-decoration:none;color:inherit href=#90> 90</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=91><a style=outline:none;text-decoration:none;color:inherit href=#91> 91</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=92><a style=outline:none;text-decoration:none;color:inherit href=#92> 92</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=93><a style=outline:none;text-decoration:none;color:inherit href=#93> 93</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=94><a style=outline:none;text-decoration:none;color:inherit href=#94> 94</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=95><a style=outline:none;text-decoration:none;color:inherit href=#95> 95</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=96><a style=outline:none;text-decoration:none;color:inherit href=#96> 96</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=97><a style=outline:none;text-decoration:none;color:inherit href=#97> 97</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=98><a style=outline:none;text-decoration:none;color:inherit href=#98> 98</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=99><a style=outline:none;text-decoration:none;color:inherit href=#99> 99</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=100><a style=outline:none;text-decoration:none;color:inherit href=#100>100</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=101><a style=outline:none;text-decoration:none;color:inherit href=#101>101</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=102><a style=outline:none;text-decoration:none;color:inherit href=#102>102</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=103><a style=outline:none;text-decoration:none;color:inherit href=#103>103</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=104><a style=outline:none;text-decoration:none;color:inherit href=#104>104</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=105><a style=outline:none;text-decoration:none;color:inherit href=#105>105</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=106><a style=outline:none;text-decoration:none;color:inherit href=#106>106</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=107><a style=outline:none;text-decoration:none;color:inherit href=#107>107</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=108><a style=outline:none;text-decoration:none;color:inherit href=#108>108</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=109><a style=outline:none;text-decoration:none;color:inherit href=#109>109</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=110><a style=outline:none;text-decoration:none;color:inherit href=#110>110</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=111><a style=outline:none;text-decoration:none;color:inherit href=#111>111</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=112><a style=outline:none;text-decoration:none;color:inherit href=#112>112</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=113><a style=outline:none;text-decoration:none;color:inherit href=#113>113</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=114><a style=outline:none;text-decoration:none;color:inherit href=#114>114</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=115><a style=outline:none;text-decoration:none;color:inherit href=#115>115</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=116><a style=outline:none;text-decoration:none;color:inherit href=#116>116</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=117><a style=outline:none;text-decoration:none;color:inherit href=#117>117</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=118><a style=outline:none;text-decoration:none;color:inherit href=#118>118</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=119><a style=outline:none;text-decoration:none;color:inherit href=#119>119</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=120><a style=outline:none;text-decoration:none;color:inherit href=#120>120</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  SetupManager: Install file found: [C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      WIM Path        [ C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Image Count     [ 6 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Count   [ 6 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      WinPE Count     [ 0 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 1 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Education ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 2 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ EducationN ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 3 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Enterprise ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 4 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ EnterpriseN ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 5 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ Professional ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG  -------------------------</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Install Index   [ 6 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Product Name    [ Microsoft� Windows� Operating System ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Version         [ 10.0.16299 (15.0) ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Architecture    [ x64 ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Edition         [ ProfessionalN ]</span>
+<span style=color:teal>2017-12-14 16:32:31, Info                  MOUPG      Language        [ en-US ]```</span>
+
+<span style=color:teal>Finally, we get to the part where we can see the issue.</span>
+
+<span style=color:teal>```ini</span>
+<span style=color:teal>2017-12-14 16:32:35, Info                  MOUPG  ProductKey: Product key found in Host OS.</span>
+<span style=color:teal>2017-12-14 16:32:35, Info                  MOUPG  ProductKey: Populating Image info set.</span>
+<span style=color:teal>2017-12-14 16:32:36, Info                  MOUPG  Action progress: [0%]</span>
+<span style=color:teal>2017-12-14 16:32:36, Info                  MOUPG  Setup SubPhase: [5]</span>
+<span style=color:teal>2017-12-14 16:32:42, Info                         SPValidateProductKey: Calling PidGenX</span>
+<span style=color:teal>2017-12-14 16:32:43, Error                        CallPidGenX: PidGenX function failed on this product key. (hr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8a010101)</span>
+<span style=color:teal>2017-12-14 16:32:43, Warning                      SPValidateProductKey: Failed to call PidGenX to validate product key</span>
+<span style=color:teal>2017-12-14 16:32:43, Error                 MOUPG  CDlpActionProductKeyValidate::ReportDownlevelInstallChannel(2975): Result</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8A010101</span>
+<span style=color:teal>2017-12-14 16:32:43, Error                 MOUPG  ProductKey: Failed to report Host OS channel to telemetry.</span>
+<span style=color:teal>2017-12-14 16:32:43, Info                  MOUPG  ProductKey: Calling GatherOSState to generate GenuineTicket.xml</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: GatherOsState Process returned   : [0x0]</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Is Machine Active                : [TRUE]</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Genuine ticket generated         : [TRUE]</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Offer Default.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Offer</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[TRUE].</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Attempting to get a product key from the response layer.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Using automation response.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  GetProductKeyFromResponse: Automation response not found.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Looking for product key in Pid.txt file.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Pid.txt file not found.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Looking for product key in Host OS.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Product key found in Host OS.</span>
+<span style=color:teal>2017-12-14 16:32:52, Info                  MOUPG  ProductKey: Validating Product Key for Image.</span>
+<span style=color:teal>2017-12-14 16:32:53, Info                         SPValidateProductKey: Calling PidGenX</span>
+<span style=color:teal>2017-12-14 16:32:54, Error                        CallPidGenX: PidGenX function failed on this product key. (hr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0x8a010101)</span>
+<span style=color:teal>2017-12-14 16:32:54, Warning                      SPValidateProductKey: Failed to call PidGenX to validate product key</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key is invalid.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Looking for product key in Digital Marker.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key found in Digital Marker.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Validating Product Key for Image.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                         SPValidateProductKey: Calling PidGenX</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key using pkey edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Professional].</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim For Exact Editions</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Matching Install Wim: Found [1] matching images.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Extracting Eula</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product key was successfully validated.</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product EditionID</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>Professional</span>
+<span style=color:teal>2017-12-14 16:32:54, Info                  MOUPG  ProductKey: Product InstallChannel</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>OEM</span>
+
+<span style=color:teal>...</span>
+
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Setup SubPhase: [6]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Drive Letter:          [C]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Wim Path:              [C:\_SMSTaskSequence\Packages\XXXXXXXX\Sources\Install.wim]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Image Index:           [5]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Image Name:            [Windows 10 Pro]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  MigChoice: Initializing Wim Ref Count:         [0]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  ProgressHandlerAction: Sending initial progress message for action [5].</span>
+<span style=color:teal>2017-12-14 16:32:55, Warning               MOUPG  CSetupDiagnostics::ReportData - Not reporting WINDLP data point [0x2002]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  CompatMigrationChoice: Entering Execute Method</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  CDlpActionCompat::ExecuteMigChoiceScan: Enter</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Professional]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Product Name</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Microsoft� Windows� Operating System]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Language</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[en-US]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Architecture</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[amd64]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Version</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[10.0.16299.0]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: SPVersion</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[15.0]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Edition</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Enterprise]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Arch</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[amd64]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source Version</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[6.1.7601.0]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source SPVersion</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[1.0]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: UpgradeFlags</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[0x10003]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source DomainName</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[XX]</span>
+<span style=color:teal>2017-12-14 16:32:55, Info                  MOUPG  Target OS: Detected Source DomainJoined</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>[Yes]</span>
+
+<span style=color:teal>...</span>
+
+<span style=color:teal>2017-12-14 16:32:56, Error                 MOUPG  CSetupHost::Execute(375): Result</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>0xC1900204</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After digging through this for a bit, I learned some things that I didn&rsquo;t know. The PidGenX and Digital Marker lines are where I found the root of the problem. I honestly could not find any real useful information about PidGenX, but I believe that it&rsquo;s a product ID checking utility. For some reason it fails. As I mentioned before, we are using a KMS key, so it&rsquo;s possible that it has issues communicating to my KMS server, but I&rsquo;m just not sure.</p>
 <p>The Digital Marker on the other hand refers to the OEM SLP in the MSDM ACPI table in UEFI, or the System Locked Preinstallation (SLP) key in the Microsoft Digital Marker (MSDM) in the Advanced Configuration and Power Interface (ACPI) table embedded in the Unified Extensive Firmware Interface (UEFI).</p>
 <p>Once I started looking in the right place, I was able to find the Digital Marker on my devices using a tool called <a href=http://rweverything.com/>RWEvertything</a> with the assistance of <a href=http://dellwindowsreinstallationguide.com/the-oem-product-key-and-oem-system-locked-preinstallation/>this post</a>. I confirmed that my machines all had OEM Professional SLP keys instead of Enterprise (also, it said it on the sticker on the outside of the machine!!).</p>
 <p><a href=/2018/01/16/windows-7-windows-10-fall-creators-update-1709-place-upgrade-fails-error-0xc1900204-invalid-sku/kmskey/><div class=image>

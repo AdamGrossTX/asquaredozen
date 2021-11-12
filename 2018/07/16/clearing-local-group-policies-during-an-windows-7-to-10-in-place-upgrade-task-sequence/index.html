@@ -177,14 +177,36 @@
 <p>One option to handle this would be to create new domain GPOs that counteract the local GPOs and let the domain GPOs win, but that just seemed like it would suck to maintain and potentially not work for some of the policies where <strong>Not Configured</strong> isn&rsquo;t the same is <strong>Enabled</strong> or <strong>Disabled</strong>. After a bit of Googling, I found some options, most of which were manual steps. The &lsquo;<em>IF Nothing Else Works</em>&rsquo; option was to just delete the GPO folders from the machine, so of course that&rsquo;s the option I chose.</p>
 <p>First I built a Windows 7 machine using our production build. Then I performed an In-Place Upgrade on it to Windows 10 1709. During the upgrade, just after the OS is upgraded then reboots, I delete any group policy files that exist. The imaging process completes and the Local Group Policies are <em>mostly</em> empty.</p>
 <p><strong>Disclaimer:</strong> I know there are more elegant ways to do this PowerShell but after several failed attempts to use the -Include and/or -Filter options, I finally just went to quick and dirty route. Forgive me. If you run this in Windows 7 as part of your Pre-Deployment steps (DON&rsquo;T DO IT!!), you will wipe our <strong>ALL</strong> group polices and will need to <strong>GPUPDATE /Force</strong> before they return. <strong>You&rsquo;ve been warned!</strong></p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>%</span>SYSTEMROOT%\System32\Windows\PowerShell\v1.0 powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;Remove-Item -Path $env:windir\System32\GroupPolicy -Confirm:$False -Recurse -force; Remove-Item -Path $env:windir\System32\GroupPolicy\Users -Confirm:$false -Recurse -force&#34;</span>
-</code></pre></div><p>Here&rsquo;s a breakdown of the command line.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>%</span>SYSTEMROOT%\System32\Windows\PowerShell\v1.0 powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;Remove-Item -Path $env:windir\System32\GroupPolicy -Confirm:$False -Recurse -force; Remove-Item -Path $env:windir\System32\GroupPolicy\Users -Confirm:$false -Recurse -force&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here&rsquo;s a breakdown of the command line.</p>
 <p>Run Powershell.exe without loading a profile in a hidden window and bypass PowerShell execution policies then run the command that follows in quotes. For more use powershell.exe /? to get commandline options.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#000;font-weight:700>%</span>SYSTEMROOT%\System32\Windows\PowerShell\v1.0 powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command
-</code></pre></div><p>Delete the folders GroupPolicy and GroupPolicyUsers folders from C:WindowsSystem32.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a></span><span style=color:#0086b3>Remove-Item</span> -Path <span style=color:teal>$env:windir</span>\System32\GroupPolicy -Confirm<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:teal>$False</span> -Recurse -force; 
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a></span><span style=color:#0086b3>Remove-Item</span> -Path <span style=color:teal>$env:windir</span>\System32\GroupPolicy\Users -Confirm<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:teal>$false</span> -Recurse -force
-</code></pre></div><p>Just add a <strong>Run Command Line</strong> step to your OSD Task Sequence following the first reboot Post In-Place Upgrade and you should be good to go. I added it there so that it was cleared before attempting any other steps in the Task Sequence, but it can really go anywhere after the new OS is applied.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>%</span>SYSTEMROOT%\System32\Windows\PowerShell\v1.0 powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command
+</code></pre></td></tr></table>
+</div>
+</div><p>Delete the folders GroupPolicy and GroupPolicyUsers folders from C:WindowsSystem32.</p>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Remove-Item</span> -Path <span style=color:teal>$env:windir</span>\System32\GroupPolicy -Confirm<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:teal>$False</span> -Recurse -force; 
+<span style=color:#0086b3>Remove-Item</span> -Path <span style=color:teal>$env:windir</span>\System32\GroupPolicy\Users -Confirm<span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:teal>$false</span> -Recurse -force
+</code></pre></td></tr></table>
+</div>
+</div><p>Just add a <strong>Run Command Line</strong> step to your OSD Task Sequence following the first reboot Post In-Place Upgrade and you should be good to go. I added it there so that it was cleared before attempting any other steps in the Task Sequence, but it can really go anywhere after the new OS is applied.</p>
 </div>
 <comments id=comments>
 <script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>

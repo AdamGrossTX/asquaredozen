@@ -177,18 +177,35 @@ Over a Teams meeting we double checked everything and walked through Ronny Dejon
 </figure>
 </div></p>
 <p>However when we queried the <strong>ClientDataKeys</strong> table (Query from Nickolaj&rsquo;s blog) we found that the <strong>AADTenantID</strong> column was <strong>NULL</strong> while the <strong>AADTenantID</strong> column in <strong>System_DISC</strong> (Used by the console views) was populated.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a></span><span style=color:#bbb>	</span>System_DISC.Name0,<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a></span><span style=color:#bbb>	</span>ClientKeyData.SMSID,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a></span><span style=color:#bbb>	</span>System_DISC.SMS_Unique_Identifier0,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a></span><span style=color:#bbb>	</span>[ClientKeyData<span style=color:#bbb> </span>AADTenantID]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>ClientKeyData.AADTenantID,<span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a></span><span style=color:#bbb>	</span>[System_DISC<span style=color:#bbb> </span>AADTenantID]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>System_DISC.AADTenantID<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a></span><span style=color:#bbb>	</span>ClientKeyData<span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb> 
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a></span><span style=color:#bbb>	</span>System_DISC<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>ClientKeyData.SMSID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>System_DISC.SMS_Unique_Identifier0<span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a></span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a></span><span style=color:#bbb>	</span>ClientKeyData.AADTenantID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span></code></pre></div><p><div class=image>
+<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
+<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
+</span></code></pre></td>
+<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
+<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>System_DISC.Name0,<span style=color:#bbb>
+</span><span style=color:#bbb>	</span>ClientKeyData.SMSID,<span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>System_DISC.SMS_Unique_Identifier0,<span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>[ClientKeyData<span style=color:#bbb> </span>AADTenantID]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>ClientKeyData.AADTenantID,<span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>[System_DISC<span style=color:#bbb> </span>AADTenantID]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>System_DISC.AADTenantID<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>ClientKeyData<span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb> 
+</span><span style=color:#bbb>	</span>System_DISC<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>ClientKeyData.SMSID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>System_DISC.SMS_Unique_Identifier0<span style=color:#bbb>
+</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span><span style=color:#bbb>	</span>ClientKeyData.AADTenantID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><div class=image>
 <figure>
 <a href=2020-08-07_11-25-05.jpg target=_blank>
 <img src=2020-08-07_11-25-05.jpg alt="A Square Dozen Image">
