@@ -332,8 +332,9 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <p>The script is written to be run in ConfigMgr. Instead of posting the script content here, I&rsquo;m just going to link my repo so that any changes are updated there. Check out the comments in the code for more details and for updates.</p>
 <p><em>Note - This has only been tested for Hybrid Azure AD Joined Devices.</em>
 <a href=https://github.com/AdamGrossTX/Toolbox/blob/master/Intune/Intune-UnHybridJoin.ps1>https://github.com/AdamGrossTX/Toolbox/blob/master/Intune/Intune-UnHybridJoin.ps1</a></p>
-<h2 id=thats-all-folks>That&rsquo;s all Folks</h2>
-<p>Sorry that took so long but hopefully you find this script useful.</p>
+<h2 id=parting-thoughts>Parting Thoughts</h2>
+<p>One question comment I&rsquo;m sure I&rsquo;ll get is around Co-Management and using pilot collections instead of deploying to all devices. One major reason not to leave Co-Management in pilot mode is because it targets a collection. That collection will need to be populated and updated when a new device is built and that takes time. Targeting all devices allows a device to immediately become Co-Managed as soon as the client pulls down policies. That seems like a better experience than using pilot to work around this.</p>
+<p>Also, note that Intune doesn&rsquo;t support non-persistent VDI, but Azure AD does. You can (Hybrid) Azure AD Join non-persistent VDI as long as you unjoin the master image. But you shouldn&rsquo;t attempt to enroll them into Intune. So in my case, we run this script to clean up the master image and we disable the ConfigMgr client so that it doesn&rsquo;t launch on the non-persistent devices, which prevents Co-Management from kicking in and re-enrolling into Intune.</p>
 </div>
 <comments id=comments>
 <script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
