@@ -21,9 +21,8 @@
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://www.asquaredozen.com/105">
 <meta name=twitter:title content="When VDI and ConfigMgr Co-Management Collide">
-<meta name=twitter:description content="Note:: This info applies to both Azure AD Join and Hybrid Azure AD Join. To notate this I&rsquo;ll reference both as (Hybrid) Azure AD Join
-READ ON - Script Link at the bottom!
-Today&rsquo;s problem was discovered when our Citrix master images were built and updated using ConfigMgr in an environment where (Hybrid) Azure AD Join and Co-Management is enabled for all devices. When the master image is cloned to create new worker VMs (persistent or non-persistent), the new VMs all share the same Azure AD and Intune device IDs.">
+<meta name=twitter:description content="Before we begin, here are some notes about persistent and non-persistent VDI that will likely give you nightmares:
+ Intune doesn&rsquo;t support non-persistent VDI Azure Active Directory only supports Hybrid Azure AD Join for non-persistent VDI ConfigMgr recommends limiting client functionality on non-persistent VDI but there is no mention about the impact of Co-Management on these devices. Whatever you do, don&rsquo;t Hybrid Join then Co-Manage your VDI Master Image or you&rsquo;re in for a bad time!">
 </head>
 <body class="home blog">
 <div id=asd-container>
@@ -166,9 +165,13 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <span class=post-date>November 13, 2021</span>
 </div>
 <div class=post-entry>
-<p><strong>Note:</strong>: This info applies to both Azure AD Join and Hybrid Azure AD Join. To notate this I&rsquo;ll reference both as <strong>(Hybrid) Azure AD Join</strong></p>
-<p><strong>READ ON - Script Link at the bottom!</strong></p>
-<p>Today&rsquo;s problem was discovered when our Citrix master images were built and updated using ConfigMgr in an environment where (Hybrid) Azure AD Join and Co-Management is enabled for all devices. When the master image is cloned to create new worker VMs (persistent or non-persistent), the new VMs all share the same Azure AD and Intune device IDs. Within Azure and Intune, if you search for a specific Azure AD or Intune Device by ID a single device record is returned which changes randomly depending on which device checked in last. While there are <a href=https://docs.microsoft.com/en-us/mem/configmgr/core/clients/deploy/plan/considerations-for-managing-clients-in-a-vdi>clearly documented instructions and caveats</a> for managing VDI devices with ConfigMgr, they leave out some key steps for handling Azure registration/Intune enrollment.</p>
+<p>Before we begin, here are some notes about persistent and non-persistent VDI that will likely give you nightmares:</p>
+<ul>
+<li><a href=https://docs.microsoft.com/en-us/mem/intune/fundamentals/windows-10-virtual-machines><strong>Intune</strong> doesn&rsquo;t support non-persistent VDI</a></li>
+<li><a href=https://docs.microsoft.com/en-us/azure/active-directory/devices/howto-device-identity-virtual-desktop-infrastructure><strong>Azure Active Directory</strong> only supports Hybrid Azure AD Join for non-persistent VDI</a></li>
+<li><a href=https://docs.microsoft.com/en-us/mem/configmgr/core/clients/deploy/plan/considerations-for-managing-clients-in-a-vdi><strong>ConfigMgr</strong> recommends limiting client functionality on non-persistent VDI</a> but there is no mention about the impact of Co-Management on these devices.</li>
+<li>Whatever you do, don&rsquo;t Hybrid Join then Co-Manage your VDI Master Image or you&rsquo;re in for a bad time!!</li>
+</ul>
 <p><div class=image>
 <figure>
 <a href=2021-11-13_3-02-21.jpg target=_blank>
@@ -235,10 +238,64 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 
 </code></pre></td></tr></table>
 </div>
-</div><h2 id=take-the-good-with-the-bad>Take the Good with the Bad</h2>
-<p>If you have ever used a device which has not been (Hybrid) Azure AD joined to attempt to access any Microsoft cloud resources, you&rsquo;ve likely been prompted numerous times to enter your Azure AD credentials. This can be overcome by joining your device to Azure. This has a huge user experience benefit but when used on cloned devices can really cause some issues. If you want the device to be (Hybrid) Azure AD Joined, then you will need to prepare your master image properly before cloning.</p>
+</div><h2 id=what-have-we-done>What have we done??</h2>
+<p>Today&rsquo;s problem was discovered when our VDI master images were built and updated using ConfigMgr in an environment where Hybrid Azure AD Join and Co-Management is enabled for all devices (which automatically Intune Enrolls devices). When the master image is cloned to create new worker VMs (persistent or non-persistent), the new VMs all share the same Azure AD and Intune device IDs. Within Azure and Intune, if you search for a specific Device by ID a single device record is returned which changes randomly depending on which device checked in last.</p>
+<p>We now run the script linked below along with BISF scripts and many other custom steps to clean up the master image and we disable the ConfigMgr client so that it doesn&rsquo;t launch on the <strong>non-persistent</strong> devices, which prevents Co-Management from kicking in and re-enrolling into Intune. For <strong>persistent</strong> VDI cloned from master images, we re-enable ConfigMgr and manage the devices as regular worksations.</p>
+<h2 id=take-the-good-with-the-bad>Take the Good with the Bad</h2>
+<p>If you have ever used a device which has not been Hybrid Azure AD joined to access any Microsoft cloud resources, you&rsquo;ve likely been prompted numerous times to enter your Azure AD credentials. This can be overcome by hybrid joining your device to Azure AD. This has a huge user experience benefit but when used on cloned devices can really cause some issues. If you want the device to be Hybrid Azure AD Joined, then you will need to prepare your master image properly before cloning.</p>
+<h2 id=take-your-pick>Take your Pick</h2>
+<p>The best part about this issue when using ConfigMgr is that it&rsquo;s super easy to find devices with duplicate Azure AD Device IDs. The quickest way is to add the <strong>Azure Active Directory Device ID</strong> column to the ConfigMgr console. You can even group by the column to make is easier to find devices sharing the same ID.</p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-17-31.jpg target=_blank>
+<img src=2021-11-13_20-17-31.jpg alt="Right Click and Select Azure Active Directory Device ID">
+</a>
+<figcaption>Right Click and Select Azure Active Directory Device ID</figcaption>
+</figure>
+</div></p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-17-56.jpg target=_blank>
+<img src=2021-11-13_20-17-56.jpg alt="Sort to find the same ID">
+</a>
+<figcaption>Sort to find the same ID</figcaption>
+</figure>
+</div></p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-19-30.jpg target=_blank>
+<img src=2021-11-13_20-19-30.jpg alt="Scroll to the bottom of the list to select Group By">
+</a>
+<figcaption>Scroll to the bottom of the list to select Group By</figcaption>
+</figure>
+</div></p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-18-28.jpg target=_blank>
+<img src=2021-11-13_20-18-28.jpg alt="Grouped by Azure Active Directory Device ID">
+</a>
+<figcaption>Grouped by Azure Active Directory Device ID</figcaption>
+</figure>
+</div></p>
+<p>Another alternative is to create a collection to help quickly determine how many devices are using duplicate IDs. I&rsquo;ve uploaded a MOF file to my repo that you can import to create a new collection. <a href=https://github.com/AdamGrossTX/Toolbox/blob/a2dc2aac1efcb9908f5deaede4c8fc5244b92ac0/ConfigMgr/Collections/Collection%20-%20Duplicate%20Azure%20AD%20Device%20ID.MOF>Duplicate Azure AD Device ID.MOF</a></p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-32-30.png target=_blank>
+<img src=2021-11-13_20-32-30.png alt="Duplicate Azure AD Device ID Collection">
+</a>
+<figcaption>Duplicate Azure AD Device ID Collection</figcaption>
+</figure>
+</div></p>
+<p><div class=image>
+<figure>
+<a href=2021-11-13_20-33-28.png target=_blank>
+<img src=2021-11-13_20-33-28.png alt="Grouped by Azure Active Directory Device ID">
+</a>
+<figcaption>Grouped by Azure Active Directory Device ID</figcaption>
+</figure>
+</div></p>
 <h2 id=too-much-of-a-good-thing>Too Much of a Good Thing</h2>
-<p>While searching for a solution to this problem, I frequently ran across solutions for handling AAD and ConfigMgr but nothing much related to Intune and <a href=https://docs.microsoft.com/en-us/mem/configmgr/comanage/overview>Co-Management</a>. When <a href=https://docs.microsoft.com/en-us/mem/configmgr/comanage/tutorial-co-manage-clients>Co-Management is enabled</a>, the Enablement tab has an option for <strong>Automatic enrollment in Intune</strong> which can target a pilot collection or all devices.</p>
+<p>While searching for a solution to this problem, I frequently ran across solutions for handling Azure AD and ConfigMgr but nothing much related to Intune and <a href=https://docs.microsoft.com/en-us/mem/configmgr/comanage/overview>Co-Management</a>. When <a href=https://docs.microsoft.com/en-us/mem/configmgr/comanage/tutorial-co-manage-clients>Co-Management is enabled</a>, the Enablement tab has an option for <strong>Automatic enrollment in Intune</strong> which can target a pilot collection or all devices.</p>
 <p><div class=image>
 <figure>
 <a href=2021-11-13_0-26-22.jpg target=_blank>
@@ -247,10 +304,10 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <figcaption>Co-Management Options</figcaption>
 </figure>
 </div></p>
-<p>Unfortunately, <strong>All</strong> means just that. The moment a device is (Hybrid) Azure AD Joined it will trigger the Co-Management Handler service which immediately begins the Intune enrollment process for the device. You can watch CoManagementHandler.log on a client to see this in action.</p>
-<p>Co-Management isn&rsquo;t great on a Master image.</p>
+<p>Unfortunately, <strong>All</strong> means just that. The moment a device is (Hybrid) Azure AD Joined it will trigger the Co-Management handler service which immediately triggers the Intune enrollment process for the device. You can watch CoManagementHandler.log on a client to see this in action.</p>
+<p>Co-Management isn&rsquo;t great on a master image.</p>
 <h2 id=if-we-could-turn-back-time>If We Could Turn Back Time</h2>
-<p>Once a device has been enrolled in Intune, you can&rsquo;t just use <code>DSREGCMD /LEAVE</code> in the cleanup script before re-sealing it - each clone will still think that it is Intune enrolled and it will continue to re-register in Azure AD with the same device ID as the master.</p>
+<p>Once a master image has been enrolled in Intune, you can&rsquo;t just use <code>DSREGCMD /LEAVE</code> in the cleanup script before re-sealing it - each clone will still think that it is Intune enrolled and it will continue to re-register in Azure AD with the same device ID as the master.</p>
 <p><div class=image>
 <figure>
 <a href=2021-11-13_0-38-46.jpg target=_blank>
@@ -259,9 +316,9 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <figcaption>Hybrid Azure AD Joined and Intune Enrolled</figcaption>
 </figure>
 </div></p>
-<p>The first step here is going to be unenrolling the device from Intune. Unfortunately, that&rsquo;s not really a feature that exists natively so we have to cleanup the client so that it no longer thinks that it&rsquo;s enrolled in Intune so that we can disjoin and rejoin Azure AD.</p>
-<h2 id=unenrolling---just-like-enrolling-only-backwards>Unenrolling - Just like Enrolling, only Backwards</h2>
-<p>(This post was a great starting point for me)[https://www.maximerastello.com/manually-re-enroll-a-co-managed-or-hybrid-azure-ad-join-windows-10-pc-to-microsoft-intune-without-loosing-current-configuration/] to find where all of the pieces go when you enroll a device into Intune. Here&rsquo;s the short version:</p>
+<p>The first step here is going to be un-enrolling the device from Intune. Unfortunately, that&rsquo;s not really a feature that exists natively so we have to cleanup the client so that it no longer thinks that it&rsquo;s enrolled in Intune so that we can disjoin and rejoin Azure AD.</p>
+<h2 id=un-enrolling---just-like-enrolling-only-backwards>Un-Enrolling - Just like Enrolling, only Backwards</h2>
+<p>To reverse the process, we need to delete everything listed below.</p>
 <h3 id=scheduled-tasks>Scheduled Tasks</h3>
 <ul>
 <li><strong>Task Scheduler Library</strong> > <strong>Microsoft</strong> > <strong>Windows</strong> > <strong>EnterpriseMgmt</strong></li>
@@ -319,7 +376,7 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <figcaption>They are Connected!</figcaption>
 </figure>
 </div></p>
-<p>Once you delete all of the items listed above, you can safely DisJoin from Azure AD using <code>DSREGCMD /LEAVE</code>. But wait, there&rsquo;s an easier way!</p>
+<p>Once you delete all of the items listed above, you can safely disjoin from Azure AD using <code>DSREGCMD /LEAVE</code>. But wait, there&rsquo;s an easier way!</p>
 <h2 id=one-script-to-unenroll-them-all>One Script to UnEnroll them All</h2>
 <p>Ok so I took you through all of the manual goodness because, just like GI JOE always says &ldquo;Knowing is half the battle!&rdquo;. The other half is hoping you don&rsquo;t run out of broken VMs to test the script on before you get it working!</p>
 <p><div class=image>
@@ -334,7 +391,6 @@ Today&rsquo;s problem was discovered when our Citrix master images were built an
 <a href=https://github.com/AdamGrossTX/Toolbox/blob/master/Intune/Intune-UnHybridJoin.ps1>https://github.com/AdamGrossTX/Toolbox/blob/master/Intune/Intune-UnHybridJoin.ps1</a></p>
 <h2 id=parting-thoughts>Parting Thoughts</h2>
 <p>One question comment I&rsquo;m sure I&rsquo;ll get is around Co-Management and using pilot collections instead of deploying to all devices. One major reason not to leave Co-Management in pilot mode is because it targets a collection. That collection will need to be populated and updated when a new device is built and that takes time. Targeting all devices allows a device to immediately become Co-Managed as soon as the client pulls down policies. That seems like a better experience than using pilot to work around this.</p>
-<p>Also, note that Intune doesn&rsquo;t support non-persistent VDI, but Azure AD does. You can (Hybrid) Azure AD Join non-persistent VDI as long as you unjoin the master image. But you shouldn&rsquo;t attempt to enroll them into Intune. So in my case, we run this script to clean up the master image and we disable the ConfigMgr client so that it doesn&rsquo;t launch on the non-persistent devices, which prevents Co-Management from kicking in and re-enrolling into Intune.</p>
 </div>
 <comments id=comments>
 <script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>

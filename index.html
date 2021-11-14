@@ -174,9 +174,8 @@
 </div>
 <div class=post-entry>
 <p>
-Note:: This info applies to both Azure AD Join and Hybrid Azure AD Join. To notate this I&rsquo;ll reference both as (Hybrid) Azure AD Join
-READ ON - Script Link at the bottom!
-Today&rsquo;s problem was discovered when our Citrix master images were built and updated using ConfigMgr in an environment where (Hybrid) Azure AD Join and Co-Management is enabled for all devices. When the master image is cloned to create new worker VMs (persistent or non-persistent), the new VMs all share the same Azure AD and Intune device IDs.
+Before we begin, here are some notes about persistent and non-persistent VDI that will likely give you nightmares:
+Intune doesn&rsquo;t support non-persistent VDI Azure Active Directory only supports Hybrid Azure AD Join for non-persistent VDI ConfigMgr recommends limiting client functionality on non-persistent VDI but there is no mention about the impact of Co-Management on these devices. Whatever you do, don&rsquo;t Hybrid Join then Co-Manage your VDI Master Image or you&rsquo;re in for a bad time!
 </p>
 </div>
 <div class=list-meta>
