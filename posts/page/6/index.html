@@ -165,6 +165,31 @@
 <div id=main>
 <article class=list-item>
 <div class=post-img>
+<a href=https://www.asquaredozen.com/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>
+<img width=520 height=400 src=https://www.asquaredozen.com/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/2018-10-03_9-59-28-1.jpg>
+</a>
+</div>
+<div class=list-content>
+<div class=post-header>
+<h2 class=post-title>
+<a href=https://www.asquaredozen.com/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
+</h2>
+</div>
+<div class=post-entry>
+<p>
+If you have worked with SCCM/ConfigMgr Task Sequences for any length of time, you&rsquo;ve likely needed to debug them. Many times, you need to check the value of a Task Sequence variable. The generally accepted approach is to add a Run Command Line step to your Task Sequence and run ServiceUI.exe like this:
+ServiceUI.exe -process:TSProgressUI.exe cmd.exe
+This approach is great if you planned ahead and you are in a test Task Sequence.
+</p>
+</div>
+<div class=list-meta>
+<span class=post-date>
+</span>
+</div>
+</div>
+</article>
+<article class=list-item>
+<div class=post-img>
 <a href=https://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>
 <img width=520 height=400 src=https://www.asquaredozen.com/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/2018-10-01_0-15-49.png>
 </a>
@@ -355,26 +380,6 @@ Note: I don&rsquo;t have 802.1x setup in a lab to show how to configure the 802.
 </div>
 </div>
 </article>
-<article class=list-item>
-<div class=list-content>
-<div class=post-header>
-<h2 class=post-title>
-<a href=https://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Configuring 802.1x Authentication for Windows Deployment – Part 1 – Building an 802.1x Computer Authentication Script</a>
-</h2>
-</div>
-<div class=post-entry>
-<p>
-This is Part 1 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
-The Anatomy of an 802.1x Configuration Script These are the basic steps need to be performed by your auth script. The code below is commented to help understand what each step is for.
-Set Wired Autoconfig (dot3svc) service startup to Auto Start Wired Autoconfig Import Configuration Profile Import Certificates Force adapter authentication event You may be looking at this and wonder why I&rsquo;m creating a Batch file instead of using PowerShell.
-</p>
-</div>
-<div class=list-meta>
-<span class=post-date>
-</span>
-</div>
-</div>
-</article>
 <div class=pagination>
 <div class=newer>
 <a href=/posts/page/5/>← Newer Posts</a>
@@ -401,11 +406,11 @@ Set Wired Autoconfig (dot3svc) service startup to Auto Start Wired Autoconfig Im
 <div class="widget widget_recent_entries">
 <h4 class=widget-title>Recent Posts</h4>
 <ul>
+<li><a href=/2021/12/12/remove-teams-for-home-from-windows-11/ target=_blank>Remove Teams for Home from Windows 11</a></li>
 <li><a href=/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/ target=_blank>Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation</a></li>
 <li><a href=/2021/11/14/cmpivot_reference/ target=_blank>CMPivot Reference</a></li>
 <li><a href=/2021/11/13/when-vdi-and-configmgr-co-management-collide/ target=_blank>When VDI and ConfigMgr Co-Management Collide</a></li>
 <li><a href=/2021/02/04/using-configmgr-run-scripts-and-microsoft-quick-assist-to-repair-a-broken-domain-trust-relationship/ target=_blank>Using ConfigMgr Run Scripts and Microsoft Quick Assist to Repair a Broken Domain Trust Relationship</a></li>
-<li><a href=/2021/01/12/how-to-find-settings-preventing-application-deletion-in-configmgr/ target=_blank>How to find Settings Preventing Application Deletion in ConfigMgr</a></li>
 </ul>
 </div>
 <div class="widget widget_SCD">
