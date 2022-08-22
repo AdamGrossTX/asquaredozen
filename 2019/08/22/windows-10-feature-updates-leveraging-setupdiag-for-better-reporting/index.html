@@ -1,372 +1,59 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting">
-<meta name=twitter:description content="This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.
-What is SetupDiag If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client.">
-<meta property="og:title" content="Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting">
-<meta property="og:description" content="This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.
-What is SetupDiag If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2019-08-23T05:57:11+00:00">
-<meta property="article:modified_time" content="2019-08-23T05:57:11+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting"><meta name=twitter:description content="This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.
+What is SetupDiag If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client."><meta property="og:title" content="Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting"><meta property="og:description" content="This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.
+What is SetupDiag If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-08-23T05:57:11+00:00"><meta property="article:modified_time" content="2019-08-23T05:57:11+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</h1>
-<span class=post-date>August 23, 2019</span>
-</div>
-<div class=post-entry>
-<p>This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.</p>
-<h2 id=what-is-setupdiag>What is SetupDiag</h2>
-<p>If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client. After a few minutes, you should get a nicely formatted report to help you quickly find the offending error.
-As a matter of fact, as I started writing this post, I checked the site and and found a new version was available that fixes several issues that I reported last week and added several cool new features (Thanks <a href=https://twitter.com/sudhagart>Sudhagar</a> for passing on my issues!). Bookmark <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag>THIS</a> page and visit often. Not only does it have a link to download the latest version of SetupDiag (version 1.6.0.0 as of 8/19/2019) but there are other pages with troubleshooting info.</p>
-<p>Some people only run SetupDiag after a failure, but with some of the cool features of the script, I find that it provides useful information even for successful feature updates.</p>
-<h2 id=setupdiag-and-feature-updates>SetupDiag and Feature Updates</h2>
-<p>In my other posts in this series, I&rsquo;m going to show how you can integrate SetupDiag into your Task Sequence or WaaS Feature Update deployments for Windows 10. To start, I&rsquo;ve written a PowerShell wrapper to launch SetupDiag and parse the output that can be consumed by SCCM inventory or used for copying logs to network shares for easy processing. Note: You don&rsquo;t NEED my script, you can just manually run SetupDiag as needed.</p>
-<p>The script <code>Process-SetupDiag.ps1</code> is designed to be run standalone or references inside another script, like a script to copy logs to the network after a successful or failed upgrade. Note: The script was written on version SetupDiag 1.5.0.0 and already in version 1.6.0.0, some things may not be as necessary as before. Regardless, the (current) key features include:</p>
-<ul>
-<li>Parsing of the XML output to create a summary log for quick reference by your imaging techs.</li>
-<li>Return value of Success/Failed/NoMatch/Unknown for easy consumption by other scripts or Configuration Items. I use this return value to add the status to a log folder on a network share for each device. It makes it easy to find failed machines.</li>
-<li>Custom Registry Key (<code>CustomSetupDiagResult</code>) option using the return value. This key gets written to the same location as SetupDiag writes so you can inventory everything at once.</li>
-</ul>
-<p><code>Process-SetupDiag.ps1</code> requires access to <code>SetupDiag.exe</code>. I copy these files to a local temp directory <code>c:\~FeatureUpdateTemp\Scripts</code> so that I can easily execute them through various options. I&rsquo;m</p>
-<h2 id=registry-entries>Registry Entries</h2>
-<p>In version 1.5.0.0 an option was added to write a registry key with values that get written to the output log file. In version 1.6.0.0, several new values were added. Here&rsquo;s an example from 1.6.0.0 of the current registry keys:</p>
-<p><div class=image>
-<figure>
-<a href=image-29.png target=_blank>
-<img src=image-29.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>This is the same machine&rsquo;s XML output.</p>
-<p><div class=image>
-<figure>
-<a href=image-30.png target=_blank>
-<img src=image-30.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=reading-setupdiag-results>Reading SetupDiag Results</h2>
-<p>SetupDiag output is pretty straightforward. Some key fields that I generally use are ProfileName, FailureData, FailureDetails, Remediation. Prior to 1.6.0.0, if you deployed the Feature Update with the /Compat IgnoreDismissable command line option, the OS would skip over dismissable compat blocks but setupdiag would report the ProfileName as CompatBlockedApplicationDismissable instead of FindSuccessfulUpgrade but the FailureData section would contain the text <code>SetupDiag reports successful upgrade found.</code> as seen above. Now in 1.6.0.0, the ProfileName includes each profile that was matched by SetupDiag.</p>
-<p>FailureData, FailureDetails & Remediation now provide lots of useful information and URLs to help you shortcut your remediation efforts. Your deployment techs should be able to use this information as their first stop for troubleshooting.</p>
-<p>The ProfileName will display one or more of the currently 60 rule matches. You can look up the rule matches <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag#rules>here</a> if you want more information.
-Ultimately, use the info that you get from SetupDiag to reference the docs site for more information.</p>
-<h2 id=inventorying-setupdiag-results>Inventorying SetupDiag Results</h2>
-<p>First - as of 1.6.0.0 you can use the <code>/RegPath</code> command line option to output the SetupDiag registry key to a custom location. You can find usage information by using <code>SetupDiag.exe /?</code>. At the time of this post, the docs don&rsquo;t have updated information and I&rsquo;m told that they will be rebuilding the page soon, so I&rsquo;m not sure if they will update it or not.</p>
-<p><div class=image>
-<figure>
-<a href=image-31.png target=_blank>
-<img src=image-31.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>Ok, so I&rsquo;ll admit that I MAY have gotten a bit carried away with my script writing. I wanted to write a reusable script to build a custom WMI class that can be inventoried by SCCM. I have used RegKey2MOF numerous times and it works great, but I didn&rsquo;t want to have to edit my configuration.mof AND I wanted to be able to merge multiple registry keys together. So if you&rsquo;re more comfortable with using RegKey2MOF, <a href=https://www.enhansoft.com/how-to-use-regkeytomof/>check out Garth Jones' great blog post</a> on using it and point it to the SetupDiag registry key. Just note that you will end up with 2 tables if you collect from the 2 registry keys I&rsquo;m using. The latest version is on the Technet Gallery <a href=https://gallery.technet.microsoft.com/RegKeyToMof-28e84c28>here</a>.</p>
-<p>If you are still with me, then you will need my script called New-WMIRegistryClass-SetupDiag.ps1. It is built so that you can quickly swap out the keys you want to collect and use it for other WMI/Registry collection.</p>
-<p>When you run the script, it will create a new WMI Class called CM_SetupDiag after deleting the class if it already exists. The downside with using a script to inventory this data is that you have to re-run the script all of the time to keep the WMI class updated. Fortunately we can just create a new Configuration Item/Baseline that runs the script on a regular basis, then the scheduled Hardware Inventory cycle will pick it up.</p>
-<h2 id=putting-it-all-together>Putting it All Together</h2>
-<p>I&rsquo;ve created a new GitHub Repo with all of the latest versions of these scripts. I&rsquo;m not going to post the full code snippets so that if I update the scripts, I only have to do it on one place. Also, note that the repo contains several extra scripts that I will be going over in future posts coming soon.</p>
-<ul>
-<li>Visit the repo here: <a href=https://github.com/AdamGrossTX/Windows10FeatureUpdates>https://github.com/AdamGrossTX/Windows10FeatureUpdates</a> and download the following:
-<ul>
-<li><code>Scripts\Process-SetupDiag.ps1</code></li>
-<li><code>Admin\ComplianceScripts\New-WMIRegistryClass-SetupDiag.ps1</code></li>
-</ul>
-</li>
-<li>Copy <code>Process-SetupDiag.ps1</code> to <code>C:\~FeatureUpdateTemp\Scripts</code> on your clients. If you need a script to do the copy, in the Repo you will see <code>Copy-FeatureUpdateFiles.ps1</code>. I will cover this script in more details later. I use it in an Application and use the folder and setupdiag version as detection methods. More on this later.</li>
-<li>Download the latest <code>SetupDiag.exe</code> from <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag>https://docs.microsoft.com/windows/deployment/upgrade/setupdiag</a> and copy to <code>C:\~FeatureUpdateTemp\Scripts</code></li>
-<li>Create a new Compliance Item in the SCCM Console
-<ul>
-<li>Name: Feature Update - SetupDiag Inventory</li>
-<li>Supported Platforms: Window 10</li>
-<li>Settings:
-<ul>
-<li>Name: SetupDiag WMI Create Class and Inventory</li>
-<li>Setting type: Script</li>
-<li>Data type: String</li>
-<li>Discovery script: import <code>New-WMIRegistryClass-SetupDiag.ps1</code></li>
-</ul>
-</li>
-<li>Compliance Rules:
-<ul>
-<li>Click New</li>
-<li>Name: Script Returns True</li>
-<li>Value returned by script: Equals True</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Create a new Configuration Baseline
-<ul>
-<li>Name: SetupDiag Inventory</li>
-<li>Evaluation Conditions: Select the CI you created above.</li>
-</ul>
-</li>
-<li>Test then deploy with a schedule that will run more often then your hardware inventory is scheduled to run.</li>
-<li>Once you have the class in WMI on your client, you can import it into SCCM Client Settings. If you want more details on this process, <a href=https://docs.microsoft.com/sccm/core/clients/manage/inventory/extend-hardware-inventory>check out the docs here</a>.
-<ul>
-<li>Open Default Client Settings</li>
-<li>Select Hardware Inventory>Set Classes</li>
-<li>Click Add</li>
-<li>Click Connect</li>
-<li>Ensure WMI Namespace is set to <code>root\cimv2</code> and click Connect.</li>
-<li>Select CM_SetupDiag from the list</li>
-<li><strong>Click Edit</strong> Don&rsquo;t skip this part!!
-<ul>
-<li>Change the Length for FailureData, FailureDetails, Remediation to 1500 (I hope this is long enough!)</li>
-<li>Changing the length will allow you to collect the full data from the the registry keys.</li>
-<li>Click Ok</li>
-</ul>
-</li>
-<li>Click Ok</li>
-<li>Uncheck the newly added class and Click Ok</li>
-<li>Open your client settings policy that you deploy to your Windows 10 clients (surely you don&rsquo;t use the Default Client Settings Policy!!)</li>
-<li>Browse back into Hardware Inventory and recheck the new class and click ok</li>
-</ul>
-</li>
-<li>Once your clients begin running the baseline and hardware inventory, you should begin seeing data in the database as well as in the console where you can use it for reporting or collection creation.</li>
-</ul>
-<h2 id=reporting-on-setupdiag-results>Reporting on SetupDiag results</h2>
-<p>If you want to report on the data you are collecting, this query should give you all of the devices that have failed for some reason. It is also included in the repo under <code>SQL\SetupDiagFailures.SQL</code>.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>  </span>s.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>DeviceName,<span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.CustomSetupDiagResult0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Result</span>,<span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.ProfileName0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ProfileName,<span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.FailureData0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureData,<span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.FailureDetails0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureDetails,<span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.Remediation0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Remediation<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style=color:#bbb>  </span>v_r_system<span style=color:#bbb> </span>s<span style=color:#bbb> </span><span style=color:#000;font-weight:700>INNER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
-</span><span style=color:#bbb>  </span>V_GS_CM_SetupDiag<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>s.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ResourceID<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> 
-</span><span style=color:#bbb>  </span>sd.CustomSetupDiagResult0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&lt;&gt;</span><span style=color:#bbb> </span><span style=color:#d14>&#39;Success&#39;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb>
-</span><span style=color:#bbb>  </span>sd.profilename0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>LIKE</span><span style=color:#bbb> </span><span style=color:#d14>&#39;FindSuccessfulUpgrade&#39;</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>order</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>by</span><span style=color:#bbb> 
-</span><span style=color:#bbb>  </span>datecollected0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>desc</span><span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>You can also make a query or collection in the SCCM console. Just look for the same table name and build it the same as above.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>select</span><span style=color:#bbb> 
-</span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb>  
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>from</span><span style=color:#bbb>  
-</span><span style=color:#bbb>    </span>SMS_R_System<span style=color:#bbb> </span><span style=color:#000;font-weight:700>inner</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>join</span><span style=color:#bbb> 
-</span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>SMS_G_System_CM_SETUPDIAG.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>SMS_R_System.ResourceId<span style=color:#bbb> 
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> 
-</span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG.CustomSetupDiagResult<span style=color:#bbb> </span><span style=color:#000;font-weight:700>!=</span><span style=color:#bbb> </span><span style=color:#d14>&#34;Success&#34;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>and</span><span style=color:#bbb> 
-</span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG.ProfileName<span style=color:#bbb> </span><span style=color:#000;font-weight:700>not</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>like</span><span style=color:#bbb> </span><span style=color:#d14>&#34;%FindSuccessfulUpgrade%&#34;</span><span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><h2 id=summary>Summary</h2>
-<p>I hope you were able to follow along. I&rsquo;ve got a lot more to share on the topic of Feature Updates so stay tuned. Please reach out to me if you find any issues with the instructions or the scripts. Feel free to edit and PR the scripts in the repo.</p>
-</div>
-<div class=post-share>
-<div class="post-share-box share-comments">
-hello
-</div>
-</div>
-<div class=post-author>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</h1><span class=post-date>August 23, 2019</span></div><div class=post-entry><p>This is the first post of my Windows 10 Feature Updates series, probably totally out of sequence, but I just need to start getting the pieces written and published. So here goes.</p><h2 id=what-is-setupdiag>What is SetupDiag</h2><p>If you have worked with Windows 10 Operating System Deployments for any amount of time, you&rsquo;ve likely had failures and encountered cryptic messages that you needed to triage. Hopefully you&rsquo;ve come across SetupDiag. For the uninitiated, SetupDiag is a fancy little tool from Microsoft that you can run against the Windows installation logs (Panther Logs) either directly on a client or against an offline copy of the Panther logs from another client. After a few minutes, you should get a nicely formatted report to help you quickly find the offending error.
+As a matter of fact, as I started writing this post, I checked the site and and found a new version was available that fixes several issues that I reported last week and added several cool new features (Thanks <a href=https://twitter.com/sudhagart>Sudhagar</a> for passing on my issues!). Bookmark <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag>THIS</a> page and visit often. Not only does it have a link to download the latest version of SetupDiag (version 1.6.0.0 as of 8/19/2019) but there are other pages with troubleshooting info.</p><p>Some people only run SetupDiag after a failure, but with some of the cool features of the script, I find that it provides useful information even for successful feature updates.</p><h2 id=setupdiag-and-feature-updates>SetupDiag and Feature Updates</h2><p>In my other posts in this series, I&rsquo;m going to show how you can integrate SetupDiag into your Task Sequence or WaaS Feature Update deployments for Windows 10. To start, I&rsquo;ve written a PowerShell wrapper to launch SetupDiag and parse the output that can be consumed by SCCM inventory or used for copying logs to network shares for easy processing. Note: You don&rsquo;t NEED my script, you can just manually run SetupDiag as needed.</p><p>The script <code>Process-SetupDiag.ps1</code> is designed to be run standalone or references inside another script, like a script to copy logs to the network after a successful or failed upgrade. Note: The script was written on version SetupDiag 1.5.0.0 and already in version 1.6.0.0, some things may not be as necessary as before. Regardless, the (current) key features include:</p><ul><li>Parsing of the XML output to create a summary log for quick reference by your imaging techs.</li><li>Return value of Success/Failed/NoMatch/Unknown for easy consumption by other scripts or Configuration Items. I use this return value to add the status to a log folder on a network share for each device. It makes it easy to find failed machines.</li><li>Custom Registry Key (<code>CustomSetupDiagResult</code>) option using the return value. This key gets written to the same location as SetupDiag writes so you can inventory everything at once.</li></ul><p><code>Process-SetupDiag.ps1</code> requires access to <code>SetupDiag.exe</code>. I copy these files to a local temp directory <code>c:\~FeatureUpdateTemp\Scripts</code> so that I can easily execute them through various options. I&rsquo;m</p><h2 id=registry-entries>Registry Entries</h2><p>In version 1.5.0.0 an option was added to write a registry key with values that get written to the output log file. In version 1.6.0.0, several new values were added. Here&rsquo;s an example from 1.6.0.0 of the current registry keys:</p><p><div class=image><figure><a href=image-29.png target=_blank><img src=image-29.png alt="A Square Dozen Image"></a></figure></div></p><p>This is the same machine&rsquo;s XML output.</p><p><div class=image><figure><a href=image-30.png target=_blank><img src=image-30.png alt="A Square Dozen Image"></a></figure></div></p><h2 id=reading-setupdiag-results>Reading SetupDiag Results</h2><p>SetupDiag output is pretty straightforward. Some key fields that I generally use are ProfileName, FailureData, FailureDetails, Remediation. Prior to 1.6.0.0, if you deployed the Feature Update with the /Compat IgnoreDismissable command line option, the OS would skip over dismissable compat blocks but setupdiag would report the ProfileName as CompatBlockedApplicationDismissable instead of FindSuccessfulUpgrade but the FailureData section would contain the text <code>SetupDiag reports successful upgrade found.</code> as seen above. Now in 1.6.0.0, the ProfileName includes each profile that was matched by SetupDiag.</p><p>FailureData, FailureDetails & Remediation now provide lots of useful information and URLs to help you shortcut your remediation efforts. Your deployment techs should be able to use this information as their first stop for troubleshooting.</p><p>The ProfileName will display one or more of the currently 60 rule matches. You can look up the rule matches <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag#rules>here</a> if you want more information.
+Ultimately, use the info that you get from SetupDiag to reference the docs site for more information.</p><h2 id=inventorying-setupdiag-results>Inventorying SetupDiag Results</h2><p>First - as of 1.6.0.0 you can use the <code>/RegPath</code> command line option to output the SetupDiag registry key to a custom location. You can find usage information by using <code>SetupDiag.exe /?</code>. At the time of this post, the docs don&rsquo;t have updated information and I&rsquo;m told that they will be rebuilding the page soon, so I&rsquo;m not sure if they will update it or not.</p><p><div class=image><figure><a href=image-31.png target=_blank><img src=image-31.png alt="A Square Dozen Image"></a></figure></div></p><p>Ok, so I&rsquo;ll admit that I MAY have gotten a bit carried away with my script writing. I wanted to write a reusable script to build a custom WMI class that can be inventoried by SCCM. I have used RegKey2MOF numerous times and it works great, but I didn&rsquo;t want to have to edit my configuration.mof AND I wanted to be able to merge multiple registry keys together. So if you&rsquo;re more comfortable with using RegKey2MOF, <a href=https://www.enhansoft.com/how-to-use-regkeytomof/>check out Garth Jones&rsquo; great blog post</a> on using it and point it to the SetupDiag registry key. Just note that you will end up with 2 tables if you collect from the 2 registry keys I&rsquo;m using. The latest version is on the Technet Gallery <a href=https://gallery.technet.microsoft.com/RegKeyToMof-28e84c28>here</a>.</p><p>If you are still with me, then you will need my script called New-WMIRegistryClass-SetupDiag.ps1. It is built so that you can quickly swap out the keys you want to collect and use it for other WMI/Registry collection.</p><p>When you run the script, it will create a new WMI Class called CM_SetupDiag after deleting the class if it already exists. The downside with using a script to inventory this data is that you have to re-run the script all of the time to keep the WMI class updated. Fortunately we can just create a new Configuration Item/Baseline that runs the script on a regular basis, then the scheduled Hardware Inventory cycle will pick it up.</p><h2 id=putting-it-all-together>Putting it All Together</h2><p>I&rsquo;ve created a new GitHub Repo with all of the latest versions of these scripts. I&rsquo;m not going to post the full code snippets so that if I update the scripts, I only have to do it on one place. Also, note that the repo contains several extra scripts that I will be going over in future posts coming soon.</p><ul><li>Visit the repo here: <a href=https://github.com/AdamGrossTX/Windows10FeatureUpdates>https://github.com/AdamGrossTX/Windows10FeatureUpdates</a> and download the following:<ul><li><code>Scripts\Process-SetupDiag.ps1</code></li><li><code>Admin\ComplianceScripts\New-WMIRegistryClass-SetupDiag.ps1</code></li></ul></li><li>Copy <code>Process-SetupDiag.ps1</code> to <code>C:\~FeatureUpdateTemp\Scripts</code> on your clients. If you need a script to do the copy, in the Repo you will see <code>Copy-FeatureUpdateFiles.ps1</code>. I will cover this script in more details later. I use it in an Application and use the folder and setupdiag version as detection methods. More on this later.</li><li>Download the latest <code>SetupDiag.exe</code> from <a href=https://docs.microsoft.com/windows/deployment/upgrade/setupdiag>https://docs.microsoft.com/windows/deployment/upgrade/setupdiag</a> and copy to <code>C:\~FeatureUpdateTemp\Scripts</code></li><li>Create a new Compliance Item in the SCCM Console<ul><li>Name: Feature Update - SetupDiag Inventory</li><li>Supported Platforms: Window 10</li><li>Settings:<ul><li>Name: SetupDiag WMI Create Class and Inventory</li><li>Setting type: Script</li><li>Data type: String</li><li>Discovery script: import <code>New-WMIRegistryClass-SetupDiag.ps1</code></li></ul></li><li>Compliance Rules:<ul><li>Click New</li><li>Name: Script Returns True</li><li>Value returned by script: Equals True</li></ul></li></ul></li><li>Create a new Configuration Baseline<ul><li>Name: SetupDiag Inventory</li><li>Evaluation Conditions: Select the CI you created above.</li></ul></li><li>Test then deploy with a schedule that will run more often then your hardware inventory is scheduled to run.</li><li>Once you have the class in WMI on your client, you can import it into SCCM Client Settings. If you want more details on this process, <a href=https://docs.microsoft.com/sccm/core/clients/manage/inventory/extend-hardware-inventory>check out the docs here</a>.<ul><li>Open Default Client Settings</li><li>Select Hardware Inventory>Set Classes</li><li>Click Add</li><li>Click Connect</li><li>Ensure WMI Namespace is set to <code>root\cimv2</code> and click Connect.</li><li>Select CM_SetupDiag from the list</li><li><strong>Click Edit</strong> Don&rsquo;t skip this part!!<ul><li>Change the Length for FailureData, FailureDetails, Remediation to 1500 (I hope this is long enough!)</li><li>Changing the length will allow you to collect the full data from the the registry keys.</li><li>Click Ok</li></ul></li><li>Click Ok</li><li>Uncheck the newly added class and Click Ok</li><li>Open your client settings policy that you deploy to your Windows 10 clients (surely you don&rsquo;t use the Default Client Settings Policy!!)</li><li>Browse back into Hardware Inventory and recheck the new class and click ok</li></ul></li><li>Once your clients begin running the baseline and hardware inventory, you should begin seeing data in the database as well as in the console where you can use it for reporting or collection creation.</li></ul><h2 id=reporting-on-setupdiag-results>Reporting on SetupDiag results</h2><p>If you want to report on the data you are collecting, this query should give you all of the devices that have failed for some reason. It is also included in the repo under <code>SQL\SetupDiagFailures.SQL</code>.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-15>15</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>s.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>DeviceName,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.CustomSetupDiagResult0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Result</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.ProfileName0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ProfileName,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.FailureData0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureData,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.FailureDetails0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureDetails,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.Remediation0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Remediation<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>v_r_system<span style=color:#bbb> </span>s<span style=color:#bbb> </span><span style=color:#000;font-weight:700>INNER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>V_GS_CM_SetupDiag<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>s.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ResourceID<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.CustomSetupDiagResult0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&lt;&gt;</span><span style=color:#bbb> </span><span style=color:#d14>&#39;Success&#39;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>sd.profilename0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>LIKE</span><span style=color:#bbb> </span><span style=color:#d14>&#39;FindSuccessfulUpgrade&#39;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>order</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>by</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>datecollected0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>desc</span><span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p>You can also make a query or collection in the SCCM console. Just look for the same table name and build it the same as above.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5>5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-6>6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-7>7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-8>8</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>select</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>*</span><span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>from</span><span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>SMS_R_System<span style=color:#bbb> </span><span style=color:#000;font-weight:700>inner</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>join</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>SMS_G_System_CM_SETUPDIAG.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>SMS_R_System.ResourceId<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>where</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG.CustomSetupDiagResult<span style=color:#bbb> </span><span style=color:#000;font-weight:700>!=</span><span style=color:#bbb> </span><span style=color:#d14>&#34;Success&#34;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>and</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>SMS_G_System_CM_SETUPDIAG.ProfileName<span style=color:#bbb> </span><span style=color:#000;font-weight:700>not</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>like</span><span style=color:#bbb> </span><span style=color:#d14>&#34;%FindSuccessfulUpgrade%&#34;</span><span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=summary>Summary</h2><p>I hope you were able to follow along. I&rsquo;ve got a lot more to share on the topic of Feature Updates so stay tuned. Please reach out to me if you find any issues with the instructions or the scripts. Feel free to edit and PR the scripts in the repo.</p></div><div class=post-share><div class="post-share-box share-comments">hello</div></div><div class=post-author></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

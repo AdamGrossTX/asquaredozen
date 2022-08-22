@@ -1,393 +1,138 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Finding ConfigMgr Task Sequences with Invalid References-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Finding ConfigMgr Task Sequences with Invalid References-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="Finding ConfigMgr Task Sequences with Invalid References">
-<meta name=twitter:description content="Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.">
-<meta property="og:title" content="Finding ConfigMgr Task Sequences with Invalid References">
-<meta property="og:description" content="Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2019-02-04T06:41:52+00:00">
-<meta property="article:modified_time" content="2019-02-04T06:41:52+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="Finding ConfigMgr Task Sequences with Invalid References"><meta name=twitter:description content="Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning."><meta property="og:title" content="Finding ConfigMgr Task Sequences with Invalid References"><meta property="og:description" content="Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2019/02/04/finding-configmgr-task-sequences-with-invalid-references/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-02-04T06:41:52+00:00"><meta property="article:modified_time" content="2019-02-04T06:41:52+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Finding ConfigMgr Task Sequences with Invalid References</h1>
-<span class=post-date>February 4, 2019</span>
-</div>
-<div class=post-entry>
-<p>Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.</p>
-<p><div class=image>
-<figure>
-<a href=image-1.png target=_blank>
-<img src=image-1.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=disabled-ts-references>Disabled TS References</h2>
-<p>So the first thing we learned is that if you disable the Install Application step in a Task Sequence, the application reference gets removed from the Task Sequence References tab. This is good and bad. It&rsquo;s good because it won&rsquo;t prevent an application from being deleted. It&rsquo;s bad because there&rsquo;s no way to find out if it exists in any Task Sequences from the console.</p>
-<p><div class=image>
-<figure>
-<a href=image-4.png target=_blank>
-<img src=image-4.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=invalid-applications>Invalid Applications</h2>
-<p>We have around 75 Task Sequences currently. We keep archives of old ones plus we use several nested ones so they add up. I thought I could quickly find the reference manually so I started out manually clicking through each Task Sequence with the References tab selected so I could quickly skim through the references. Within a few minutes, I was done and was unable to find the reference. I thought that maybe the Application was disabled in the TS but based on the way Disabled works, we should have been able to delete.
-I ended up running some PowerShell commands (script below) and was able to find the Task Sequence where the application was referenced. When I opened the Task Sequence, I received an alert indicating that one of my application references was invalid. During the cleanup process, the deployment type had been deleted from the application. While you can&rsquo;t delete an application if it&rsquo;s referenced by a Task Sequence, you CAN delete it&rsquo;s deployment types, which then breaks the reference apparently.</p>
-<p><div class=image>
-<figure>
-<a href=image-2.png target=_blank>
-<img src=image-2.png alt="Missing deployment type breaks step.">
-</a>
-<figcaption>Missing deployment type breaks step.</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-3.png target=_blank>
-<img src=image-3.png alt="One or more of selected applications is not valid">
-</a>
-<figcaption>One or more of selected applications is not valid</figcaption>
-</figure>
-</div></p>
-<h2 id=scripting-the-fix>Scripting the Fix</h2>
-<p>If you launch the PowerShell console from the ConfigMgr console, you can run these commands to find out useful information about your Applications and their references.</p>
-<h4 id=get-applications>Get Applications</h4>
-<p>This command will return the list of applications and their counts of places they are used. For Task Sequences, you would look for <code>NumberOfDependentTS</code>.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>where-Object</span> NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 | <span style=color:#0086b3>select </span>LocalizedDisplayName, Number*
-
-<span style=color:#998;font-style:italic>#####################</span>
-<span style=color:#998;font-style:italic>#RESULTS#</span>
-
-LocalizedDisplayName        <span style=color:#a61717;background-color:#e3d2d2>:</span> Google Chrome
-NumberOfDependentDTs        <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfDependentTS         <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
-NumberOfDeployments         <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
-NumberOfDeploymentTypes     <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
-NumberOfDevicesWithApp      <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfDevicesWithFailure  <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfSettings            <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfUsersWithApp        <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfUsersWithFailure    <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfUsersWithRequest    <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-NumberOfVirtualEnvironments <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=get-task-sequences>Get Task Sequences</h4>
-<p>This command will get all Task Sequences that have references to any Applications/Packages/Etc.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>Get</span><span style=color:#000;font-weight:700>-</span>CMTaskSequence<span style=color:#bbb> </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Where</span><span style=color:#000;font-weight:700>-</span><span style=color:#000;font-weight:700>Object</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>-</span>ne<span style=color:#bbb> </span><span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#000;font-weight:700>null</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>select</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb>
-</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>#####################</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>#</span>RESULTS<span style=color:#000;font-weight:700>#</span><span style=color:#bbb>
-</span><span style=color:#bbb></span>Name<span style=color:#bbb>    </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#998;font-style:italic>----    ----------
-</span><span style=color:#998;font-style:italic></span>Test<span style=color:#bbb> </span>TS<span style=color:#bbb> </span><span style=color:#a61717;background-color:#e3d2d2>{</span>...<span style=color:#bbb>
-</span><span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><h4 id=get-applications-that-have-dependent-task-sequences>Get Applications that have Dependent Task Sequences</h4>
-<p>This command will return all applications that have Dependent Task Sequences but don&rsquo;t have any Deployment Types. Note, you can change out <code>Application</code> for <code>Package</code> in any of these commands.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>Where-Object</span> {<span style=color:teal>$_</span>.NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 <span style=color:#000;font-weight:700>-and</span> <span style=color:teal>$_</span>.NumberOfDeploymentTypes <span style=color:#000;font-weight:700>-eq</span> 0}
-
-<span style=color:#998;font-style:italic>#####################</span>
-<span style=color:#998;font-style:italic>#RESULTS#</span>
-
-SmsProviderObjectPath              <span style=color:#a61717;background-color:#e3d2d2>:</span> SMS_Application.CI_ID=16777520
-ApplicabilityCondition             <span style=color:#a61717;background-color:#e3d2d2>:</span>
-CategoryInstance_UniqueIDs         <span style=color:#a61717;background-color:#e3d2d2>:</span> {}
-CI_ID                              <span style=color:#a61717;background-color:#e3d2d2>:</span> 16777520
-CI_UniqueID                        <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#0086b3>ScopeId_89BCCE7B-CC4E</span>-458F-A3F9-7E5BE4ADEF9E/Application_37ca86a3-9a6e-4bd2-aa41-d08c7692fef9/6
-CIType_ID                          <span style=color:#a61717;background-color:#e3d2d2>:</span> 10
-CIVersion                          <span style=color:#a61717;background-color:#e3d2d2>:</span> 6
-ConfigurationFlags                 <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
-CreatedBy                          <span style=color:#a61717;background-color:#e3d2d2>:</span> ASD\Adam
-DateCreated                        <span style=color:#a61717;background-color:#e3d2d2>:</span> 2/2/2019 9<span style=color:#a61717;background-color:#e3d2d2>:</span>44<span style=color:#a61717;background-color:#e3d2d2>:</span>06 PM
-DateLastModified                   <span style=color:#a61717;background-color:#e3d2d2>:</span> 2/3/2019 12<span style=color:#a61717;background-color:#e3d2d2>:</span>15<span style=color:#a61717;background-color:#e3d2d2>:</span>54 AM
-EffectiveDate                      <span style=color:#a61717;background-color:#e3d2d2>:</span>
-EULAAccepted                       <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
-.......
-</code></pre></td></tr></table>
-</div>
-</div><h4 id=finding-the-task-sequences-that-references-the-invalid-applications>Finding the Task Sequences that References the invalid applications.</h4>
-<p>Run this to find all Applications and Task Sequences that don&rsquo;t have a deployment type and have an invalid reference.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$Applications</span> = <span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>Where-Object</span> {<span style=color:teal>$_</span>.NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 <span style=color:#000;font-weight:700>-and</span> <span style=color:teal>$_</span>.NumberOfDeploymentTypes <span style=color:#000;font-weight:700>-eq</span> 0}
-<span style=color:teal>$TaskSequences</span> = <span style=color:#0086b3>Get-CMTaskSequence</span> | <span style=color:#0086b3>Where-Object</span> { <span style=color:teal>$_</span>.References <span style=color:#000;font-weight:700>-ne</span> <span style=color:teal>$null</span> }
-
-<span style=color:#998;font-style:italic># Run application report</span>
-<span style=color:#000;font-weight:700>foreach</span> (<span style=color:teal>$Application</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$Applications</span>) {
-    <span style=color:#000;font-weight:700>foreach</span> (<span style=color:teal>$TaskSequence</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$TaskSequences</span>) {
-        <span style=color:teal>$Ref</span> = <span style=color:#0086b3>New-Object</span> PSObject
-        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Application Name&#39;</span> -Value <span style=color:teal>$Application</span>.LocalizedDisplayName
-        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Package ID&#39;</span> -Value <span style=color:teal>$Application</span>.PackageID
-        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Task Sequence Name&#39;</span> -Value <span style=color:teal>$TaskSequence</span>.Name
-
-    }
-}
-
-<span style=color:teal>$Ref</span>
-
-<span style=color:#998;font-style:italic>#####################</span>
-<span style=color:#998;font-style:italic>#RESULTS#</span>
-Application Name   Package ID Task Sequence Name
-----------------   ---------- ------------------
-Google <span style=color:#0086b3>Chrome-copy</span>            Test TS
-</code></pre></td></tr></table>
-</div>
-</div><h2 id=summary>Summary</h2>
-<p>From here, I just manually went into the Task Sequence and resolved the issue. I&rsquo;m haven&rsquo;t scripted Task Sequence stuff enough yet to feel comfortable just blindly removing the invalid reference. Hopefully this gets you through the hard part.</p>
-<p>Well that&rsquo;s all I&rsquo;ve got for this one. Hopefully you find it useful. I&rsquo;d like to thank <a href=https://twitter.com/modaly_it>Maurice Daly</a> for his <a href=http://www.scconfigmgr.com/2017/08/11/using-powershell-for-cleaning-up-packages-and-applications/>post on cleaning up applications</a>. It saved me a few steps on putting everything together.</p>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Finding ConfigMgr Task Sequences with Invalid References</h1><span class=post-date>February 4, 2019</span></div><div class=post-entry><p>Last week, my coworker was in the process of cleaning up some old versions of our core applications and ran into an issue deleting an app. When she attempted to delete it, she got a message indicating that the application was used in a Task Sequence. Unfortunately, the dialog doesn&rsquo;t offer any additional information as to WHICH Task Sequence is using the application. She asked me for help and here&rsquo;s what we ended learning.</p><p><div class=image><figure><a href=image-1.png target=_blank><img src=image-1.png alt="A Square Dozen Image"></a></figure></div></p><h2 id=disabled-ts-references>Disabled TS References</h2><p>So the first thing we learned is that if you disable the Install Application step in a Task Sequence, the application reference gets removed from the Task Sequence References tab. This is good and bad. It&rsquo;s good because it won&rsquo;t prevent an application from being deleted. It&rsquo;s bad because there&rsquo;s no way to find out if it exists in any Task Sequences from the console.</p><p><div class=image><figure><a href=image-4.png target=_blank><img src=image-4.png alt="A Square Dozen Image"></a></figure></div></p><h2 id=invalid-applications>Invalid Applications</h2><p>We have around 75 Task Sequences currently. We keep archives of old ones plus we use several nested ones so they add up. I thought I could quickly find the reference manually so I started out manually clicking through each Task Sequence with the References tab selected so I could quickly skim through the references. Within a few minutes, I was done and was unable to find the reference. I thought that maybe the Application was disabled in the TS but based on the way Disabled works, we should have been able to delete.
+I ended up running some PowerShell commands (script below) and was able to find the Task Sequence where the application was referenced. When I opened the Task Sequence, I received an alert indicating that one of my application references was invalid. During the cleanup process, the deployment type had been deleted from the application. While you can&rsquo;t delete an application if it&rsquo;s referenced by a Task Sequence, you CAN delete it&rsquo;s deployment types, which then breaks the reference apparently.</p><p><div class=image><figure><a href=image-2.png target=_blank><img src=image-2.png alt="Missing deployment type breaks step."></a><figcaption>Missing deployment type breaks step.</figcaption></figure></div></p><p><div class=image><figure><a href=image-3.png target=_blank><img src=image-3.png alt="One or more of selected applications is not valid"></a><figcaption>One or more of selected applications is not valid</figcaption></figure></div></p><h2 id=scripting-the-fix>Scripting the Fix</h2><p>If you launch the PowerShell console from the ConfigMgr console, you can run these commands to find out useful information about your Applications and their references.</p><h4 id=get-applications>Get Applications</h4><p>This command will return the list of applications and their counts of places they are used. For Task Sequences, you would look for <code>NumberOfDependentTS</code>.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-17>17</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>where-Object</span> NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 | <span style=color:#0086b3>select </span>LocalizedDisplayName, Number*
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#####################</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#RESULTS#</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>LocalizedDisplayName        <span style=color:#a61717;background-color:#e3d2d2>:</span> Google Chrome
+</span></span><span style=display:flex><span>NumberOfDependentDTs        <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfDependentTS         <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
+</span></span><span style=display:flex><span>NumberOfDeployments         <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
+</span></span><span style=display:flex><span>NumberOfDeploymentTypes     <span style=color:#a61717;background-color:#e3d2d2>:</span> 1
+</span></span><span style=display:flex><span>NumberOfDevicesWithApp      <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfDevicesWithFailure  <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfSettings            <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfUsersWithApp        <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfUsersWithFailure    <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfUsersWithRequest    <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>NumberOfVirtualEnvironments <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span></code></pre></td></tr></table></div></div><h4 id=get-task-sequences>Get Task Sequences</h4><p>This command will get all Task Sequences that have references to any Applications/Packages/Etc.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5>5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-6>6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-7>7</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>Get</span><span style=color:#000;font-weight:700>-</span>CMTaskSequence<span style=color:#bbb> </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Where</span><span style=color:#000;font-weight:700>-</span><span style=color:#000;font-weight:700>Object</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>-</span>ne<span style=color:#bbb> </span><span style=color:#a61717;background-color:#e3d2d2>$</span><span style=color:#000;font-weight:700>null</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>select</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>#####################</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>#</span>RESULTS<span style=color:#000;font-weight:700>#</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>Name<span style=color:#bbb>    </span><span style=color:#000;font-weight:700>References</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>----    ----------
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>Test<span style=color:#bbb> </span>TS<span style=color:#bbb> </span><span style=color:#a61717;background-color:#e3d2d2>{</span>...<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=get-applications-that-have-dependent-task-sequences>Get Applications that have Dependent Task Sequences</h4><p>This command will return all applications that have Dependent Task Sequences but don&rsquo;t have any Deployment Types. Note, you can change out <code>Application</code> for <code>Package</code> in any of these commands.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-19>19</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>Where-Object</span> {<span style=color:teal>$_</span>.NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 <span style=color:#000;font-weight:700>-and</span> <span style=color:teal>$_</span>.NumberOfDeploymentTypes <span style=color:#000;font-weight:700>-eq</span> 0}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#####################</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#RESULTS#</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>SmsProviderObjectPath              <span style=color:#a61717;background-color:#e3d2d2>:</span> SMS_Application.CI_ID=16777520
+</span></span><span style=display:flex><span>ApplicabilityCondition             <span style=color:#a61717;background-color:#e3d2d2>:</span>
+</span></span><span style=display:flex><span>CategoryInstance_UniqueIDs         <span style=color:#a61717;background-color:#e3d2d2>:</span> {}
+</span></span><span style=display:flex><span>CI_ID                              <span style=color:#a61717;background-color:#e3d2d2>:</span> 16777520
+</span></span><span style=display:flex><span>CI_UniqueID                        <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#0086b3>ScopeId_89BCCE7B-CC4E</span>-458F-A3F9-7E5BE4ADEF9E/Application_37ca86a3-9a6e-4bd2-aa41-d08c7692fef9/6
+</span></span><span style=display:flex><span>CIType_ID                          <span style=color:#a61717;background-color:#e3d2d2>:</span> 10
+</span></span><span style=display:flex><span>CIVersion                          <span style=color:#a61717;background-color:#e3d2d2>:</span> 6
+</span></span><span style=display:flex><span>ConfigurationFlags                 <span style=color:#a61717;background-color:#e3d2d2>:</span> 0
+</span></span><span style=display:flex><span>CreatedBy                          <span style=color:#a61717;background-color:#e3d2d2>:</span> ASD\Adam
+</span></span><span style=display:flex><span>DateCreated                        <span style=color:#a61717;background-color:#e3d2d2>:</span> 2/2/2019 9<span style=color:#a61717;background-color:#e3d2d2>:</span>44<span style=color:#a61717;background-color:#e3d2d2>:</span>06 PM
+</span></span><span style=display:flex><span>DateLastModified                   <span style=color:#a61717;background-color:#e3d2d2>:</span> 2/3/2019 12<span style=color:#a61717;background-color:#e3d2d2>:</span>15<span style=color:#a61717;background-color:#e3d2d2>:</span>54 AM
+</span></span><span style=display:flex><span>EffectiveDate                      <span style=color:#a61717;background-color:#e3d2d2>:</span>
+</span></span><span style=display:flex><span>EULAAccepted                       <span style=color:#a61717;background-color:#e3d2d2>:</span> 2
+</span></span><span style=display:flex><span>.......
+</span></span></code></pre></td></tr></table></div></div><h4 id=finding-the-task-sequences-that-references-the-invalid-applications>Finding the Task Sequences that References the invalid applications.</h4><p>Run this to find all Applications and Task Sequences that don&rsquo;t have a deployment type and have an invalid reference.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-21>21</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$Applications</span> = <span style=color:#0086b3>Get-CMApplication</span> | <span style=color:#0086b3>Where-Object</span> {<span style=color:teal>$_</span>.NumberOfDependentTS <span style=color:#000;font-weight:700>-gt</span> 0 <span style=color:#000;font-weight:700>-and</span> <span style=color:teal>$_</span>.NumberOfDeploymentTypes <span style=color:#000;font-weight:700>-eq</span> 0}
+</span></span><span style=display:flex><span><span style=color:teal>$TaskSequences</span> = <span style=color:#0086b3>Get-CMTaskSequence</span> | <span style=color:#0086b3>Where-Object</span> { <span style=color:teal>$_</span>.References <span style=color:#000;font-weight:700>-ne</span> <span style=color:teal>$null</span> }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># Run application report</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>foreach</span> (<span style=color:teal>$Application</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$Applications</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>foreach</span> (<span style=color:teal>$TaskSequence</span> <span style=color:#000;font-weight:700>in</span> <span style=color:teal>$TaskSequences</span>) {
+</span></span><span style=display:flex><span>        <span style=color:teal>$Ref</span> = <span style=color:#0086b3>New-Object</span> PSObject
+</span></span><span style=display:flex><span>        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Application Name&#39;</span> -Value <span style=color:teal>$Application</span>.LocalizedDisplayName
+</span></span><span style=display:flex><span>        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Package ID&#39;</span> -Value <span style=color:teal>$Application</span>.PackageID
+</span></span><span style=display:flex><span>        <span style=color:teal>$Ref</span> | <span style=color:#0086b3>Add-Member</span> -type NoteProperty -Name <span style=color:#d14>&#39;Task Sequence Name&#39;</span> -Value <span style=color:teal>$TaskSequence</span>.Name
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>$Ref</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#####################</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#RESULTS#</span>
+</span></span><span style=display:flex><span>Application Name   Package ID Task Sequence Name
+</span></span><span style=display:flex><span>----------------   ---------- ------------------
+</span></span><span style=display:flex><span>Google <span style=color:#0086b3>Chrome-copy</span>            Test TS
+</span></span></code></pre></td></tr></table></div></div><h2 id=summary>Summary</h2><p>From here, I just manually went into the Task Sequence and resolved the issue. I&rsquo;m haven&rsquo;t scripted Task Sequence stuff enough yet to feel comfortable just blindly removing the invalid reference. Hopefully this gets you through the hard part.</p><p>Well that&rsquo;s all I&rsquo;ve got for this one. Hopefully you find it useful. I&rsquo;d like to thank <a href=https://twitter.com/modaly_it>Maurice Daly</a> for his <a href=http://www.scconfigmgr.com/2017/08/11/using-powershell-for-cleaning-up-packages-and-applications/>post on cleaning up applications</a>. It saved me a few steps on putting everything together.</p></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

@@ -1,732 +1,413 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/2021-11-17_17-39-31.png">
-<meta name=twitter:title content="Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation">
-<meta name=twitter:description content="The Key to Success is Knowledge Recently Garth Jones accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when Bryan Dam came to me demanding to know the keys to BitLocker keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:
-Keying in on the Issue When trying to automate processes around ConfigMgr, there are Ways to do things then there are Supported Ways to do things.">
-<meta property="og:title" content="Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation">
-<meta property="og:description" content="The Key to Success is Knowledge Recently Garth Jones accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when Bryan Dam came to me demanding to know the keys to BitLocker keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:
-Keying in on the Issue When trying to automate processes around ConfigMgr, there are Ways to do things then there are Supported Ways to do things.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/"><meta property="og:image" content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/2021-11-17_17-39-31.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-11-17T00:00:00+00:00">
-<meta property="article:modified_time" content="2021-11-17T00:00:00+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/2021-11-17_17-39-31.png"><meta name=twitter:title content="Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation"><meta name=twitter:description content="The Key to Success is Knowledge Recently Garth Jones accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when Bryan Dam came to me demanding to know the keys to BitLocker keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:
+Keying in on the Issue When trying to automate processes around ConfigMgr, there are Ways to do things then there are Supported Ways to do things."><meta property="og:title" content="Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation"><meta property="og:description" content="The Key to Success is Knowledge Recently Garth Jones accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when Bryan Dam came to me demanding to know the keys to BitLocker keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:
+Keying in on the Issue When trying to automate processes around ConfigMgr, there are Ways to do things then there are Supported Ways to do things."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/"><meta property="og:image" content="https://www.asquaredozen.com/2021/11/17/using-the-configmgr-adminservice-to-retrieve-bitlocker-recovery-keys-and-triggering-key-rotation/2021-11-17_17-39-31.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-11-17T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-17T00:00:00+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation</h1>
-<span class=post-date>November 17, 2021</span>
-</div>
-<div class=post-entry>
-<h1 id=the-key-to-success-is-knowledge>The Key to Success is Knowledge</h1>
-<p>Recently <a href=https://twitter.com/GarthMJ>Garth Jones</a> accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when <a href=https://twitter.com/bdam555>Bryan Dam</a> came to me demanding to know the keys to <a href=https://docs.microsoft.com/windows/security/information-protection/bitlocker/bitlocker-overview>BitLocker</a> keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:</p>
-<h2 id=keying-in-on-the-issue>Keying in on the Issue</h2>
-<p>When trying to automate processes around ConfigMgr, there are <strong>Ways</strong> to do things then there are <strong>Supported Ways</strong> to do things. Bryan asked if I knew <strong>Supported Ways</strong> to extract a Bitlocker recovery key from the ConfigMgr database in a way that marks the key as disclosed and forces the client device to rotate keys. Sure sounded like Garth put him up to this.</p>
-<h2 id=the-key-to-success>The Key to Success</h2>
-<p>Enter <a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>AdminService</a>. You remember that guy right? It&rsquo;s been a while since I&rsquo;ve written anything about it and I can honestly say, it has come a LONG way. I may need to update my guide soon. The AdminService is now used as part of the backend that enabled <a href=https://docs.microsoft.com/mem/configmgr/tenant-attach/device-sync-actions>Cloud Attach (formerly Tenant Attach)</a> to integrate into the <a href=https://endpoint.microsoft.com/>Microsoft Endpoint Manager Admin Console</a> (we all still just call it Intune :-)).</p>
-<p>When you enable Cloud Attach, you get access to ConfigMgr attributes and methods that have always been in-console-only items.</p>
-<p><div class=image>
-<figure>
-<a href=2021-11-17_17-36-11.png target=_blank>
-<img src=2021-11-17_17-36-11.png alt="Cloud Attach Resources in the MEM Console">
-</a>
-<figcaption>Cloud Attach Resources in the MEM Console</figcaption>
-</figure>
-</div></p>
-<p>One of these items is the <a href=https://docs.microsoft.com/mem/configmgr/tenant-attach/bitlocker-recovery-keys>Recovery Keys</a> blade. It allows you to, yep, you guessed it, see BitLocker recovery keys for your ConfigMgr managed devices. When you click the <strong>Recovery keys (preview)</strong> blade, you will see a list of keys and a link on each one to view the Recovery Key.</p>
-<p><div class=image>
-<figure>
-<a href=2021-11-17_17-39-31.png target=_blank>
-<img src=2021-11-17_17-39-31.png alt="RECOVERY KEYS!">
-</a>
-<figcaption>RECOVERY KEYS!</figcaption>
-</figure>
-</div></p>
-<p>When you click on <strong>Show recovery key</strong> you will be notified that the key will be marked disclosed and that this will trigger a key rotation on the client. This is exactly what we want!</p>
-<p><div class=image>
-<figure>
-<a href=2021-11-17_17-41-36.png target=_blank>
-<img src=2021-11-17_17-41-36.png alt="Are you sure you want to trigger key rotation?">
-</a>
-<figcaption>Are you sure you want to trigger key rotation?</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=2021-11-17_17-42-34.png target=_blank>
-<img src=2021-11-17_17-42-34.png alt="Look at this beautiful key!">
-</a>
-<figcaption>Look at this beautiful key!</figcaption>
-</figure>
-</div></p>
-<p>What&rsquo;s great about the AdminService is that it has a verbose log file. You can find the log in the install directory of your SMS Provider server (generally your primary) AdminService.log. If you watch the log as you navigate in the MEM portal and click through to display the recovery key, you will see each call back to the AdminService to retrieve the data which is then displayed in the web console. The logs look like this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=38><a style=outline:none;text-decoration:none;color:inherit href=#38>38</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=39><a style=outline:none;text-decoration:none;color:inherit href=#39>39</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=40><a style=outline:none;text-decoration:none;color:inherit href=#40>40</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=41><a style=outline:none;text-decoration:none;color:inherit href=#41>41</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=42><a style=outline:none;text-decoration:none;color:inherit href=#42>42</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=43><a style=outline:none;text-decoration:none;color:inherit href=#43>43</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=44><a style=outline:none;text-decoration:none;color:inherit href=#44>44</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=45><a style=outline:none;text-decoration:none;color:inherit href=#45>45</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=46><a style=outline:none;text-decoration:none;color:inherit href=#46>46</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=47><a style=outline:none;text-decoration:none;color:inherit href=#47>47</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=48><a style=outline:none;text-decoration:none;color:inherit href=#48>48</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=49><a style=outline:none;text-decoration:none;color:inherit href=#49>49</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=50><a style=outline:none;text-decoration:none;color:inherit href=#50>50</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=51><a style=outline:none;text-decoration:none;color:inherit href=#51>51</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=52><a style=outline:none;text-decoration:none;color:inherit href=#52>52</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=53><a style=outline:none;text-decoration:none;color:inherit href=#53>53</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=54><a style=outline:none;text-decoration:none;color:inherit href=#54>54</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[GET]</span>, User - [NT AUTHORITY\SYSTEM]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[55641]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
-Received request from the notification channel.
-Successfully validated request from Service Connection Point.
-Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
-Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
-Provider authentication level and exception list not present or expired. Retrieving from database.
-User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
-Get all instances of Device.
-Completing request with response code [200] reason <span style=color:teal>[OK]</span>
-
-Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/RecoveryKeys], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[GET]</span>, User - [NT AUTHORITY\SYSTEM]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[55646]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
-Received request from the notification channel.
-Successfully validated request from Service Connection Point.
-Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
-Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
-Provider authentication level and exception list up to date.
-User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
-Completing request with response code [200] reason <span style=color:teal>[OK]</span>
-
-Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[POST]</span>, User - [NT AUTHORITY\SYSTEM]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> [<span style=color:#0086b3>Content-Length</span>]=[56]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> [<span style=color:#0086b3>Content-Type</span>]=[application/json]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Expect]</span>=[100-continue]
-Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[62213]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[application/json]
-Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
-Received request from the notification channel.
-Successfully validated request from Service Connection Point.
-Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
-Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
-Provider authentication level and exception list up to date.
-User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
-Get instance of Device with key <span style=color:#d14>&#39;16777377&#39;</span>
-User ASD\Adam requests to read value of recovery key 5eb3baec-4e9b-49f4-9aee-90d3554aef05 on device 16777377 (<span style=color:#0086b3>CMCB-WS01</span>).
-Completing request with response code [200] reason <span style=color:teal>[OK]</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p>The above log entries show 3 calls to the AdminService and although some of the data is obfuscated, we can piece it all together.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>#Using a GET Method:</span>
-<span style=color:#998;font-style:italic>#Get the Device:</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode
-
-<span style=color:#998;font-style:italic>#Base Device Entity</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
-
-<span style=color:#998;font-style:italic>#ODATA syntax to filter to find the specific device using SMSID and passing in the device GUID</span>
-?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>
-
-<span style=color:#998;font-style:italic># Select statement to explicitly return device properties. We can exclude this if we just want everything back.</span>
-&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#998;font-style:italic>//Response data. Note that this returned an Array since we used $filter.
-</span><span style=color:#998;font-style:italic></span>{
-    <span style=color:navy>&#34;@odata.context&#34;</span>: <span style=color:#d14>&#34;https://cm01.asd.net/AdminService/v1.0/$metadata#Device(MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode)&#34;</span>,
-    <span style=color:navy>&#34;value&#34;</span>: [
-        {
-        <span style=color:navy>&#34;MachineId&#34;</span>: <span style=color:#099>16777377</span>,
-        <span style=color:navy>&#34;ADSiteName&#34;</span>: <span style=color:#d14>&#34;Houston&#34;</span>,
-        <span style=color:navy>&#34;CNLastOnlineTime&#34;</span>: <span style=color:#d14>&#34;2021-11-05T21:49:33.287Z&#34;</span>,
-        <span style=color:navy>&#34;CNLastOfflineTime&#34;</span>: <span style=color:#d14>&#34;2021-11-06T01:58:14.697Z&#34;</span>,
-        <span style=color:navy>&#34;CNAccessMP&#34;</span>: <span style=color:#d14>&#34;CM01.asd.net&#34;</span>,
-        <span style=color:navy>&#34;CurrentLogonUser&#34;</span>: <span style=color:#000;font-weight:700>null</span>,
-        <span style=color:navy>&#34;CoManaged&#34;</span>: <span style=color:#099>1</span>,
-        <span style=color:navy>&#34;CA_IsCompliant&#34;</span>: <span style=color:#099>0</span>,
-        <span style=color:navy>&#34;ClientVersion&#34;</span>: <span style=color:#d14>&#34;5.00.9058.1018&#34;</span>,
-        <span style=color:navy>&#34;Domain&#34;</span>: <span style=color:#d14>&#34;ASD&#34;</span>,
-        <span style=color:navy>&#34;IsApproved&#34;</span>: <span style=color:#099>3</span>,
-        <span style=color:navy>&#34;IsVirtualMachine&#34;</span>: <span style=color:#000;font-weight:700>true</span>,
-        <span style=color:navy>&#34;LastPolicyRequest&#34;</span>: <span style=color:#d14>&#34;2021-11-06T00:32:02Z&#34;</span>,
-        <span style=color:navy>&#34;LastMPServerName&#34;</span>: <span style=color:#d14>&#34;CM01.ASD.NET&#34;</span>,
-        <span style=color:navy>&#34;LastActiveTime&#34;</span>: <span style=color:#d14>&#34;2021-11-06T00:32:02Z&#34;</span>,
-        <span style=color:navy>&#34;DeviceOSBuild&#34;</span>: <span style=color:#d14>&#34;10.0.19043.1288&#34;</span>,
-        <span style=color:navy>&#34;CNIsOnInternet&#34;</span>: <span style=color:#000;font-weight:700>false</span>,
-        <span style=color:navy>&#34;CNIsOnline&#34;</span>: <span style=color:#000;font-weight:700>false</span>,
-        <span style=color:navy>&#34;MACAddress&#34;</span>: <span style=color:#d14>&#34;00:15:5D:01:11:C3&#34;</span>,
-        <span style=color:navy>&#34;SiteCode&#34;</span>: <span style=color:#d14>&#34;PS1&#34;</span>
-        }
-    ]
-}
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>#Using a GET Method:</span>
-<span style=color:#998;font-style:italic>#Get the list of recovery key ids for the specific device</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/RecoveryKeys
-
-<span style=color:#998;font-style:italic>#Base Device Entity</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
-
-<span style=color:#998;font-style:italic>#Device&#39;s ResourceId/MachineId from the ConfigMgr database.</span>
-(16777377)
-
-<span style=color:#998;font-style:italic>#RecoveryKeys entity to retrieve the key ids</span>
-/RecoveryKeys
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#998;font-style:italic>//Response Data
-</span><span style=color:#998;font-style:italic></span>{
-    <span style=color:navy>&#34;@odata.context&#34;</span>: <span style=color:#d14>&#34;https://cm01.asd.net/AdminService/v1.0/$metadata#RecoveryKey&#34;</span>,
-    <span style=color:navy>&#34;value&#34;</span>: [
-        {
-        <span style=color:navy>&#34;ItemKey&#34;</span>: <span style=color:#099>16777377</span>,
-        <span style=color:navy>&#34;RecoveryKeyId&#34;</span>: <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>,
-        <span style=color:navy>&#34;VolumeTypeId&#34;</span>: <span style=color:#099>1</span>
-        }
-    ]
-}
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>#Using a POST Method:</span>
-<span style=color:#998;font-style:italic>#Post data to the GetRecoveryKeyValue action/function to return the recovery key values</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue
-
-<span style=color:#998;font-style:italic>#Base Device Entity</span>
-https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
-
-<span style=color:#998;font-style:italic>#Device&#39;s ResourceId/MachineId from the ConfigMgr database.</span>
-(16777377)
-
-<span style=color:#998;font-style:italic>#GetRecoveryKeyValue Action/function to submit a body with the recovery id key from the previous call.</span>
-/AdminService.GetRecoveryKeyValue
-
-<span style=color:#998;font-style:italic>#Not shown in the logs - since this is a POST method, we need to send in JSON a body. The format for the body is found in the metadata XML I&#39;ll show later in the post.</span>
-
-{
-    <span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>
-}
-
-<span style=color:#998;font-style:italic>#Response Data</span>
-{
-    <span style=color:#d14>&#34;value&#34;</span><span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;161964-088066-081752-251955-663949-379379-473033-388113&#34;</span>
-}
-
-</code></pre></td></tr></table>
-</div>
-</div><p>From a client machine, this is equivalent to running <code>manage-bde -protectors -get c:</code> and retrieving the Numerical Password ID and Password as shown below.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>C:\Windows\system32&gt;manage-bde -protectors -get c:
-BitLocker Drive Encryption: Configuration Tool version 10.0.19041
-Copyright (C) 2013 Microsoft Corporation. All rights reserved.
-
-Volume C: []
-All Key Protectors
-
-    Numerical Password:
-      ID: {5EB3BAEC-4E9B-49F4-9AEE-90D3554AEF05}
-      Password:
-        161964-088066-081752-251955-663949-379379-473033-388113
-
-    TPM:
-      ID: {0884EEB4-3DE1-46BD-A6D6-258C70714B88}
-      PCR Validation Profile:
-        7, 11
-        (Uses Secure Boot for integrity validation)
-</code></pre></td></tr></table>
-</div>
-</div><h2 id=the-key-to-knowledge-is-understanding>The Key to Knowledge is Understanding</h2>
-<p>As I&rsquo;ve mentioned in <a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>previous posts</a>, you can view the metadata XML for the AdminService by using the following url:</p>
-<p><code>https://cm01.asd.net/AdminService/v1.0/$metadata</code></p>
-<p>The part we care about is this (From CB 2107):</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:navy>&lt;EntityType</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKey&#34;</span><span style=color:navy>&gt;</span>
-    <span style=color:navy>&lt;Key&gt;</span>
-        <span style=color:navy>&lt;PropertyRef</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;ItemKey&#34;</span><span style=color:navy>/&gt;</span>
-        <span style=color:navy>&lt;PropertyRef</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;/Key&gt;</span>
-    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;ItemKey&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Int32&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.String&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;VolumeTypeId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Byte&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;NavigationProperty</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;Device&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Microsoft.ConfigurationManager.ObjectLibrary.Models.Device&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>&gt;</span>
-        <span style=color:navy>&lt;ReferentialConstraint</span> <span style=color:teal>Property=</span><span style=color:#d14>&#34;ItemKey&#34;</span> <span style=color:teal>ReferencedProperty=</span><span style=color:#d14>&#34;MachineId&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;/NavigationProperty&gt;</span>
-<span style=color:navy>&lt;/EntityType&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>Take note of the <strong>NavigationProperty</strong> above. This indicates that we can retrieve the recovery key info FROM another entity, in this case, from a <strong>Device</strong> entity. If we scroll a little more we will see the Action or Function that we want to call <strong>GetRecoveryKeyValue</strong></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:navy>&lt;Action</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;GetRecoveryKeyValue&#34;</span> <span style=color:teal>IsBound=</span><span style=color:#d14>&#34;true&#34;</span><span style=color:navy>&gt;</span>
-    <span style=color:navy>&lt;Parameter</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;bindingParameter&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Microsoft.ConfigurationManager.ObjectLibrary.Models.Device&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;Parameter</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Guid&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
-    <span style=color:navy>&lt;ReturnType</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.String&#34;</span> <span style=color:teal>Unicode=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
-<span style=color:navy>&lt;/Action&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>From this snippet we can see that we call this action on a Device entity <strong>bindingParameter</strong> and have to pass in a body with parameters <strong>RecoveryKeyId</strong>. This is the bit that translates to these lines from above:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue
-
-{
-    <span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>
-}
-</code></pre></td></tr></table>
-</div>
-</div><p>Using Fiddler, you can trigger this command to test it out.</p>
-<p><div class=image>
-<figure>
-<a href=2021-11-17_19-25-58.png target=_blank>
-<img src=2021-11-17_19-25-58.png alt="Fiddler doing some coolness!">
-</a>
-<figcaption>2021-11-17_19-25-58.png</figcaption>
-</figure>
-</div></p>
-<h2 id=there-can-only-be-one-master-key-or-is-it-key-master>There can only be one Master Key or is it Key Master?</h2>
-<p>For this next part I was going to show you how to watch the client rotate the key, but it turns out that my lab&rsquo;s MBAM instance may no longer be in existence, so instead I&rsquo;ll direct you over to the always thorough and informative, <a href=https://www.windows-noob.com/forums/topic/19925-how-does-key-rotation-work-in-the-bitlocker-managment-feature-in-configmgr/>Niall Brady!</a></p>
-<h2 id=have-you-recovered-from-all-of-the-key-puns-yet>Have you Recovered from all of the Key puns yet?</h2>
-<p>So after digging through all of these thing we have all of the pieces we need to write script, or build this into an enterprise-class 3rd party product so people can leverage it other places&mldr;</p>
-<p>I&rsquo;ve uploaded a <a href=https://github.com/AdamGrossTX/Toolbox/blob/675e396a35eecaf4a66fee782e510df7b895e2ce/ConfigMgr/AdminService/AdminSerivce-GetBitlockerRecoveryKey.ps1>copy of my full example script to my GitHub repo</a>, but here are the basics in PowerShell.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#998;font-style:italic>#The script assumes you have the resource ID.</span>
-<span style=color:#000;font-weight:700>param</span>(
-    <span style=color:teal>[string]</span><span style=color:teal>$ServerName</span>
-    <span style=color:teal>[int]</span><span style=color:teal>$ResourceID</span>
-)
-
-<span style=color:#998;font-style:italic>#Get the Device</span>
-<span style=color:teal>$Device</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)&#34;</span> -Method Get -UseDefaultCredentials
-
-<span style=color:#998;font-style:italic>#Get the recovery key IDs</span>
-<span style=color:teal>$KeyIDs</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)/RecoveryKeys&#34;</span> -Method Get -UseDefaultCredentials
-
-<span style=color:#998;font-style:italic>#Loop through the Ids and return the Recovery Keys</span>
-<span style=color:teal>$KeyIDs</span>.value | <span style=color:#0086b3>ForEach-Object</span> {
-    <span style=color:teal>$Body</span> = @{RecoveryKeyId = <span style=color:teal>$_</span>.RecoveryKeyId} | <span style=color:#0086b3>ConvertTo-Json</span>
-    <span style=color:teal>$Keys</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)/AdminService.GetRecoveryKeyValue&#34;</span> -Method Post -Body <span style=color:teal>$Body</span> -UseDefaultCredentials -ContentType <span style=color:#d14>&#34;application/json&#34;</span> 
-    <span style=color:teal>$Keys</span>
-}
-
-<span style=color:#998;font-style:italic>#Result</span>
-<span style=color:#998;font-style:italic>#value</span>
-<span style=color:#998;font-style:italic>#-----</span>
-<span style=color:#998;font-style:italic>#161964-088066-081752-251955-663949-379379-473033-388113</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><h2 id=keyping-up-is-hard-to-do>KEYping up is Hard to Do</h2>
-<p>Well that&rsquo;s pretty much it. Hope you learned something new, I sure did. Thanks Bryan and Garth for the inspiration to give it go. Hope to see you at <a href=https://www.mmsmoa.com/>MMSMOA in May 2022</a>!</p>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Using the ConfigMgr AdminService to Retrieve BitLocker Recovery Keys and Triggering Key Rotation</h1><span class=post-date>November 17, 2021</span></div><div class=post-entry><h1 id=the-key-to-success-is-knowledge>The Key to Success is Knowledge</h1><p>Recently <a href=https://twitter.com/GarthMJ>Garth Jones</a> accused me of knowing something that I knew nothing about and I was very offended by that. So much so, that when <a href=https://twitter.com/bdam555>Bryan Dam</a> came to me demanding to know the keys to <a href=https://docs.microsoft.com/windows/security/information-protection/bitlocker/bitlocker-overview>BitLocker</a> keys in ConfigMgr, I decided I should figure it out. So I did. Here&rsquo;s what I know now:</p><h2 id=keying-in-on-the-issue>Keying in on the Issue</h2><p>When trying to automate processes around ConfigMgr, there are <strong>Ways</strong> to do things then there are <strong>Supported Ways</strong> to do things. Bryan asked if I knew <strong>Supported Ways</strong> to extract a Bitlocker recovery key from the ConfigMgr database in a way that marks the key as disclosed and forces the client device to rotate keys. Sure sounded like Garth put him up to this.</p><h2 id=the-key-to-success>The Key to Success</h2><p>Enter <a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>AdminService</a>. You remember that guy right? It&rsquo;s been a while since I&rsquo;ve written anything about it and I can honestly say, it has come a LONG way. I may need to update my guide soon. The AdminService is now used as part of the backend that enabled <a href=https://docs.microsoft.com/mem/configmgr/tenant-attach/device-sync-actions>Cloud Attach (formerly Tenant Attach)</a> to integrate into the <a href=https://endpoint.microsoft.com/>Microsoft Endpoint Manager Admin Console</a> (we all still just call it Intune :-)).</p><p>When you enable Cloud Attach, you get access to ConfigMgr attributes and methods that have always been in-console-only items.</p><p><div class=image><figure><a href=2021-11-17_17-36-11.png target=_blank><img src=2021-11-17_17-36-11.png alt="Cloud Attach Resources in the MEM Console"></a><figcaption>Cloud Attach Resources in the MEM Console</figcaption></figure></div></p><p>One of these items is the <a href=https://docs.microsoft.com/mem/configmgr/tenant-attach/bitlocker-recovery-keys>Recovery Keys</a> blade. It allows you to, yep, you guessed it, see BitLocker recovery keys for your ConfigMgr managed devices. When you click the <strong>Recovery keys (preview)</strong> blade, you will see a list of keys and a link on each one to view the Recovery Key.</p><p><div class=image><figure><a href=2021-11-17_17-39-31.png target=_blank><img src=2021-11-17_17-39-31.png alt="RECOVERY KEYS!"></a><figcaption>RECOVERY KEYS!</figcaption></figure></div></p><p>When you click on <strong>Show recovery key</strong> you will be notified that the key will be marked disclosed and that this will trigger a key rotation on the client. This is exactly what we want!</p><p><div class=image><figure><a href=2021-11-17_17-41-36.png target=_blank><img src=2021-11-17_17-41-36.png alt="Are you sure you want to trigger key rotation?"></a><figcaption>Are you sure you want to trigger key rotation?</figcaption></figure></div></p><p><div class=image><figure><a href=2021-11-17_17-42-34.png target=_blank><img src=2021-11-17_17-42-34.png alt="Look at this beautiful key!"></a><figcaption>Look at this beautiful key!</figcaption></figure></div></p><p>What&rsquo;s great about the AdminService is that it has a verbose log file. You can find the log in the install directory of your SMS Provider server (generally your primary) AdminService.log. If you watch the log as you navigate in the MEM portal and click through to display the recovery key, you will see each call back to the AdminService to retrieve the data which is then displayed in the web console. The logs look like this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-23>23</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-24><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-24>24</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-25><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-25>25</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-26><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-26>26</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-27><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-27>27</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-28><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-28>28</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-29><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-29>29</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-30><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-30>30</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-31><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-31>31</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-32><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-32>32</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-33><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-33>33</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-34><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-34>34</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-35><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-35>35</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-36><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-36>36</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-37><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-37>37</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-38><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-38>38</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-39><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-39>39</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-40><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-40>40</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-41><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-41>41</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-42><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-42>42</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-43><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-43>43</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-44><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-44>44</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-45><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-45>45</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-46><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-46>46</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-47><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-47>47</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-48><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-48>48</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-49><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-49>49</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-50><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-50>50</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-51><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-51>51</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-52><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-52>52</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-53><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-53>53</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[GET]</span>, User - [NT AUTHORITY\SYSTEM]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[55641]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
+</span></span><span style=display:flex><span>Received request from the notification channel.
+</span></span><span style=display:flex><span>Successfully validated request from Service Connection Point.
+</span></span><span style=display:flex><span>Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
+</span></span><span style=display:flex><span>Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
+</span></span><span style=display:flex><span>Provider authentication level and exception list not present or expired. Retrieving from database.
+</span></span><span style=display:flex><span>User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
+</span></span><span style=display:flex><span>Get all instances of Device.
+</span></span><span style=display:flex><span>Completing request with response code [200] reason <span style=color:teal>[OK]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/RecoveryKeys], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[GET]</span>, User - [NT AUTHORITY\SYSTEM]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[55646]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
+</span></span><span style=display:flex><span>Received request from the notification channel.
+</span></span><span style=display:flex><span>Successfully validated request from Service Connection Point.
+</span></span><span style=display:flex><span>Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
+</span></span><span style=display:flex><span>Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
+</span></span><span style=display:flex><span>Provider authentication level and exception list up to date.
+</span></span><span style=display:flex><span>User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
+</span></span><span style=display:flex><span>Completing request with response code [200] reason <span style=color:teal>[OK]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Processing incoming request <span style=color:#000;font-weight:700>for</span> resource [https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue], method<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[POST]</span>, User - [NT AUTHORITY\SYSTEM]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ServiceNotification]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> [<span style=color:#0086b3>Content-Length</span>]=[56]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> [<span style=color:#0086b3>Content-Type</span>]=[application/json]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Authorization]</span>=[**************]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Expect]</span>=[100-continue]
+</span></span><span style=display:flex><span>Header<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Host]</span>=<span style=color:teal>[cm01.asd.net]</span>
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemoteIpAddress]</span>=[fe80::9d59<span style=color:#a61717;background-color:#e3d2d2>:</span>e444<span style=color:#a61717;background-color:#e3d2d2>:</span>736c<span style=color:#a61717;background-color:#e3d2d2>:</span>f5e2<span style=color:#000;font-weight:700>%</span>4]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[RemotePort]</span>=[62213]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[ContentType]</span>=[application/json]
+</span></span><span style=display:flex><span>Context<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>[Accept]</span>=[]
+</span></span><span style=display:flex><span>Received request from the notification channel.
+</span></span><span style=display:flex><span>Successfully validated request from Service Connection Point.
+</span></span><span style=display:flex><span>Successfully validated user [10d75920-6cf5-48de-955c-e856de2a39de,S-1-5-21-1909024835-672986419-4090565466-1624] from tenant [**************].
+</span></span><span style=display:flex><span>Successfully logged on user using user principal name Adam<span style=color:teal>@ASD</span>.NET.
+</span></span><span style=display:flex><span>Provider authentication level and exception list up to date.
+</span></span><span style=display:flex><span>User ASD\Adam is allowed because it is validated with current authentication level <span style=color:#000;font-weight:700>Default</span>.
+</span></span><span style=display:flex><span>Get instance of Device with key <span style=color:#d14>&#39;16777377&#39;</span>
+</span></span><span style=display:flex><span>User ASD\Adam requests to read value of recovery key 5eb3baec-4e9b-49f4-9aee-90d3554aef05 on device 16777377 (<span style=color:#0086b3>CMCB-WS01</span>).
+</span></span><span style=display:flex><span>Completing request with response code [200] reason <span style=color:teal>[OK]</span>
+</span></span></code></pre></td></tr></table></div></div><p>The above log entries show 3 calls to the AdminService and although some of the data is obfuscated, we can piece it all together.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-12>12</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#998;font-style:italic>#Using a GET Method:</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Get the Device:</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Base Device Entity</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#ODATA syntax to filter to find the specific device using SMSID and passing in the device GUID</span>
+</span></span><span style=display:flex><span>?<span style=color:teal>$filter</span>=SMSID eq <span style=color:#d14>&#39;GUID:3d03b4dd-2007-47da-af02-83800df961c0&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># Select statement to explicitly return device properties. We can exclude this if we just want everything back.</span>
+</span></span><span style=display:flex><span>&amp;<span style=color:teal>$select</span>=MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-23>23</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-24><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-24>24</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-25><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-25>25</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-26><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-26>26</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-27><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-27>27</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-28><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-28>28</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span><span style=color:#998;font-style:italic>//Response data. Note that this returned an Array since we used $filter.
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>{
+</span></span><span style=display:flex><span>    <span style=color:navy>&#34;@odata.context&#34;</span>: <span style=color:#d14>&#34;https://cm01.asd.net/AdminService/v1.0/$metadata#Device(MachineId,ADSiteName,CNLastOnlineTime,CNLastOfflineTime,CNAccessMP,CurrentLogonUser,CoManaged,CA_IsCompliant,ClientVersion,Domain,IsApproved,IsVirtualMachine,LastPolicyRequest,LastMPServerName,LastActiveTime,DeviceOSBuild,CNIsOnInternet,CNIsOnline,MACAddress,SiteCode)&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:navy>&#34;value&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;MachineId&#34;</span>: <span style=color:#099>16777377</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;ADSiteName&#34;</span>: <span style=color:#d14>&#34;Houston&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CNLastOnlineTime&#34;</span>: <span style=color:#d14>&#34;2021-11-05T21:49:33.287Z&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CNLastOfflineTime&#34;</span>: <span style=color:#d14>&#34;2021-11-06T01:58:14.697Z&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CNAccessMP&#34;</span>: <span style=color:#d14>&#34;CM01.asd.net&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CurrentLogonUser&#34;</span>: <span style=color:#000;font-weight:700>null</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CoManaged&#34;</span>: <span style=color:#099>1</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CA_IsCompliant&#34;</span>: <span style=color:#099>0</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;ClientVersion&#34;</span>: <span style=color:#d14>&#34;5.00.9058.1018&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;Domain&#34;</span>: <span style=color:#d14>&#34;ASD&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;IsApproved&#34;</span>: <span style=color:#099>3</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;IsVirtualMachine&#34;</span>: <span style=color:#000;font-weight:700>true</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;LastPolicyRequest&#34;</span>: <span style=color:#d14>&#34;2021-11-06T00:32:02Z&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;LastMPServerName&#34;</span>: <span style=color:#d14>&#34;CM01.ASD.NET&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;LastActiveTime&#34;</span>: <span style=color:#d14>&#34;2021-11-06T00:32:02Z&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;DeviceOSBuild&#34;</span>: <span style=color:#d14>&#34;10.0.19043.1288&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CNIsOnInternet&#34;</span>: <span style=color:#000;font-weight:700>false</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;CNIsOnline&#34;</span>: <span style=color:#000;font-weight:700>false</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;MACAddress&#34;</span>: <span style=color:#d14>&#34;00:15:5D:01:11:C3&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;SiteCode&#34;</span>: <span style=color:#d14>&#34;PS1&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-12>12</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#998;font-style:italic>#Using a GET Method:</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Get the list of recovery key ids for the specific device</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/RecoveryKeys
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Base Device Entity</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Device&#39;s ResourceId/MachineId from the ConfigMgr database.</span>
+</span></span><span style=display:flex><span>(16777377)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#RecoveryKeys entity to retrieve the key ids</span>
+</span></span><span style=display:flex><span>/RecoveryKeys
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-11>11</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span><span style=color:#998;font-style:italic>//Response Data
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>{
+</span></span><span style=display:flex><span>    <span style=color:navy>&#34;@odata.context&#34;</span>: <span style=color:#d14>&#34;https://cm01.asd.net/AdminService/v1.0/$metadata#RecoveryKey&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:navy>&#34;value&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;ItemKey&#34;</span>: <span style=color:#099>16777377</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;RecoveryKeyId&#34;</span>: <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:navy>&#34;VolumeTypeId&#34;</span>: <span style=color:#099>1</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-23>23</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#998;font-style:italic>#Using a POST Method:</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Post data to the GetRecoveryKeyValue action/function to return the recovery key values</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Base Device Entity</span>
+</span></span><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Device&#39;s ResourceId/MachineId from the ConfigMgr database.</span>
+</span></span><span style=display:flex><span>(16777377)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#GetRecoveryKeyValue Action/function to submit a body with the recovery id key from the previous call.</span>
+</span></span><span style=display:flex><span>/AdminService.GetRecoveryKeyValue
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Not shown in the logs - since this is a POST method, we need to send in JSON a body. The format for the body is found in the metadata XML I&#39;ll show later in the post.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Response Data</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#d14>&#34;value&#34;</span><span style=color:#a61717;background-color:#e3d2d2>:</span><span style=color:#d14>&#34;161964-088066-081752-251955-663949-379379-473033-388113&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>From a client machine, this is equivalent to running <code>manage-bde -protectors -get c:</code> and retrieving the Numerical Password ID and Password as shown below.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-17>17</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>C:\Windows\system32&gt;manage-bde -protectors -get c:
+</span></span><span style=display:flex><span>BitLocker Drive Encryption: Configuration Tool version 10.0.19041
+</span></span><span style=display:flex><span>Copyright (C) 2013 Microsoft Corporation. All rights reserved.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Volume C: []
+</span></span><span style=display:flex><span>All Key Protectors
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    Numerical Password:
+</span></span><span style=display:flex><span>      ID: {5EB3BAEC-4E9B-49F4-9AEE-90D3554AEF05}
+</span></span><span style=display:flex><span>      Password:
+</span></span><span style=display:flex><span>        161964-088066-081752-251955-663949-379379-473033-388113
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    TPM:
+</span></span><span style=display:flex><span>      ID: {0884EEB4-3DE1-46BD-A6D6-258C70714B88}
+</span></span><span style=display:flex><span>      PCR Validation Profile:
+</span></span><span style=display:flex><span>        7, 11
+</span></span><span style=display:flex><span>        (Uses Secure Boot for integrity validation)
+</span></span></code></pre></td></tr></table></div></div><h2 id=the-key-to-knowledge-is-understanding>The Key to Knowledge is Understanding</h2><p>As I&rsquo;ve mentioned in <a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>previous posts</a>, you can view the metadata XML for the AdminService by using the following url:</p><p><code>https://cm01.asd.net/AdminService/v1.0/$metadata</code></p><p>The part we care about is this (From CB 2107):</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-7-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-7-12>12</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:navy>&lt;EntityType</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKey&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Key&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:navy>&lt;PropertyRef</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;ItemKey&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:navy>&lt;PropertyRef</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/Key&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;ItemKey&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Int32&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.String&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Property</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;VolumeTypeId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Byte&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;NavigationProperty</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;Device&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Microsoft.ConfigurationManager.ObjectLibrary.Models.Device&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:navy>&lt;ReferentialConstraint</span> <span style=color:teal>Property=</span><span style=color:#d14>&#34;ItemKey&#34;</span> <span style=color:teal>ReferencedProperty=</span><span style=color:#d14>&#34;MachineId&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/NavigationProperty&gt;</span>
+</span></span><span style=display:flex><span><span style=color:navy>&lt;/EntityType&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>Take note of the <strong>NavigationProperty</strong> above. This indicates that we can retrieve the recovery key info FROM another entity, in this case, from a <strong>Device</strong> entity. If we scroll a little more we will see the Action or Function that we want to call <strong>GetRecoveryKeyValue</strong></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-8-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-8-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-8-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-8-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-8-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-8-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-8-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-8-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-8-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-8-5>5</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:navy>&lt;Action</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;GetRecoveryKeyValue&#34;</span> <span style=color:teal>IsBound=</span><span style=color:#d14>&#34;true&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Parameter</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;bindingParameter&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Microsoft.ConfigurationManager.ObjectLibrary.Models.Device&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;Parameter</span> <span style=color:teal>Name=</span><span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.Guid&#34;</span> <span style=color:teal>Nullable=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;ReturnType</span> <span style=color:teal>Type=</span><span style=color:#d14>&#34;Edm.String&#34;</span> <span style=color:teal>Unicode=</span><span style=color:#d14>&#34;false&#34;</span><span style=color:navy>/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:navy>&lt;/Action&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>From this snippet we can see that we call this action on a Device entity <strong>bindingParameter</strong> and have to pass in a body with parameters <strong>RecoveryKeyId</strong>. This is the bit that translates to these lines from above:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-9-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-9-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-9-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-9-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-9-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-9-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-9-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-9-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-9-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-9-5>5</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>https<span style=color:#a61717;background-color:#e3d2d2>:</span>//cm01.asd.net/AdminService/v1.0/Device(16777377)/AdminService.GetRecoveryKeyValue
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#d14>&#34;RecoveryKeyId&#34;</span> <span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:#d14>&#34;5eb3baec-4e9b-49f4-9aee-90d3554aef05&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>Using Fiddler, you can trigger this command to test it out.</p><p><div class=image><figure><a href=2021-11-17_19-25-58.png target=_blank><img src=2021-11-17_19-25-58.png alt="Fiddler doing some coolness!"></a><figcaption>2021-11-17_19-25-58.png</figcaption></figure></div></p><h2 id=there-can-only-be-one-master-key-or-is-it-key-master>There can only be one Master Key or is it Key Master?</h2><p>For this next part I was going to show you how to watch the client rotate the key, but it turns out that my lab&rsquo;s MBAM instance may no longer be in existence, so instead I&rsquo;ll direct you over to the always thorough and informative, <a href=https://www.windows-noob.com/forums/topic/19925-how-does-key-rotation-work-in-the-bitlocker-managment-feature-in-configmgr/>Niall Brady!</a></p><h2 id=have-you-recovered-from-all-of-the-key-puns-yet>Have you Recovered from all of the Key puns yet?</h2><p>So after digging through all of these thing we have all of the pieces we need to write script, or build this into an enterprise-class 3rd party product so people can leverage it other places&mldr;</p><p>I&rsquo;ve uploaded a <a href=https://github.com/AdamGrossTX/Toolbox/blob/675e396a35eecaf4a66fee782e510df7b895e2ce/ConfigMgr/AdminService/AdminSerivce-GetBitlockerRecoveryKey.ps1>copy of my full example script to my GitHub repo</a>, but here are the basics in PowerShell.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-10-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-10-23>23</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#998;font-style:italic>#The script assumes you have the resource ID.</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>param</span>(
+</span></span><span style=display:flex><span>    <span style=color:teal>[string]</span><span style=color:teal>$ServerName</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>[int]</span><span style=color:teal>$ResourceID</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Get the Device</span>
+</span></span><span style=display:flex><span><span style=color:teal>$Device</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)&#34;</span> -Method Get -UseDefaultCredentials
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Get the recovery key IDs</span>
+</span></span><span style=display:flex><span><span style=color:teal>$KeyIDs</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)/RecoveryKeys&#34;</span> -Method Get -UseDefaultCredentials
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Loop through the Ids and return the Recovery Keys</span>
+</span></span><span style=display:flex><span><span style=color:teal>$KeyIDs</span>.value | <span style=color:#0086b3>ForEach-Object</span> {
+</span></span><span style=display:flex><span>    <span style=color:teal>$Body</span> = @{RecoveryKeyId = <span style=color:teal>$_</span>.RecoveryKeyId} | <span style=color:#0086b3>ConvertTo-Json</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$Keys</span> = <span style=color:#0086b3>Invoke-RestMethod</span> -Uri <span style=color:#d14>&#34;https://</span>$(<span style=color:teal>$ServerName</span>)<span style=color:#d14>/AdminService/v1.0/Device(</span>$(<span style=color:teal>$ResourceID</span>)<span style=color:#d14>)/AdminService.GetRecoveryKeyValue&#34;</span> -Method Post -Body <span style=color:teal>$Body</span> -UseDefaultCredentials -ContentType <span style=color:#d14>&#34;application/json&#34;</span> 
+</span></span><span style=display:flex><span>    <span style=color:teal>$Keys</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#Result</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#value</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#-----</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#161964-088066-081752-251955-663949-379379-473033-388113</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=keyping-up-is-hard-to-do>KEYping up is Hard to Do</h2><p>Well that&rsquo;s pretty much it. Hope you learned something new, I sure did. Thanks Bryan and Garth for the inspiration to give it go. Hope to see you at <a href=https://www.mmsmoa.com/>MMSMOA in May 2022</a>!</p></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

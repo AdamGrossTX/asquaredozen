@@ -1,463 +1,112 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Using SCCM Task Sequence Variables as Scripts-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Using SCCM Task Sequence Variables as Scripts-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="Using SCCM Task Sequence Variables as Scripts">
-<meta name=twitter:description content="The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read Gary Blok&rsquo;s Waas posts and picked up a few tricks, I know I have.">
-<meta property="og:title" content="Using SCCM Task Sequence Variables as Scripts">
-<meta property="og:description" content="The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read Gary Blok&rsquo;s Waas posts and picked up a few tricks, I know I have.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2018/08/27/using-sccm-task-sequence-variables-as-scripts/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2018-08-27T06:09:27+00:00">
-<meta property="article:modified_time" content="2018-08-27T06:09:27+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="Using SCCM Task Sequence Variables as Scripts"><meta name=twitter:description content="The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read Gary Blok&rsquo;s Waas posts and picked up a few tricks, I know I have."><meta property="og:title" content="Using SCCM Task Sequence Variables as Scripts"><meta property="og:description" content="The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read Gary Blok&rsquo;s Waas posts and picked up a few tricks, I know I have."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2018/08/27/using-sccm-task-sequence-variables-as-scripts/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-08-27T06:09:27+00:00"><meta property="article:modified_time" content="2018-08-27T06:09:27+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Using SCCM Task Sequence Variables as Scripts</h1>
-<span class=post-date>August 27, 2018</span>
-</div>
-<div class=post-entry>
-<p>The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read <a href=https://garytown.com/waas-post-1-precache-compat-scan-ts>Gary Blok&rsquo;s Waas posts</a> and picked up a few tricks, I know I have. Last week on Twitter, I asked about dynamically setting variables to script output and Gary reminded me that he had several examples of this in his Waas posts using PowerShell to create a new <strong>TSEnvironment</strong> object, which I use in most of my scripts as well. While this approach works fine, I was actually looking for a shorter alternative, but it made me wonder if it would be possible to store your scripts as Task Sequence Variables then reference them in Run Command Line steps. The answer is &lsquo;<strong>YES</strong>!&rsquo;. Some of you may have already known this or tried it or have determined that this is a silly idea, but for me, I&rsquo;m relatively new to some of what SCCM has to offer, so I&rsquo;m excited about it!</p>
-<h2 id=the-theory>The Theory</h2>
-<p>My theory was that the Task Sequence would expand any text inside a Task Sequence variable and string it all together and run it as a command just like if you had type the full command line into the text box. This would allow you to maintain a &lsquo;Variable-Based Script Repository&rsquo;. I find that I always have to copy an existing script/command step or go look it up to be sure I&rsquo;ve got it right - why memorize if you know where to look it up when you need it? So things like the powershell.exe command line with the correct parameters or the ServiceUI command line for debug prompts or user prompts could be stored into variables for use later in Run Command Line steps. While you could save entire command blocks into the variables, you could store single PowerShell cmdlets then string them together at runtime.</p>
-<h2 id=the-setup>The Setup</h2>
-<p>For these examples, I&rsquo;m going to use <strong>Get-CimClass Win32_OperatingSystem</strong> to return Operating System version information. <strong>Note:</strong> If I was doing this in production, I would use more shorthand code, but I want it to easy to understand the examples, so they are less than optimal, but hopefully easier to follow. Also note, I&rsquo;m much more comfortable in PowerShell. If you want to see examples of doing similar things with generating batch files on the fly, check out <a href=https://garytown.com/customize-setupcomplete>Gary&rsquo;s SetupComplete post</a>. <a href=https://stackoverflow.com/questions/48290568/run-multiple-lines-of-powershell-script-in-cmd></a></p>
-<p>To get started, run this in PowerShell ISE.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
-<span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
-<span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
-<span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
-<span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
-
-<span style=color:#0086b3>Write-Host</span> Getting <span style=color:#0086b3>PS </span>Variables
-<span style=color:#0086b3>Write-Host</span> Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSCaption</span>
-<span style=color:#0086b3>Write-Host</span> Version<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSVersion</span>
-<span style=color:#0086b3>Write-Host</span> Build<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSBuild</span>
-<span style=color:#0086b3>Write-Host</span> Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSArchitecture</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>Your output should be something like this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Getting <span style=color:#0086b3>PS </span>Variables
-Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
-Version<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
-Build<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
-Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
-</code></pre></td></tr></table>
-</div>
-</div><p>If we add the TSEnvironment object to the script, we get this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
-
-<span style=color:#0086b3>Write-Host</span> Getting TS Variables 
-<span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
-</code></pre></td></tr></table>
-</div>
-</div><p>If we launch a Task Sequence and add a Debug command line (See below for steps to add Debug to as Task Sequence), we can run this manually and get this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>Getting TS Variables
-OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
-OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
-OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
-OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
-</code></pre></td></tr></table>
-</div>
-</div><p>Amazing right? It&rsquo;s almost as if this worked!!</p>
-<p>At this point, you would normally save this to a script then use the Run PowerShell Script step in the Task Sequence to launch it. But that would require you to maintain a script in a file and replicating content each time you needed to change the script (debugging or future updates). Keep reading for some cool alternatives.</p>
-<h2 id=option-1---run-command-line>Option 1 - Run Command Line</h2>
-<p>Your first option for running in-line code would be to simply take a working script block, then remove all line breaks and replace them with semicolons. Then make sure you don&rsquo;t have any double quotes in the script. Then add it to a Run Command Line step and run it. Using the script above, your command line would look like this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;&amp; { $OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;) }&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=2018-08-26_23-47-29.jpg target=_blank>
-<img src=2018-08-26_23-47-29.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=option-2---output-to-script>Option 2 - Output to Script</h2>
-<p><strong>NOTE:</strong> <em>The code below doesn&rsquo;t work (other code I tested with did work) as written when run from a TS, but just fine in a cmd prompt. I don&rsquo;t feel like working it out since this is just sample code anyway. The concept/technique still stands, just not this particular code. Sorry.</em></p>
-<p>If you wanted to export a block of code into a local file then call it using a Run Powershell Script, you could use the ECHO function in the Command Prompt.</p>
-<p>You could use ECHO and &#187; but if your script has any special characters like > or | you will need to escape the characters with ^ or you can use | Set /p='' to add quoted text like this:</p>
-<p><code>cmd.exe /c ECHO | Set /p="Your Text" >> C:\Temp\YourFile.PS1</code></p>
-<p>So your completed code would look like this and would output a file called GetOSInfo.ps1 that can now be run inside your Task Sequence or be left on the computer for later use.</p>
-<p><strong>Type:</strong> Run Command Line<br>
-<strong>Name:</strong> Export Script<br>
-<strong>Command Line:</strong></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>cmd.exe /c <span style=color:#0086b3>ECHO </span>| <span style=color:#0086b3>Set </span>/p =<span style=color:#d14>&#34;$OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;)&#34;</span> &gt;&gt; c:\Temp\GetOSInfo.PS1
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=2018-08-26_23-47-35-2.jpg target=_blank>
-<img src=2018-08-26_23-47-35-2.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><strong>Type:</strong> Run Command Line<br>
-<strong>Name:</strong> Launch Local Script<br>
-<strong>Command Line:</strong><br>
-<code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command c:\Temp\GetOSInfo.PS1</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-26_23-47-40-3.jpg target=_blank>
-<img src=2018-08-26_23-47-40-3.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=option-3---storing-scripts-in-task-sequence-variables>Option 3 - Storing scripts in Task Sequence Variables</h2>
-<p>Here&rsquo;s the approach that I was hoping would work when I began down this road. I have tested several different ways and was surprised that they each worked pretty well. I&rsquo;m honestly not sure to what extent you&rsquo;d even use this, but I think it&rsquo;s cool and at least worth experimenting with. I plan to use it so I can re-use the same embedded script, without having to update content AND so that I can change a value 1 time in a Task Sequence and know that all references to it were changed.</p>
-<p><strong>Type:</strong> Set Task Sequence Variable<br>
-<strong>Name:</strong> Set Variable - PowerShellCommandOpen<br>
-<strong>Task Sequence Variable:</strong> PowerShellCommandOpen<br>
-<strong>Value:</strong>
-<code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& {</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-26_23-47-46.jpg target=_blank>
-<img src=2018-08-26_23-47-46.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><strong>Type:</strong> Set Task Sequence Variable<br>
-<strong>Name:</strong> Set Variable - PowerShellCommandClose<br>
-<strong>Task Sequence Variable:</strong> PowerShellCommandClose<br>
-<strong>Value:</strong> <code>}"</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-26_23-47-50.jpg target=_blank>
-<img src=2018-08-26_23-47-50.jpg alt="Not a typo. Just use }">
-</a>
-<figcaption>Not a typo. Just use } This is the closing tag for the PowerShell script block.</figcaption>
-</figure>
-</div></p>
-<p><strong>Type:</strong> Set Task Sequence Variable<br>
-<strong>Name:</strong> Set Variable - GetOSInfo<br>
-<strong>Task Sequence Variable:</strong> GetOSInfo<br>
-<strong>Value:</strong></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
-<span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
-<span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
-<span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
-<span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
-
-<span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
-<span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
-
-<span style=color:#0086b3>Write-Host</span> Getting TS Variables 
-<span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
-<span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=2018-08-26_23-48-30.jpg target=_blank>
-<img src=2018-08-26_23-48-30.jpg alt="Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break.">
-</a>
-<figcaption>Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break.</figcaption>
-</figure>
-</div></p>
-<p><strong>Type:</strong> Run Command Line<br>
-<strong>Name:</strong> Get OS Info<br>
-<strong>Command Line:</strong> <code>%PowerShellCommandOpen%%%GetOSInfo%%%PowerShellCommandClose%</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-26_23-48-00.jpg target=_blank>
-<img src=2018-08-26_23-48-00.jpg alt="Consecutive % must include an extra % around the variable in the middle">
-</a>
-<figcaption>Consecutive % must include an extra % around the variable in the middle</figcaption>
-</figure>
-</div></p>
-<p>When you launch the TS, you can check the logs and see that the script ran and see the results.</p>
-<p><div class=image>
-<figure>
-<a href=2018-08-27_0-56-10.jpg target=_blank>
-<img src=2018-08-27_0-56-10.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=debugging>Debugging</h2>
-<p>This information has been posted many times. If you want to write scripts that depend on information from your Task Sequence, you should build a Task Sequence that has a Debug step in it. The Debug step simply opens a command prompt in the user&rsquo;s context then allows you to launch anything as Local System. I generally launch PowerShell_ISE.exe to open PowerShell. From there, you can interact with the Task Sequence. You also need to include ServiceUI.exe in your Task Sequence as a reference to make this work. Using Option 3, here&rsquo;s how I added a Debug step to my Task Sequence.</p>
-<p><strong>Type:</strong> Set Task Sequence Variable<br>
-<strong>Name:</strong> Set Variable - TSDebug<br>
-<strong>Task Sequence Variable:</strong> GetOSInfo<br>
-<strong>Value:</strong> <code>ServiceUI.exe -process:TSProgressUI.exe C:\Windows\System32\cmd.exe</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-27_0-13-17.jpg target=_blank>
-<img src=2018-08-27_0-13-17.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><strong>Type:</strong> Run Command Line<br>
-<strong>Name:</strong> Debug<br>
-<strong>Command Line:</strong> <code>%TSDebug%</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-08-27_0-13-53.jpg target=_blank>
-<img src=2018-08-27_0-13-53.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=summary>Summary</h2>
-<p>After going down this path, I feel like I know more about what we can do with ConfigMgr Task Sequence Variables and scripts. I really wanted Option 3 to be far superior to the alternatives. If you have a script that you use all the time, this could make it easier to update it and use it on the fly without updating content. I think it just depends on your use case. If you want to easily edit long scripts in the Task Sequence, you can use variables to break it into pieces them string them all back together when you want to run them. Or you can take the values of existing variable and embed them into your script variables and have an even more dynamic experience. I&rsquo;d love to know what you thought. Send me a <a href=http://www.twitter.com/AdamGrossTX>tweet</a> or post a comment here and let me know how you would use this, or if it&rsquo;s just a dumb idea.</p>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Using SCCM Task Sequence Variables as Scripts</h1><span class=post-date>August 27, 2018</span></div><div class=post-entry><p>The more I dig in to SCCM/ConfigMgr, the more cool things I find. Every time I read a new post blog about things people have done with their Task Sequences, I get inspired to try more things. One of those things is setting Task Sequence variable values from the output of a script. At this point, I&rsquo;m sure we&rsquo;ve all read and re-read <a href=https://garytown.com/waas-post-1-precache-compat-scan-ts>Gary Blok&rsquo;s Waas posts</a> and picked up a few tricks, I know I have. Last week on Twitter, I asked about dynamically setting variables to script output and Gary reminded me that he had several examples of this in his Waas posts using PowerShell to create a new <strong>TSEnvironment</strong> object, which I use in most of my scripts as well. While this approach works fine, I was actually looking for a shorter alternative, but it made me wonder if it would be possible to store your scripts as Task Sequence Variables then reference them in Run Command Line steps. The answer is &lsquo;<strong>YES</strong>!&rsquo;. Some of you may have already known this or tried it or have determined that this is a silly idea, but for me, I&rsquo;m relatively new to some of what SCCM has to offer, so I&rsquo;m excited about it!</p><h2 id=the-theory>The Theory</h2><p>My theory was that the Task Sequence would expand any text inside a Task Sequence variable and string it all together and run it as a command just like if you had type the full command line into the text box. This would allow you to maintain a &lsquo;Variable-Based Script Repository&rsquo;. I find that I always have to copy an existing script/command step or go look it up to be sure I&rsquo;ve got it right - why memorize if you know where to look it up when you need it? So things like the powershell.exe command line with the correct parameters or the ServiceUI command line for debug prompts or user prompts could be stored into variables for use later in Run Command Line steps. While you could save entire command blocks into the variables, you could store single PowerShell cmdlets then string them together at runtime.</p><h2 id=the-setup>The Setup</h2><p>For these examples, I&rsquo;m going to use <strong>Get-CimClass Win32_OperatingSystem</strong> to return Operating System version information. <strong>Note:</strong> If I was doing this in production, I would use more shorthand code, but I want it to easy to understand the examples, so they are less than optimal, but hopefully easier to follow. Also note, I&rsquo;m much more comfortable in PowerShell. If you want to see examples of doing similar things with generating batch files on the fly, check out <a href=https://garytown.com/customize-setupcomplete>Gary&rsquo;s SetupComplete post</a>. <a href=https://stackoverflow.com/questions/48290568/run-multiple-lines-of-powershell-script-in-cmd></a></p><p>To get started, run this in PowerShell ISE.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
+</span></span><span style=display:flex><span><span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
+</span></span><span style=display:flex><span><span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
+</span></span><span style=display:flex><span><span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
+</span></span><span style=display:flex><span><span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Getting <span style=color:#0086b3>PS </span>Variables
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSCaption</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Version<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSVersion</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Build<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSBuild</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$OSArchitecture</span>
+</span></span></code></pre></td></tr></table></div></div><p>Your output should be something like this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5>5</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>Getting <span style=color:#0086b3>PS </span>Variables
+</span></span><span style=display:flex><span>Caption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
+</span></span><span style=display:flex><span>Version<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
+</span></span><span style=display:flex><span>Build<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
+</span></span><span style=display:flex><span>Arch<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
+</span></span></code></pre></td></tr></table></div></div><p>If we add the TSEnvironment object to the script, we get this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-11>11</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Getting TS Variables 
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
+</span></span></code></pre></td></tr></table></div></div><p>If we launch a Task Sequence and add a Debug command line (See below for steps to add Debug to as Task Sequence), we can run this manually and get this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-5>5</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>Getting TS Variables
+</span></span><span style=display:flex><span>OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> Microsoft Windows 10 Enterprise
+</span></span><span style=display:flex><span>OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> 10.0.17134
+</span></span><span style=display:flex><span>OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> 17134
+</span></span><span style=display:flex><span>OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> 64-bit
+</span></span></code></pre></td></tr></table></div></div><p>Amazing right? It&rsquo;s almost as if this worked!!</p><p>At this point, you would normally save this to a script then use the Run PowerShell Script step in the Task Sequence to launch it. But that would require you to maintain a script in a file and replicating content each time you needed to change the script (debugging or future updates). Keep reading for some cool alternatives.</p><h2 id=option-1---run-command-line>Option 1 - Run Command Line</h2><p>Your first option for running in-line code would be to simply take a working script block, then remove all line breaks and replace them with semicolons. Then make sure you don&rsquo;t have any double quotes in the script. Then add it to a Run Command Line step and run it. Using the script above, your command line would look like this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-1>1</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command <span style=color:#d14>&#34;&amp; { $OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;) }&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=2018-08-26_23-47-29.jpg target=_blank><img src=2018-08-26_23-47-29.jpg alt="A Square Dozen Image"></a></figure></div></p><h2 id=option-2---output-to-script>Option 2 - Output to Script</h2><p><strong>NOTE:</strong> <em>The code below doesn&rsquo;t work (other code I tested with did work) as written when run from a TS, but just fine in a cmd prompt. I don&rsquo;t feel like working it out since this is just sample code anyway. The concept/technique still stands, just not this particular code. Sorry.</em></p><p>If you wanted to export a block of code into a local file then call it using a Run Powershell Script, you could use the ECHO function in the Command Prompt.</p><p>You could use ECHO and &#187; but if your script has any special characters like > or | you will need to escape the characters with ^ or you can use | Set /p=&rsquo;&rsquo; to add quoted text like this:</p><p><code>cmd.exe /c ECHO | Set /p="Your Text" >> C:\Temp\YourFile.PS1</code></p><p>So your completed code would look like this and would output a file called GetOSInfo.ps1 that can now be run inside your Task Sequence or be left on the computer for later use.</p><p><strong>Type:</strong> Run Command Line<br><strong>Name:</strong> Export Script<br><strong>Command Line:</strong></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-5-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-5-1>1</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>cmd.exe /c <span style=color:#0086b3>ECHO </span>| <span style=color:#0086b3>Set </span>/p =<span style=color:#d14>&#34;$OS = Get-CimInstance Win32_OperatingSystem; $OSCaption = $OS.Caption; $OSVersion = $OS.Version; $OSBuild = $OS.buildNumber; $OSArchitecture = $OS.OSArchitecture; $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment; $tsenv.Value(&#39;OSCaption&#39;) = $OSCaption; $tsenv.Value(&#39;OSVersion&#39;) = $OSVersion; $tsenv.Value(&#39;OSBuild&#39;) = $OSBuild; $tsenv.Value(&#39;OSArchitecture&#39;) = $OSArchitecture; Write-Host Getting TS Variables; Write-Host OSCaption: $tsenv.Value(&#39;OSCaption&#39;); Write-Host OSVersion: $tsenv.Value(&#39;OSVersion&#39;); Write-Host OSBuild: $tsenv.Value(&#39;OSBuild&#39;); Write-Host OSArchitecture: $tsenv.Value(&#39;OSArchitecture&#39;)&#34;</span> &gt;&gt; c:\Temp\GetOSInfo.PS1
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=2018-08-26_23-47-35-2.jpg target=_blank><img src=2018-08-26_23-47-35-2.jpg alt="A Square Dozen Image"></a></figure></div></p><p><strong>Type:</strong> Run Command Line<br><strong>Name:</strong> Launch Local Script<br><strong>Command Line:</strong><br><code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command c:\Temp\GetOSInfo.PS1</code></p><p><div class=image><figure><a href=2018-08-26_23-47-40-3.jpg target=_blank><img src=2018-08-26_23-47-40-3.jpg alt="A Square Dozen Image"></a></figure></div></p><h2 id=option-3---storing-scripts-in-task-sequence-variables>Option 3 - Storing scripts in Task Sequence Variables</h2><p>Here&rsquo;s the approach that I was hoping would work when I began down this road. I have tested several different ways and was surprised that they each worked pretty well. I&rsquo;m honestly not sure to what extent you&rsquo;d even use this, but I think it&rsquo;s cool and at least worth experimenting with. I plan to use it so I can re-use the same embedded script, without having to update content AND so that I can change a value 1 time in a Task Sequence and know that all references to it were changed.</p><p><strong>Type:</strong> Set Task Sequence Variable<br><strong>Name:</strong> Set Variable - PowerShellCommandOpen<br><strong>Task Sequence Variable:</strong> PowerShellCommandOpen<br><strong>Value:</strong>
+<code>C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& {</code></p><p><div class=image><figure><a href=2018-08-26_23-47-46.jpg target=_blank><img src=2018-08-26_23-47-46.jpg alt="A Square Dozen Image"></a></figure></div></p><p><strong>Type:</strong> Set Task Sequence Variable<br><strong>Name:</strong> Set Variable - PowerShellCommandClose<br><strong>Task Sequence Variable:</strong> PowerShellCommandClose<br><strong>Value:</strong> <code>}"</code></p><p><div class=image><figure><a href=2018-08-26_23-47-50.jpg target=_blank><img src=2018-08-26_23-47-50.jpg alt="Not a typo. Just use }"></a><figcaption>Not a typo. Just use } This is the closing tag for the PowerShell script block.</figcaption></figure></div></p><p><strong>Type:</strong> Set Task Sequence Variable<br><strong>Name:</strong> Set Variable - GetOSInfo<br><strong>Task Sequence Variable:</strong> GetOSInfo<br><strong>Value:</strong></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-6-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-6-17>17</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$OS</span> = <span style=color:#0086b3>Get-CimInstance</span> Win32_OperatingSystem
+</span></span><span style=display:flex><span><span style=color:teal>$OSCaption</span> = <span style=color:teal>$OS</span>.Caption
+</span></span><span style=display:flex><span><span style=color:teal>$OSVersion</span> = <span style=color:teal>$OS</span>.Version
+</span></span><span style=display:flex><span><span style=color:teal>$OSBuild</span> = <span style=color:teal>$OS</span>.buildNumber
+</span></span><span style=display:flex><span><span style=color:teal>$OSArchitecture</span> = <span style=color:teal>$OS</span>.OSArchitecture
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span> = <span style=color:#0086b3>New-Object</span> -COMObject Microsoft.SMS.TSEnvironment
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>) = <span style=color:teal>$OSCaption</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>) = <span style=color:teal>$OSVersion</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>) = <span style=color:teal>$OSBuild</span>
+</span></span><span style=display:flex><span><span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>) = <span style=color:teal>$OSArchitecture</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> Getting TS Variables 
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSCaption<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSCaption&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSVersion<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSVersion&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSBuild<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSBuild&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>Write-Host</span> OSArchitecture<span style=color:#a61717;background-color:#e3d2d2>:</span> <span style=color:teal>$tsenv</span>.Value(<span style=color:#d14>&#39;OSArchitecture&#39;</span>)
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=2018-08-26_23-48-30.jpg target=_blank><img src=2018-08-26_23-48-30.jpg alt="Paste in the whole script. No need to remove line breaks or ; but DO remove &amp;rsquo; or the script will break."></a><figcaption>Paste in the whole script. No need to remove line breaks or ; but DO remove ' or the script will break.</figcaption></figure></div></p><p><strong>Type:</strong> Run Command Line<br><strong>Name:</strong> Get OS Info<br><strong>Command Line:</strong> <code>%PowerShellCommandOpen%%%GetOSInfo%%%PowerShellCommandClose%</code></p><p><div class=image><figure><a href=2018-08-26_23-48-00.jpg target=_blank><img src=2018-08-26_23-48-00.jpg alt="Consecutive % must include an extra % around the variable in the middle"></a><figcaption>Consecutive % must include an extra % around the variable in the middle</figcaption></figure></div></p><p>When you launch the TS, you can check the logs and see that the script ran and see the results.</p><p><div class=image><figure><a href=2018-08-27_0-56-10.jpg target=_blank><img src=2018-08-27_0-56-10.jpg alt="A Square Dozen Image"></a></figure></div></p><h2 id=debugging>Debugging</h2><p>This information has been posted many times. If you want to write scripts that depend on information from your Task Sequence, you should build a Task Sequence that has a Debug step in it. The Debug step simply opens a command prompt in the user&rsquo;s context then allows you to launch anything as Local System. I generally launch PowerShell_ISE.exe to open PowerShell. From there, you can interact with the Task Sequence. You also need to include ServiceUI.exe in your Task Sequence as a reference to make this work. Using Option 3, here&rsquo;s how I added a Debug step to my Task Sequence.</p><p><strong>Type:</strong> Set Task Sequence Variable<br><strong>Name:</strong> Set Variable - TSDebug<br><strong>Task Sequence Variable:</strong> GetOSInfo<br><strong>Value:</strong> <code>ServiceUI.exe -process:TSProgressUI.exe C:\Windows\System32\cmd.exe</code></p><p><div class=image><figure><a href=2018-08-27_0-13-17.jpg target=_blank><img src=2018-08-27_0-13-17.jpg alt="A Square Dozen Image"></a></figure></div></p><p><strong>Type:</strong> Run Command Line<br><strong>Name:</strong> Debug<br><strong>Command Line:</strong> <code>%TSDebug%</code></p><p><div class=image><figure><a href=2018-08-27_0-13-53.jpg target=_blank><img src=2018-08-27_0-13-53.jpg alt="A Square Dozen Image"></a></figure></div></p><h2 id=summary>Summary</h2><p>After going down this path, I feel like I know more about what we can do with ConfigMgr Task Sequence Variables and scripts. I really wanted Option 3 to be far superior to the alternatives. If you have a script that you use all the time, this could make it easier to update it and use it on the fly without updating content. I think it just depends on your use case. If you want to easily edit long scripts in the Task Sequence, you can use variables to break it into pieces them string them all back together when you want to run them. Or you can take the values of existing variable and embed them into your script variables and have an even more dynamic experience. I&rsquo;d love to know what you thought. Send me a <a href=http://www.twitter.com/AdamGrossTX>tweet</a> or post a comment here and let me know how you would use this, or if it&rsquo;s just a dumb idea.</p></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

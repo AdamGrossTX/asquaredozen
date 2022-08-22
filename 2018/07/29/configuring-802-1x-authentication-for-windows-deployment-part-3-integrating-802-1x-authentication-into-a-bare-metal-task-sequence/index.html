@@ -1,269 +1,39 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence">
-<meta name=twitter:description content="This is Part 3 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence"><meta name=twitter:description content="This is Part 3 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 You will need all of the files you created in Part 1 for this part.
-During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS.">
-<meta property="og:title" content="Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence">
-<meta property="og:description" content="This is Part 3 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
+During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS."><meta property="og:title" content="Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence"><meta property="og:description" content="This is Part 3 in my Configuring 802.1x Authentication for Windows Deployment series. Be sure to check out all of the other parts here.
 You will need all of the files you created in Part 1 for this part.
-During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2018-07-30T02:31:16+00:00">
-<meta property="article:modified_time" content="2018-07-30T02:31:16+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-07-30T02:31:16+00:00"><meta property="article:modified_time" content="2018-07-30T02:31:16+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="active menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</h1>
-<span class=post-date>July 30, 2018</span>
-</div>
-<div class=post-entry>
-<p>This is Part 3 in my <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>Configuring 802.1x Authentication for Windows Deployment</a> series. Be sure to check out all of the other parts <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>here</a>.</p>
-<p>You will need all of the files you created in <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1</a> for this part.</p>
-<p>During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS. WinPE doesn&rsquo;t pass any of the authentication information to the new OS, so you will need to re-authenticate with 802.1x. To accomplish this, you need to copy your 802.1x authentication script down locally and add an entry to your <strong>Unattend.XML</strong> to launch the script at during the correct pass in Windows setup.</p>
-<h1 id=unattendxml>Unattend.XML</h1>
-<p>You can edit your <strong>Unattend.XML</strong> using the <strong>Windows System Image Manager</strong> that&rsquo;s part of <strong>Windows ADK</strong> or you can manually edit it. The script needs to run during <strong>specialize</strong> pass.</p>
-<p>After loading your OS media into WSIM, follow the steps below to add the commandline for your 802.1x authentication script.<br>
-<div class=image>
-<figure>
-<a href=2018-07-29_1-04-00.jpg target=_blank>
-<img src=2018-07-29_1-04-00.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=2018-07-29_1-04-38.jpg target=_blank>
-<img src=2018-07-29_1-04-38.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>Add the following as the Path. It should point to the location where you will copy your auth package to in the next step.</p>
-<p><code>cmd /c C:\Temp\ImportComputerAuthProfile.bat</code></p>
-<p><div class=image>
-<figure>
-<a href=2018-07-29_1-05-32.jpg target=_blank>
-<img src=2018-07-29_1-05-32.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>This is what the resulting XML should look like.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=color:navy>&lt;unattend</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style=color:navy>&gt;</span>
-    <span style=color:navy>&lt;settings</span> <span style=color:teal>pass=</span><span style=color:#d14>&#34;specialize&#34;</span><span style=color:navy>&gt;</span>
-        <span style=color:navy>&lt;component</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Microsoft-Windows-Deployment&#34;</span> <span style=color:teal>processorArchitecture=</span><span style=color:#d14>&#34;amd64&#34;</span> <span style=color:teal>publicKeyToken=</span><span style=color:#d14>&#34;31bf3856ad364e35&#34;</span> <span style=color:teal>language=</span><span style=color:#d14>&#34;neutral&#34;</span> <span style=color:teal>versionScope=</span><span style=color:#d14>&#34;nonSxS&#34;</span> <span style=color:teal>xmlns:wcm=</span><span style=color:#d14>&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style=color:teal>xmlns:xsi=</span><span style=color:#d14>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style=color:navy>&gt;</span>
-            <span style=color:navy>&lt;RunAsynchronous&gt;</span>
-                <span style=color:navy>&lt;RunAsynchronousCommand</span> <span style=color:teal>wcm:action=</span><span style=color:#d14>&#34;add&#34;</span><span style=color:navy>&gt;</span>
-                    <span style=color:navy>&lt;Path&gt;</span>cmd /c C:\Temp\ImportComputerAuthProfile.bat<span style=color:navy>&lt;/Path&gt;</span>
-                    <span style=color:navy>&lt;Order&gt;</span>2<span style=color:navy>&lt;/Order&gt;</span>
-                    <span style=color:navy>&lt;Description&gt;</span>Import Computer Auth Profile<span style=color:navy>&lt;/Description&gt;</span>
-                <span style=color:navy>&lt;/RunAsynchronousCommand&gt;</span>
-            <span style=color:navy>&lt;/RunAsynchronous&gt;</span>
-        <span style=color:navy>&lt;/component&gt;</span>
-    <span style=color:navy>&lt;/settings&gt;</span>
-<span style=color:navy>&lt;/unattend&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><h1 id=adding-everything-to-your-bare-metal-task-sequence>Adding everything to your Bare Metal Task Sequence</h1>
-<p>Create a new Package in ConfgMgr and include all of your script files in the package. Then add a new <strong>Run Command Line</strong> Task Sequence step before <strong>Install Operating System</strong> step. Set the Package source to the new package your created.</p>
-<p><div class=image>
-<figure>
-<a href=2018-07-29_1-11-19.jpg target=_blank>
-<img src=2018-07-29_1-11-19.jpg alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>The path in this command line needs to match the path in the Unattend.XML file.</p>
-<p><code>xcopy.exe ".\*.*" c:\Temp\ /E /C /I /Q /H /R /Y /S</code></p>
-<p>That&rsquo;s it for your <strong>Bare Metal Task Sequence</strong>. If you&rsquo;ve been following the steps and testing, you should be able to build a Bare Metal build using Computer Authentication on an 802.1x protected network.</p>
-<p><a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4</a> Covers In-Place Upgrades</p>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Configuring 802.1x Authentication for Windows Deployment – Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</h1><span class=post-date>July 30, 2018</span></div><div class=post-entry><p>This is Part 3 in my <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>Configuring 802.1x Authentication for Windows Deployment</a> series. Be sure to check out all of the other parts <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment/>here</a>.</p><p>You will need all of the files you created in <a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1</a> for this part.</p><p>During a Bare Metal/Wipe & Load OSD Task Sequence, the Task Sequence will start in WinPE and copy down the OS installation files. Once Windows as been installed, the Task Sequence will boot out of WinPE and into the new OS. WinPE doesn&rsquo;t pass any of the authentication information to the new OS, so you will need to re-authenticate with 802.1x. To accomplish this, you need to copy your 802.1x authentication script down locally and add an entry to your <strong>Unattend.XML</strong> to launch the script at during the correct pass in Windows setup.</p><h1 id=unattendxml>Unattend.XML</h1><p>You can edit your <strong>Unattend.XML</strong> using the <strong>Windows System Image Manager</strong> that&rsquo;s part of <strong>Windows ADK</strong> or you can manually edit it. The script needs to run during <strong>specialize</strong> pass.</p><p>After loading your OS media into WSIM, follow the steps below to add the commandline for your 802.1x authentication script.<br><div class=image><figure><a href=2018-07-29_1-04-00.jpg target=_blank><img src=2018-07-29_1-04-00.jpg alt="A Square Dozen Image"></a></figure></div></p><p><div class=image><figure><a href=2018-07-29_1-04-38.jpg target=_blank><img src=2018-07-29_1-04-38.jpg alt="A Square Dozen Image"></a></figure></div></p><p>Add the following as the Path. It should point to the location where you will copy your auth package to in the next step.</p><p><code>cmd /c C:\Temp\ImportComputerAuthProfile.bat</code></p><p><div class=image><figure><a href=2018-07-29_1-05-32.jpg target=_blank><img src=2018-07-29_1-05-32.jpg alt="A Square Dozen Image"></a></figure></div></p><p>This is what the resulting XML should look like.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-13>13</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-XML data-lang=XML><span style=display:flex><span><span style=color:navy>&lt;unattend</span> <span style=color:teal>xmlns=</span><span style=color:#d14>&#34;urn:schemas-microsoft-com:unattend&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;settings</span> <span style=color:teal>pass=</span><span style=color:#d14>&#34;specialize&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:navy>&lt;component</span> <span style=color:teal>name=</span><span style=color:#d14>&#34;Microsoft-Windows-Deployment&#34;</span> <span style=color:teal>processorArchitecture=</span><span style=color:#d14>&#34;amd64&#34;</span> <span style=color:teal>publicKeyToken=</span><span style=color:#d14>&#34;31bf3856ad364e35&#34;</span> <span style=color:teal>language=</span><span style=color:#d14>&#34;neutral&#34;</span> <span style=color:teal>versionScope=</span><span style=color:#d14>&#34;nonSxS&#34;</span> <span style=color:teal>xmlns:wcm=</span><span style=color:#d14>&#34;http://schemas.microsoft.com/WMIConfig/2002/State&#34;</span> <span style=color:teal>xmlns:xsi=</span><span style=color:#d14>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:navy>&lt;RunAsynchronous&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:navy>&lt;RunAsynchronousCommand</span> <span style=color:teal>wcm:action=</span><span style=color:#d14>&#34;add&#34;</span><span style=color:navy>&gt;</span>
+</span></span><span style=display:flex><span>                    <span style=color:navy>&lt;Path&gt;</span>cmd /c C:\Temp\ImportComputerAuthProfile.bat<span style=color:navy>&lt;/Path&gt;</span>
+</span></span><span style=display:flex><span>                    <span style=color:navy>&lt;Order&gt;</span>2<span style=color:navy>&lt;/Order&gt;</span>
+</span></span><span style=display:flex><span>                    <span style=color:navy>&lt;Description&gt;</span>Import Computer Auth Profile<span style=color:navy>&lt;/Description&gt;</span>
+</span></span><span style=display:flex><span>                <span style=color:navy>&lt;/RunAsynchronousCommand&gt;</span>
+</span></span><span style=display:flex><span>            <span style=color:navy>&lt;/RunAsynchronous&gt;</span>
+</span></span><span style=display:flex><span>        <span style=color:navy>&lt;/component&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:navy>&lt;/settings&gt;</span>
+</span></span><span style=display:flex><span><span style=color:navy>&lt;/unattend&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><h1 id=adding-everything-to-your-bare-metal-task-sequence>Adding everything to your Bare Metal Task Sequence</h1><p>Create a new Package in ConfgMgr and include all of your script files in the package. Then add a new <strong>Run Command Line</strong> Task Sequence step before <strong>Install Operating System</strong> step. Set the Package source to the new package your created.</p><p><div class=image><figure><a href=2018-07-29_1-11-19.jpg target=_blank><img src=2018-07-29_1-11-19.jpg alt="A Square Dozen Image"></a></figure></div></p><p>The path in this command line needs to match the path in the Unattend.XML file.</p><p><code>xcopy.exe ".\*.*" c:\Temp\ /E /C /I /Q /H /R /Y /S</code></p><p>That&rsquo;s it for your <strong>Bare Metal Task Sequence</strong>. If you&rsquo;ve been following the steps and testing, you should be able to build a Bare Metal build using Computer Authentication on an 802.1x protected network.</p><p><a href=http://www.asquaredozen.com/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4</a> Covers In-Place Upgrades</p></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

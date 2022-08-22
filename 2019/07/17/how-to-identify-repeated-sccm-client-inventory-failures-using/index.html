@@ -1,509 +1,237 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>How to Identify Repeated SCCM Client Inventory Failures Using SQL-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>How to Identify Repeated SCCM Client Inventory Failures Using SQL-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="How to Identify Repeated SCCM Client Inventory Failures Using SQL">
-<meta name=twitter:description content="For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here.">
-<meta property="og:title" content="How to Identify Repeated SCCM Client Inventory Failures Using SQL">
-<meta property="og:description" content="For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2019-07-17T22:49:56+00:00">
-<meta property="article:modified_time" content="2019-07-17T22:49:56+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="How to Identify Repeated SCCM Client Inventory Failures Using SQL"><meta name=twitter:description content="For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here."><meta property="og:title" content="How to Identify Repeated SCCM Client Inventory Failures Using SQL"><meta property="og:description" content="For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2019/07/17/how-to-identify-repeated-sccm-client-inventory-failures-using/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-07-17T22:49:56+00:00"><meta property="article:modified_time" content="2019-07-17T22:49:56+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>How to Identify Repeated SCCM Client Inventory Failures Using SQL</h1>
-<span class=post-date>July 17, 2019</span>
-</div>
-<div class=post-entry>
-<p>For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here. I really just want to share a few of the things I did to identify clients with &lsquo;broken&rsquo; hardware inventory.</p>
-<h2 id=incorrect-os-version>Incorrect OS Version</h2>
-<p>I had deployed the Windows 10 1809 Feature Update to a collection of Windows 10 1803 devices and added the Operating System Build column in the SCCM Console. Then I would connect to the devices remotely using <a href=https://recastsoftware.com/>Recast Right Click Tools</a> and <a href=https://github.com/rzander/sccmclictr>Client Center for Configuration Manger</a> by <a href=https://twitter.com/roger_zander>Roger Zander</a> to force any pending updates to install. Whenever it appeared that the clients had already installed the update, I would run some PowerShell to check for the OS version and many times, force a reboot and hardware inventory collection. I began to notice that several machines never showed the correct OS version and started digging. Checking Resource Explorer in the SCCM console, I would see that the client hadn&rsquo;t updated the Operating System Hardware Inventory class for a few days which led me to believe we had an inventory issue.</p>
-<h2 id=bad-mifs>Bad MIFs</h2>
-<p>Whenever Hardware Inventory - among other client processes - runs on an SCCM Client, the client sends back a MIF file. This file contains the data that will be inserted into the database records for that machine. These MIF files are dropped into folders on the site server called Inboxes where they are picked up according to certain intervals (or some inboxes are triggered by new files being added) and processed (there are other file types that are managed by the inbox processes as well). In the case of Hardware Inventory, whenever the MIF is invalid for any number of reasons, the file is moved to one of several BADMIFS folders. Depending on the failure, most failures simply result in the client being notified that it&rsquo;s last inventory was invalid and that it should resync or send in a new full inventory file instead of the delta that it generally sends.</p>
-<p>In my case, I used the <a href=https://gallery.technet.microsoft.com/ConfigMgr-Inbox-Monitor-77620e1c>ConfigMgr Inbox Monitor</a> by <a href=https://twitter.com/RobMVP>Robert Marshall</a> tool to see that I had over 500 MIFs in the various BADMIFs folders. I began opening the MIFs in Notepad and could read out the device name from the second line of the file and go check that device in the console to see if I could sort out what the issue was. As I mentioned, most bad inventory will resolve itself. So my challenge was to figure out which MIFs represented devices that were having repeated inventory issues.
-For more on MIFs, check out <a href=https://blogs.technet.microsoft.com/umairkhan/2014/10/01/configmgr-2012-hardware-inventory-resync-and-badmif-internals/>this in-depth post</a> from <a href=https://twitter.com/TheFrankUK>Umair Kahn</a> from Microsoft.</p>
-<h2 id=sql-magic>SQL Magic</h2>
-<p>First - let me start with a disclaimer on this section (see links at the end for more info from Garth and Benjamin on this). The views and tables that I&rsquo;m going to use are technically &lsquo;not supported&rsquo; by Microsoft in that they shouldn&rsquo;t be used in reports or used to share out to others. The main risks in using these are that 1) some day the view could change and would break your report 2) the view likely doesn&rsquo;t have the correct permissions on it and you should NEVER change permissions on your ConfigMgr Database. (Yeah, Yeah - I know some of you do change them, but that&rsquo;s just silly and you shouldn&rsquo;t do it)</p>
-<p>I started digging through the database and found the InventoryLog table and started playing with it. I discovered that it matched up nicely with the machines I was finding in the BADMIFs folders. I decided that this table could be the ticket to sorting this out. One great thing about the SCCM Database is that GENERALLY where there&rsquo;s a table, there&rsquo;s a view. You should always use the v_ views when they are available. If you can&rsquo;t find a view that matches, like v_InventoryLog, check for vInventoryLog (which is the one I found). You can also right click on the table or view in SQL Server Management Studio (SSMS) and click View Dependencies.</p>
-<p><div class=image>
-<figure>
-<a href=image-14.png target=_blank>
-<img src=image-14.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-15.png target=_blank>
-<img src=image-15.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>Since I didn&rsquo;t know anything about the the table, I validated a few things first. I ran <code>SELECT DISTINCT ResourceID FROM vInventoryLog WHERE Name IS NOT NULL</code> and the total count matched up with my total device count (within reason). I also opened up the view in SSMS to see which tables/views it was using. Here&rsquo;s the view contents. As you can see, it&rsquo;s doing some cool math and using <code>InventoryLog</code> and <code>System_DISC</code>. This is perfect.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ResourceID,<span style=color:#bbb> </span>sd.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> 
-</span><span style=color:#bbb>        </span>dbo.fnConvertUTCToLocal(il.LogTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>AS</span><span style=color:#bbb> </span>LogLocalTime,<span style=color:#bbb> 
-</span><span style=color:#bbb>        </span>il.LogTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogUtcTime,<span style=color:#bbb> 
-</span><span style=color:#bbb>        </span>il.LogSource,<span style=color:#bbb> 
-</span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ServerReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMajor,<span style=color:#bbb>  
-</span><span style=color:#bbb>		</span>il.ServerReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMinor,<span style=color:#bbb>  
-</span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ClientReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMajor,<span style=color:#bbb>  
-</span><span style=color:#bbb>		</span>il.ClientReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMinor,<span style=color:#bbb>  
-</span><span style=color:#bbb>		</span>il.LogText,<span style=color:#bbb> 
-</span><span style=color:#bbb>		</span>il.LogDetail<span style=color:#bbb> 
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>InventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb> </span><span style=color:#000;font-weight:700>left</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Join</span><span style=color:#bbb> </span>System_DISC<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ItemKey<span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>Next I used these 2 queries to show me how bad things may be. The first shows the count by LogText value to give us the total of each type of inventory is being reported. It also gives us a list of possible values to work with. The second adds in <code>ResourceID</code> to show devices that have had repeated failures. The third shows the oldest record in the log - which is about 90 days old.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=34><a style=outline:none;text-decoration:none;color:inherit href=#34>34</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=35><a style=outline:none;text-decoration:none;color:inherit href=#35>35</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=36><a style=outline:none;text-decoration:none;color:inherit href=#36>36</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=37><a style=outline:none;text-decoration:none;color:inherit href=#37>37</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#998;font-style:italic>--Total Inventory Type
-</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Total Inventory Type by Device
-</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Oldest Log Entry
-</span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MIN</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>OldestDateTime<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=image-16.png target=_blank>
-<img src=image-16.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p>From this data, I can see that within the past 90 days, I&rsquo;ve got several machines that are repeatedly sending in bad inventory. Next we need to find the max <code>LogUtcTime</code> for each device where the LogText is <code>full/resync report</code>. This will enable us to determine the last time a device reported a valid inventory.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2>2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3>3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4>4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5>5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6>6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7>7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8>8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9>9</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb> 
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
-</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>ResourceID<span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>Now that we know the last time we had a good inventory reported, we can find all of the devices who&rsquo;s last inventory was NOT good. To do this, we can&rsquo;t just flip the previous query around and use <code>WHERE LogText &lt;> 'full/resync report'</code> because this just give us the last time inventory failed for the device but doesn&rsquo;t tell us if the failure was the last thing reported for the device.</p>
-<p>This query will give you a list of every failed inventory log entry by device where the failed entry occurred AFTER the last successful inventory was reported for that device. It also includes the failure count since the last successful inventory (the total is included on each row for a given device).</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=24><a style=outline:none;text-decoration:none;color:inherit href=#24>24</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=25><a style=outline:none;text-decoration:none;color:inherit href=#25>25</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=26><a style=outline:none;text-decoration:none;color:inherit href=#26>26</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=27><a style=outline:none;text-decoration:none;color:inherit href=#27>27</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=28><a style=outline:none;text-decoration:none;color:inherit href=#28>28</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=29><a style=outline:none;text-decoration:none;color:inherit href=#29>29</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=30><a style=outline:none;text-decoration:none;color:inherit href=#30>30</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=31><a style=outline:none;text-decoration:none;color:inherit href=#31>31</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=32><a style=outline:none;text-decoration:none;color:inherit href=#32>32</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=33><a style=outline:none;text-decoration:none;color:inherit href=#33>33</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>il.Name<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.LogLocalTime<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.ServerMajor<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.ServerMinor<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.ClientMajor<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.ClientMinor<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.ResourceID<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.logText<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,il.LogDetail<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,mil.LastFullSync<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,<span style=color:#000;font-weight:700>COUNT</span>(il.ResourceID)<span style=color:#bbb> </span>OVER<span style=color:#bbb> </span>(PARTITION<span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> </span>il.ResourceID)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureCount<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>LEFT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>OUTER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>(<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
-</span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb> 
-</span><span style=color:#bbb>		</span>,<span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
-</span><span style=color:#bbb>		</span>vInventoryLog<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
-</span><span style=color:#bbb>		</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb>
-</span><span style=color:#bbb>	</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>mil<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>mil.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>il.resourceID<span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>il.LogUtcTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span>mil.LastFullSync<span style=color:#bbb>
-</span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb> </span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
-</span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>FailureCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>Desc</span><span style=color:#bbb>
-</span><span style=color:#bbb>	</span>,LogLocalTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>![A Square Dozen Image](image-17.png</p>
-<p>Also note the LogDetail column. This column should identify the inventory class that is the source of the inventory failure.
-Then I summarized this list (you could just do it in Excel from here) to give me a DISTINCT device list that I could drop into a collection in SCCM and target with remediation steps.</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=17><a style=outline:none;text-decoration:none;color:inherit href=#17>17</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=18><a style=outline:none;text-decoration:none;color:inherit href=#18>18</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=19><a style=outline:none;text-decoration:none;color:inherit href=#19>19</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=20><a style=outline:none;text-decoration:none;color:inherit href=#20>20</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=21><a style=outline:none;text-decoration:none;color:inherit href=#21>21</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=22><a style=outline:none;text-decoration:none;color:inherit href=#22>22</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=23><a style=outline:none;text-decoration:none;color:inherit href=#23>23</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>SELECT 
-	DISTINCT
-	il.Name
-	,COUNT(il.ResourceID) OVER (PARTITION BY il.ResourceID) as FailureCount
-FROM 
-	vInventoryLog il
-	LEFT OUTER JOIN
-	(
-	SELECT 
-		ResourceID 
-		,MAX(LogUtcTime) as LastFullSync
-	FROM  
-		vInventoryLog
-	WHERE 
-		LogText = &#39;full/resync report&#39; 
-	GROUP BY
-		ResourceID
-	) as mil ON mil.ResourceID = il.resourceID
-WHERE
-	il.LogUtcTime &gt; mil.LastFullSync
-	AND Name IS NOT NULL
-ORDER BY
-	FailureCount desc
-</code></pre></td></tr></table>
-</div>
-</div><p>You&rsquo;ll notice the low failure counts on many of the machines listed. When I began, I had many more with much higher counts. The ones with 1-3 failures don&rsquo;t concern me since I&rsquo;m sure they will auto-remediate on their next inventory attempt, but the higher counts may require a bit more attention.</p>
-<p><div class=image>
-<figure>
-<a href=image-18.png target=_blank>
-<img src=image-18.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=summary>Summary</h2>
-<p>Well, this was supposed to be a short post, but I never can get away with that. There&rsquo;s just too much good stuff to share (so I don&rsquo;t forget it 6 months from now as well). Hopefully this post has given you some thoughts on how you can keep an eye on your inventory. I do believe that the increased numbers of failures I&rsquo;m seeing are directly related to In-Place upgrades from Windows 7 to Windows 10 and in other cases related to devices changing from KMS to Subscription activation for Windows. I&rsquo;m still chasing down the latter. Please let me know if I missed anything or share any improvements that you can come up with.</p>
-<p>Special thanks to <a href=https://twitter.com/GarthMJ>Garth Jones</a> and <a href=https://twitter.com/SqlBenjamin>Benjamin Reynolds</a> for their excellent blogs and assistance as I waded through all of this. Here are some great blogs that they&rsquo;ve written around these issues that I used for reference.</p>
-<p><a href=https://sqlbenjamin.wordpress.com/2018/01/11/troubleshootingmonitoring-hardware-inventory-with-the-inventorylog/>https://sqlbenjamin.wordpress.com/2018/01/11/troubleshootingmonitoring-hardware-inventory-with-the-inventorylog/</a></p>
-<p><a href=https://www.enhansoft.com/what-are-the-supported-sql-server-views-to-use-with-sccm-reporting/>https://www.enhansoft.com/what-are-the-supported-sql-server-views-to-use-with-sccm-reporting/</a></p>
-<p>Plus a Reddit post that asked about InventoryLog at the same time I was dealing with this <a href=https://www.reddit.com/r/SCCM/comments/ccqomn/sccm_db_inventorylog_table_questions/>https://www.reddit.com/r/SCCM/comments/ccqomn/sccm_db_inventorylog_table_questions/</a></p>
-<p>And 2 related Twitter threads<br>
-<a href=https://twitter.com/AdamGrossTX/status/1150863800456884227>https://twitter.com/AdamGrossTX/status/1150863800456884227</a><br>
-<a href=https://twitter.com/AdamGrossTX/status/1149065393794879488>https://twitter.com/AdamGrossTX/status/1149065393794879488</a></p>
-</div>
-<div class=post-share>
-<div class="post-share-box share-comments">
-hello
-</div>
-</div>
-<div class=post-author>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>How to Identify Repeated SCCM Client Inventory Failures Using SQL</h1><span class=post-date>July 17, 2019</span></div><div class=post-entry><p>For the past few weeks I&rsquo;ve been chasing some issues in my production ConfigMgr environment related to Windows 7 to Windows 10 upgrades and Windows 10 Feature Updates and SCCM Hardware Inventory. During that process, I found that several of my clients had successfully been upgraded, but were still reporting the old OS version in the ConfigMgr console. My search led to several root causes which I&rsquo;m still working through, but the solution in most cases was to force a Full Hardware Inventory on the client or fully uninstall, clean and reinstall the client - I also won&rsquo;t go into those steps here. I really just want to share a few of the things I did to identify clients with &lsquo;broken&rsquo; hardware inventory.</p><h2 id=incorrect-os-version>Incorrect OS Version</h2><p>I had deployed the Windows 10 1809 Feature Update to a collection of Windows 10 1803 devices and added the Operating System Build column in the SCCM Console. Then I would connect to the devices remotely using <a href=https://recastsoftware.com/>Recast Right Click Tools</a> and <a href=https://github.com/rzander/sccmclictr>Client Center for Configuration Manger</a> by <a href=https://twitter.com/roger_zander>Roger Zander</a> to force any pending updates to install. Whenever it appeared that the clients had already installed the update, I would run some PowerShell to check for the OS version and many times, force a reboot and hardware inventory collection. I began to notice that several machines never showed the correct OS version and started digging. Checking Resource Explorer in the SCCM console, I would see that the client hadn&rsquo;t updated the Operating System Hardware Inventory class for a few days which led me to believe we had an inventory issue.</p><h2 id=bad-mifs>Bad MIFs</h2><p>Whenever Hardware Inventory - among other client processes - runs on an SCCM Client, the client sends back a MIF file. This file contains the data that will be inserted into the database records for that machine. These MIF files are dropped into folders on the site server called Inboxes where they are picked up according to certain intervals (or some inboxes are triggered by new files being added) and processed (there are other file types that are managed by the inbox processes as well). In the case of Hardware Inventory, whenever the MIF is invalid for any number of reasons, the file is moved to one of several BADMIFS folders. Depending on the failure, most failures simply result in the client being notified that it&rsquo;s last inventory was invalid and that it should resync or send in a new full inventory file instead of the delta that it generally sends.</p><p>In my case, I used the <a href=https://gallery.technet.microsoft.com/ConfigMgr-Inbox-Monitor-77620e1c>ConfigMgr Inbox Monitor</a> by <a href=https://twitter.com/RobMVP>Robert Marshall</a> tool to see that I had over 500 MIFs in the various BADMIFs folders. I began opening the MIFs in Notepad and could read out the device name from the second line of the file and go check that device in the console to see if I could sort out what the issue was. As I mentioned, most bad inventory will resolve itself. So my challenge was to figure out which MIFs represented devices that were having repeated inventory issues.
+For more on MIFs, check out <a href=https://blogs.technet.microsoft.com/umairkhan/2014/10/01/configmgr-2012-hardware-inventory-resync-and-badmif-internals/>this in-depth post</a> from <a href=https://twitter.com/TheFrankUK>Umair Kahn</a> from Microsoft.</p><h2 id=sql-magic>SQL Magic</h2><p>First - let me start with a disclaimer on this section (see links at the end for more info from Garth and Benjamin on this). The views and tables that I&rsquo;m going to use are technically &rsquo;not supported&rsquo; by Microsoft in that they shouldn&rsquo;t be used in reports or used to share out to others. The main risks in using these are that 1) some day the view could change and would break your report 2) the view likely doesn&rsquo;t have the correct permissions on it and you should NEVER change permissions on your ConfigMgr Database. (Yeah, Yeah - I know some of you do change them, but that&rsquo;s just silly and you shouldn&rsquo;t do it)</p><p>I started digging through the database and found the InventoryLog table and started playing with it. I discovered that it matched up nicely with the machines I was finding in the BADMIFs folders. I decided that this table could be the ticket to sorting this out. One great thing about the SCCM Database is that GENERALLY where there&rsquo;s a table, there&rsquo;s a view. You should always use the v_ views when they are available. If you can&rsquo;t find a view that matches, like v_InventoryLog, check for vInventoryLog (which is the one I found). You can also right click on the table or view in SQL Server Management Studio (SSMS) and click View Dependencies.</p><p><div class=image><figure><a href=image-14.png target=_blank><img src=image-14.png alt="A Square Dozen Image"></a></figure></div></p><p><div class=image><figure><a href=image-15.png target=_blank><img src=image-15.png alt="A Square Dozen Image"></a></figure></div></p><p>Since I didn&rsquo;t know anything about the the table, I validated a few things first. I ran <code>SELECT DISTINCT ResourceID FROM vInventoryLog WHERE Name IS NOT NULL</code> and the total count matched up with my total device count (within reason). I also opened up the view in SSMS to see which tables/views it was using. Here&rsquo;s the view contents. As you can see, it&rsquo;s doing some cool math and using <code>InventoryLog</code> and <code>System_DISC</code>. This is perfect.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ResourceID,<span style=color:#bbb> </span>sd.Netbios_Name0<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>Name,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>dbo.fnConvertUTCToLocal(il.LogTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>AS</span><span style=color:#bbb> </span>LogLocalTime,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>il.LogTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogUtcTime,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>il.LogSource,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ServerReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMajor,<span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>il.ServerReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ServerMinor,<span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span><span style=color:#000;font-weight:700>CAST</span>(il.ClientReportVersion<span style=color:#000;font-weight:700>/</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#0086b3>int</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMajor,<span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>il.ClientReportVersion<span style=color:#000;font-weight:700>%</span><span style=color:#099>4294967296</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>ClientMinor,<span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>il.LogText,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>il.LogDetail<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> </span>InventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb> </span><span style=color:#000;font-weight:700>left</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>Join</span><span style=color:#bbb> </span>System_DISC<span style=color:#bbb> </span>sd<span style=color:#bbb> </span><span style=color:#000;font-weight:700>on</span><span style=color:#bbb> </span>il.MachineID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>sd.ItemKey<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p>Next I used these 2 queries to show me how bad things may be. The first shows the count by LogText value to give us the total of each type of inventory is being reported. It also gives us a list of possible values to work with. The second adds in <code>ResourceID</code> to show devices that have had repeated failures. The third shows the oldest record in the log - which is about 90 days old.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-23>23</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-24><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-24>24</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-25><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-25>25</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-26><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-26>26</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-27><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-27>27</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-28><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-28>28</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-29><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-29>29</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-30><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-30>30</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-31><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-31>31</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-32><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-32>32</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-33><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-33>33</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-34><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-34>34</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-35><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-35>35</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-36><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-36>36</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-37><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-37>37</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#998;font-style:italic>--Total Inventory Type
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Total Inventory Type by Device
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>DISTINCT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogText,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>Count</span>(<span style=color:#000;font-weight:700>*</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LogTextCount<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogText<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogTextCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>--Oldest Log Entry
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MIN</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>OldestDateTime<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=image-16.png target=_blank><img src=image-16.png alt="A Square Dozen Image"></a></figure></div></p><p>From this data, I can see that within the past 90 days, I&rsquo;ve got several machines that are repeatedly sending in bad inventory. Next we need to find the max <code>LogUtcTime</code> for each device where the LogText is <code>full/resync report</code>. This will enable us to determine the last time a device reported a valid inventory.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-1>1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-2>2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-3>3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-4>4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-5>5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-6>6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-7>7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-8>8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-9>9</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>ResourceID,<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>ResourceID<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p>Now that we know the last time we had a good inventory reported, we can find all of the devices who&rsquo;s last inventory was NOT good. To do this, we can&rsquo;t just flip the previous query around and use <code>WHERE LogText &lt;> 'full/resync report'</code> because this just give us the last time inventory failed for the device but doesn&rsquo;t tell us if the failure was the last thing reported for the device.</p><p>This query will give you a list of every failed inventory log entry by device where the failed entry occurred AFTER the last successful inventory was reported for that device. It also includes the failure count since the last successful inventory (the total is included on each row for a given device).</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-23>23</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-24><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-24>24</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-25><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-25>25</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-26><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-26>26</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-27><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-27>27</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-28><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-28>28</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-29><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-29>29</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-30><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-30>30</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-31><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-31>31</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-32><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-32>32</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-33><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-33>33</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=display:flex><span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>il.Name<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.LogLocalTime<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.ServerMajor<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.ServerMinor<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.ClientMajor<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.ClientMinor<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.ResourceID<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.logText<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,il.LogDetail<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,mil.LastFullSync<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,<span style=color:#000;font-weight:700>COUNT</span>(il.ResourceID)<span style=color:#bbb> </span>OVER<span style=color:#bbb> </span>(PARTITION<span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb> </span>il.ResourceID)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>FailureCount<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>vInventoryLog<span style=color:#bbb> </span>il<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>LEFT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>OUTER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>JOIN</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>(<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>SELECT</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>,<span style=color:#000;font-weight:700>MAX</span>(LogUtcTime)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>LastFullSync<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>FROM</span><span style=color:#bbb>  
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>vInventoryLog<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>LogText<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#39;full/resync report&#39;</span><span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>GROUP</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>		</span>ResourceID<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span>mil<span style=color:#bbb> </span><span style=color:#000;font-weight:700>ON</span><span style=color:#bbb> </span>mil.ResourceID<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>il.resourceID<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>WHERE</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>il.LogUtcTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span>mil.LastFullSync<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span><span style=color:#000;font-weight:700>AND</span><span style=color:#bbb> </span>Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>IS</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NOT</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>NULL</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>ORDER</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>BY</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>FailureCount<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,Name<span style=color:#bbb> </span><span style=color:#000;font-weight:700>Desc</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>	</span>,LogLocalTime<span style=color:#bbb> </span><span style=color:#000;font-weight:700>DESC</span><span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p>![A Square Dozen Image](image-17.png</p><p>Also note the LogDetail column. This column should identify the inventory class that is the source of the inventory failure.
+Then I summarized this list (you could just do it in Excel from here) to give me a DISTINCT device list that I could drop into a collection in SCCM and target with remediation steps.</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-16>16</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-17><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-17>17</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-18><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-18>18</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-19><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-19>19</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-20><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-20>20</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-21><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-21>21</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-22><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-22>22</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-4-23><a style=outline:none;text-decoration:none;color:inherit href=#hl-4-23>23</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>SELECT 
+</span></span><span style=display:flex><span>	DISTINCT
+</span></span><span style=display:flex><span>	il.Name
+</span></span><span style=display:flex><span>	,COUNT(il.ResourceID) OVER (PARTITION BY il.ResourceID) as FailureCount
+</span></span><span style=display:flex><span>FROM 
+</span></span><span style=display:flex><span>	vInventoryLog il
+</span></span><span style=display:flex><span>	LEFT OUTER JOIN
+</span></span><span style=display:flex><span>	(
+</span></span><span style=display:flex><span>	SELECT 
+</span></span><span style=display:flex><span>		ResourceID 
+</span></span><span style=display:flex><span>		,MAX(LogUtcTime) as LastFullSync
+</span></span><span style=display:flex><span>	FROM  
+</span></span><span style=display:flex><span>		vInventoryLog
+</span></span><span style=display:flex><span>	WHERE 
+</span></span><span style=display:flex><span>		LogText = &#39;full/resync report&#39; 
+</span></span><span style=display:flex><span>	GROUP BY
+</span></span><span style=display:flex><span>		ResourceID
+</span></span><span style=display:flex><span>	) as mil ON mil.ResourceID = il.resourceID
+</span></span><span style=display:flex><span>WHERE
+</span></span><span style=display:flex><span>	il.LogUtcTime &gt; mil.LastFullSync
+</span></span><span style=display:flex><span>	AND Name IS NOT NULL
+</span></span><span style=display:flex><span>ORDER BY
+</span></span><span style=display:flex><span>	FailureCount desc
+</span></span></code></pre></td></tr></table></div></div><p>You&rsquo;ll notice the low failure counts on many of the machines listed. When I began, I had many more with much higher counts. The ones with 1-3 failures don&rsquo;t concern me since I&rsquo;m sure they will auto-remediate on their next inventory attempt, but the higher counts may require a bit more attention.</p><p><div class=image><figure><a href=image-18.png target=_blank><img src=image-18.png alt="A Square Dozen Image"></a></figure></div></p><h2 id=summary>Summary</h2><p>Well, this was supposed to be a short post, but I never can get away with that. There&rsquo;s just too much good stuff to share (so I don&rsquo;t forget it 6 months from now as well). Hopefully this post has given you some thoughts on how you can keep an eye on your inventory. I do believe that the increased numbers of failures I&rsquo;m seeing are directly related to In-Place upgrades from Windows 7 to Windows 10 and in other cases related to devices changing from KMS to Subscription activation for Windows. I&rsquo;m still chasing down the latter. Please let me know if I missed anything or share any improvements that you can come up with.</p><p>Special thanks to <a href=https://twitter.com/GarthMJ>Garth Jones</a> and <a href=https://twitter.com/SqlBenjamin>Benjamin Reynolds</a> for their excellent blogs and assistance as I waded through all of this. Here are some great blogs that they&rsquo;ve written around these issues that I used for reference.</p><p><a href=https://sqlbenjamin.wordpress.com/2018/01/11/troubleshootingmonitoring-hardware-inventory-with-the-inventorylog/>https://sqlbenjamin.wordpress.com/2018/01/11/troubleshootingmonitoring-hardware-inventory-with-the-inventorylog/</a></p><p><a href=https://www.enhansoft.com/what-are-the-supported-sql-server-views-to-use-with-sccm-reporting/>https://www.enhansoft.com/what-are-the-supported-sql-server-views-to-use-with-sccm-reporting/</a></p><p>Plus a Reddit post that asked about InventoryLog at the same time I was dealing with this <a href=https://www.reddit.com/r/SCCM/comments/ccqomn/sccm_db_inventorylog_table_questions/>https://www.reddit.com/r/SCCM/comments/ccqomn/sccm_db_inventorylog_table_questions/</a></p><p>And 2 related Twitter threads<br><a href=https://twitter.com/AdamGrossTX/status/1150863800456884227>https://twitter.com/AdamGrossTX/status/1150863800456884227</a><br><a href=https://twitter.com/AdamGrossTX/status/1149065393794879488>https://twitter.com/AdamGrossTX/status/1149065393794879488</a></p></div><div class=post-share><div class="post-share-box share-comments">hello</div></div><div class=post-author></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>

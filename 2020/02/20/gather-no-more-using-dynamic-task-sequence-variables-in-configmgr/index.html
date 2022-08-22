@@ -1,512 +1,103 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows">
-<meta name=viewport content="width=device-width">
-<meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP">
-<link rel="shortcut icon" href=/img/favicon.ico>
-<title>Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr-A Square Dozen | A. Gross Blog</title>
-<link rel=canonical href=/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/>
-<link rel=stylesheet href=/css/style.css>
-<link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=keyword content="ConfigMgr Microsoft MVP Gross Intune Windows"><meta name=viewport content="width=device-width"><meta name=description content="A.Gross Blog | Adam Gross Enterprise Mobility MVP"><link rel="shortcut icon" href=/img/favicon.ico><title>Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr-A Square Dozen | A. Gross Blog</title><link rel=canonical href=/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=https://www.asquaredozen.com/css/custom.css><script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js></script>
 <script src=https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js></script>
 <script src=https://www.asquaredozen.com/js/jquery.slicknav.js></script>
 <script src=https://www.asquaredozen.com/js/asd_SlickNav_Mobile.js></script>
 <script src=https://www.asquaredozen.com/js/custom.js></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYVXTRTXN4"></script>
-<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-DYVXTRTXN4',{anonymize_ip:!1})}</script>
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png">
-<meta name=twitter:title content="Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr">
-<meta name=twitter:description content="Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
-  Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
- If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences.">
-<meta property="og:title" content="Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr">
-<meta property="og:description" content="Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
-  Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
- If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2020-02-21T02:15:17+00:00">
-<meta property="article:modified_time" content="2020-02-21T02:15:17+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog">
-</head>
-<body class="home blog">
-<div id=asd-container>
-<div id=top-bar>
-<div class=container>
-<div id=nav-wrapper>
-<ul class=menu id=menu-top-menu>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/>Home</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Feature Updates</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/>
-<span>ConfigMgr AdminService</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>802.1x for OSD</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>Task Sequence Hacks</span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a>
-</li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=https://github.com/AdamGrossTX>
-<span>GitHub</span>
-</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=#>
-<span>MORE></span>
-</a>
-<ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/about/>About</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/consulting/>Consulting</a>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home">
-<a href=/contact/>Contact</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div id=top-search>
-<a href=# class=search><i class="fa fa-search"></i></a>
-<div class=show-search>
-<form role=search method=get action=https://www.google.com/search id=searchform>
-<input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-DYVXTRTXN4",{anonymize_ip:!1})}</script><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta name=twitter:title content="Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr"><meta name=twitter:description content="Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
+Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
+If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences."><meta property="og:title" content="Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr"><meta property="og:description" content="Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! https://communityhub.microsoft.com/item/7812
+Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)
+If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences."><meta property="og:type" content="article"><meta property="og:url" content="https://www.asquaredozen.com/2020/02/20/gather-no-more-using-dynamic-task-sequence-variables-in-configmgr/"><meta property="og:image" content="https://www.asquaredozen.com/img/ASquareDozen-Logo_Horiz_Twitter.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-02-21T02:15:17+00:00"><meta property="article:modified_time" content="2020-02-21T02:15:17+00:00"><meta property="og:site_name" content="A Square Dozen | A. Gross Blog"></head><body class="home blog"><div id=asd-container><div id=top-bar><div class=container><div id=nav-wrapper><ul class=menu id=menu-top-menu><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/>Home</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Feature Updates</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/22/windows-10-feature-updates-leveraging-setupdiag-for-better-reporting/>Windows 10 Feature Updates – Leveraging SetupDiag for Better Reporting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/10/05/windows-10-feature-updates-the-challenge-of-servicing-in-the-enterprise/>Windows 10 Feature Updates – The Challenge of Servicing in the Enterprise</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-custom-action-scripts/>Windows 10 Feature Updates – Using Custom Action Scripts</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/08/25/windows-10-feature-updates-using-setupconfig-ini-to-manage-feature-updates-in-the-enterprise/>Windows 10 Feature Updates – Using Setupconfig.ini to Manage Feature Updates in the Enterprise</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/02/12/the-system-center-configuration-manager-adminservice-guide/><span>ConfigMgr AdminService</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>802.1x for OSD</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-1-building-an-802-1x-computer-authentication-script/>Part 1 – Building an 802.1x Computer Authentication Script</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-2-building-an-802-1x-enabled-winpe-boot-image/>Part 2 – Building an 802.1x Enabled WinPE Boot Image</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-3-integrating-802-1x-authentication-into-a-bare-metal-task-sequence/>Part 3 – Integrating 802.1x Authentication into a Bare Metal Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-part-4-integrating-802-1x-authentication-into-an-in-place-upgrade-task-sequence/>Part 4 – Integrating 802.1x Authentication into an In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/09/29/configuring-802-1x-authentication-for-windows-deployment-part-5-dynamic-whitelisting-using-the-cisco-ise-external-restful-service/>Part 5 – Dynamic Whitelisting using the Cisco ISE External RESTful Service</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/29/configuring-802-1x-authentication-for-windows-deployment-tips-and-tricks/>Tips and Tricks</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>Task Sequence Hacks</span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/11/29/building-a-better-task-sequence/>Building a Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2019/04/30/building-a-smarter-task-sequence/>Building a Smarter Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/12/14/building-an-even-better-task-sequence/>Building An Even Better Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/16/clearing-local-group-policies-during-an-windows-7-to-10-in-place-upgrade-task-sequence/>Clearing Local Group Policies during an Windows 7 to 10 In-Place Upgrade Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/10/03/debugging-sccm-configmgr-task-sequences-on-the-fly/>Debugging SCCM/ConfigMgr Task Sequences on the Fly</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/07/11/dynamically-updating-unattend-xml-during-an-osd-task-sequence-using-mdt-variables-and-zti-scripts/>Dynamically Updating Unattend.XML during an OSD Task Sequence using MDT Variables and ZTI Scripts.</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/06/14/triggering-configmgr-client-actions-from-a-task-sequence/>Triggering ConfigMgr Client Actions from a Task Sequence</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/2018/08/27/using-sccm-task-sequence-variables-as-scripts/>Using SCCM Task Sequence Variables as Scripts</a></li></ul></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=https://github.com/AdamGrossTX><span>GitHub</span></a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=#><span>MORE></span></a><ul class="sub-menu menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/about/>About</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/consulting/>Consulting</a></li><li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home"><a href=/contact/>Contact</a></li></ul></li></ul></div><div id=top-search><a href=# class=search><i class="fa fa-search"></i></a><div class=show-search><form role=search method=get action=https://www.google.com/search id=searchform><input type=search placeholder="Search and hit enter..." name=q id=q title="Search and hit enter...">
 <input type=hidden name=sitesearch value=https://www.asquaredozen.com>
-<button type=submit value=Search>
-</form>
-</div>
-</div>
-<div class=menu id=menu-mobile></div>
-</div>
-</div>
-<header id=header class=noslider>
-<div class=container>
-<div id=logo>
-<h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1>
-</div>
-</div>
-</header>
-<div class=container>
-<div id=content>
-<div id=main class=fullwidth>
-<article class="post type-post status-publish format-standard has-post-thumbnail hentry">
-<div class=post-header>
-<h1>Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr</h1>
-<span class=post-date>February 21, 2020</span>
-</div>
-<div class=post-entry>
-<hr>
-<p>Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! <strong><a href=https://communityhub.microsoft.com/item/7812>https://communityhub.microsoft.com/item/7812</a></strong></p>
-<hr>
-<hr>
-<p>Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)</p>
-<hr>
-<p>If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences. We have always included some form of MDT in our Task Sequences but I&rsquo;m in spring cleaning mode and it&rsquo;s time to start some re-work on our main OSD Task Sequence now that we have completed our Windows 7 upgrade project. Now&rsquo;s the time to see if I can replace Gather with native ConfigMgr Dynamic Task Sequence Variables.</p>
-<h2 id=gather-alternatives>Gather Alternatives</h2>
-<p>If you actually still think you need Gather after you finish reading, here are some community tools that can at least help you move away from using the MDT scripts.</p>
-<ul>
-<li><strong>MDT Lite</strong> - Most recently we&rsquo;ve been using <a href=https://twitter.com/gwblok>Gary Blok</a>‘s MDT Lite - which is just the essential files required to run Gather <a href=https://garytown.com/replace-mdt-with-mdt-lite>https://garytown.com/replace-mdt-with-mdt-lite</a>.</li>
-<li><strong>PowerShell Gather Script</strong> - There are also several other community Gather solutions available. <a href=https://twitter.com/josch62>Johan Schrewelius</a> created a PowerShell alternative <a href=https://gallery.technet.microsoft.com/PowerShell-script-that-a8a7bdd8>https://gallery.technet.microsoft.com/PowerShell-script-that-a8a7bdd8</a></li>
-<li><strong>OSD</strong> module - <a href=https://twitter.com/SeguraOSD>David Segura</a> along with several other community contributors created a PowerShell module simply called <strong>OSD</strong> <a href=https://github.com/OSDeploy/OSD>https://github.com/OSDeploy/OSD</a>.</li>
-<li><strong>Friends of MDT/PSD</strong> - <a href=https://github.com/FriendsOfMDT/PSD/graphs/contributors>Several folks</a> from the community have actually rebuilt MDT as a PowerShell framework if you&rsquo;re into that sort of thing <a href=https://github.com/FriendsOfMDT/PSD>https://github.com/FriendsOfMDT/PSD</a> & <a href=https://www.scconfigmgr.com/2019/05/21/powershell-deployment-getting-started-with-the-psd-hydration-kit/>https://www.scconfigmgr.com/2019/05/21/powershell-deployment-getting-started-with-the-psd-hydration-kit/</a></li>
-</ul>
-<p>All of these work and it&rsquo;s really just a question of what you need to Gather.</p>
-<h2 id=dynamic-variables>Dynamic Variables</h2>
-<p>I believe <a href=https://twitter.com/miketerrill>Mike Terrill</a> once told me about these variables (He also drives a fancy Tesla) and while they are missing a few key items, they can get the job done. In order to create these variables, you need to add a Set Dynamic Variables step to your Task Sequence. When this step runs, it will populate a set of commonly used variables. Here&rsquo;s a link to the doc <a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-steps#BKMK_SetDynamicVariables>https://docs.microsoft.com/configmgr/osd/understand/task-sequence-steps#BKMK_SetDynamicVariables</a>. This link also contains instructions for using the Set Dynamic Variables step. It is a very powerful step with lots of functionality.</p>
-<ul>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSMake>_SMSTSMake</a></li>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSModel>_SMSTSModel</a></li>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSMacAddresses>_SMSTSMacAddresses</a></li>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSIPAddresses>_SMSTSIPAddresses</a></li>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSSerialNumber>_SMSTSSerialNumber</a></li>
-<li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSAssetTag>_SMSTSAssetTag</a></li>
-<li>[_SMSTSUUID](<a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSUUID>https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSUUID</a></li>
-</ul>
-<p>As you can see from the list, it&rsquo;s not nearly as many variables as you&rsquo;d get with MDT Gather, however, I have found that I generally only need 5 - Make, Model, SerialNumber, IsVM & IsLaptop. I know others will need more, but that&rsquo;s it for me and I&rsquo;ll explain how I use next.</p>
-<p>On and in case you&rsquo;re into scripting things, there are 4 PowerShell cmdlets to manage the Dynamic Variables steps.</p>
-<ul>
-<li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/get-cmtsstepsetdynamicvariable?view=sccm-ps">Get-CMTSStepSetDynamicVariable</a></li>
-<li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/new-cmtsstepsetdynamicvariable?view=sccm-ps">New-CMTSStepSetDynamicVariable</a></li>
-<li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/remove-cmtsstepsetdynamicvariable?view=sccm-ps">Remove-CMTSStepSetDynamicVariable</a></li>
-<li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/set-cmtsstepsetdynamicvariable?view=sccm-ps">Set-CMTSStepSetDynamicVariable</a></li>
-</ul>
-<h2 id=use-cases>Use Cases</h2>
-<p>To use these Variables, you can simply refer to them like any other variable like: <code>%_SMSTSMake%</code>. Here are some of the places I use these variables:</p>
-<ul>
-<li>Computer Naming
-<ul>
-<li>We have a wizard that sets the site code based on the device&rsquo;s gateway then I append the site code to the serial number like <code>%SiteCode%-%_SMSTSSerialNumber%</code>. * There&rsquo;s a challenge with the serial number here that I&rsquo;ll cover in a moment.</li>
-</ul>
-</li>
-<li>IsLaptop & IsVM
-<ul>
-<li>We target specific software (VPN) to Laptops VMware Tools to VMs.</li>
-<li>All of our laptops are either Lenovo Thinkpads or Microsoft Surfaces. I will replace IsLaptop with <code>_SMSTSModel like *Thinkpad*</code> and <code>_SMSTSModel like *Surface*</code> and it should be a pretty simple swap. I believe we only use IsLaptop on a single step in Task Sequence.</li>
-<li>All of our VMs are VMware, so I can simply swap IsVM for <code>_SMSTSMake -like *VMware*</code> for the 2 steps where I was using it.</li>
-</ul>
-</li>
-<li>Drivers & Bios
-<ul>
-<li>We use legacy driver packages and dism to inject drivers into the image during the Task Sequence. It&rsquo;s a variation of this: <a href=https://deploymentresearch.com/configmgr-driver-management-in-just-four-steps-by-matthew-teegarden/>https://deploymentresearch.com/configmgr-driver-management-in-just-four-steps-by-matthew-teegarden/</a>. You can read more about my struggles with it here: &lt;/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/></li>
-<li>Using <code>_SMSTSMake</code> and <code>_SMSTSModel</code> we can set the Options on various groups and steps to target the right devices.</li>
-</ul>
-</li>
-</ul>
-<p><div class=image>
-<figure>
-<a href=image.png target=_blank>
-<img src=image.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-3.png target=_blank>
-<img src=image-3.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-2.png target=_blank>
-<img src=image-2.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div></p>
-<h2 id=serial-number-gotchas>Serial Number Gotcha&rsquo;s</h2>
-<p>The only downside that I&rsquo;ve found so far with this approach is that hardware manufacturers don&rsquo;t care about how we use serial numbers.<br>
-Dell, Lenovo and HP seem to have reasonable formats, but VMWare and Microsoft make you work for it.</p>
-<p>VMWare uses this craziness:<br>
-<code>VMware-42 15 8d a3 7c b6 f6 ba-d9 90 40 60 11 ed f3 13</code></p>
-<p>Microsoft uses 12 digits, the last 4 of which are common across devices in the same model. Not to mention that all of ours so far start with `` or <code>00</code> which makes dropping a list of them into Excel more difficult than it should be.</p>
-<p>To handle these, I can&rsquo;t just append my 2-5 digit site code plus <code>-</code> to the serial number or it blows things up. VMWare is pretty obvious, Microsoft&rsquo;s is more subtle. Active Directory only supports 15-character computer names, and (someone on the internet told me this) doesn&rsquo;t really like all numeric numbers. While Windows doesn&rsquo;t seem to care if you go over 15 characters, Active directory will hate you, and you will hate whoever at Microsoft came up with their serial number system after having your Task Sequence repeatedly blow up on the domain join step over and over and over again! (I&rsquo;m not bitter).</p>
-<p>All that said to say, for VMWare, you&rsquo;ll want to drop the VMWare part and remove the spaces to create a clean serial number that you can work with. go from<br>
-<code>VMware-42 15 8d a3 7c b6 f6 ba-d9 90 40 60 11 ed f3 13</code><br>
-to<br>
-<code>42158da37cb6f6bad990406011edf313</code></p>
-<p>So now you&rsquo;ll have a really long serial number for VMware and an almost-too-long-in-some-instances serial number for Microsoft.</p>
-<p>The next step is to truncate them. For VMware, I have had good luck just taking the last 8 characters. For Microsoft, I use the first 8 (since the last 4 aren&rsquo;t unique anyway, it doesn&rsquo;t matter).</p>
-<p>So, here&rsquo;s a simple script that I&rsquo;ve been using to take care of all of this:</p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$WMIBIOS</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class win32_BIOS
-<span style=color:teal>$WMIComputerSystem</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class Win32_ComputerSystem
-
-<span style=color:teal>$Manufacturer</span> = <span style=color:teal>$WMIComputerSystem</span>.Manufacturer
-<span style=color:teal>$SerialNumber</span> = <span style=color:teal>$WMIBIOS</span>.SerialNumber
-
-<span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Manufacturer</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
-    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
-}
-<span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
-    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
-}
-<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>Simply drop the script into a Run PowerShell Script step in your task Sequence and set the output to a new variable name. Now, you could remove all of the lookups and just pass <code>_SMSTSMake</code> and <code>_SMSTSModel</code> to the script or use them as Options on the steps, but keeping it all in one simple script makes it easy to re-use later.</p>
-<p><div class=image>
-<figure>
-<a href=image-4.png target=_blank>
-<img src=image-4.png alt="A Square Dozen Image">
-</a>
-</figure>
-</div>]</p>
-<h2 id=diy-gather-in-the-task-sequence>DIY Gather in the Task Sequence</h2>
-<hr>
-<p>Update 02/21/2020 - Ok, so I thought about this some more and decided that I would see if I could just make a Task Sequence as a module to perform all of the gather steps directly in the Task Sequence instead of using external scripts. At this point, we&rsquo;ve moved from one custom solution to another and kind of missing the point of &lsquo;going native&rsquo; but in any case, conceptually, you could make a stand-alone child task sequence that performs all of your Gather steps then just call it from any other Task Sequence as needed.</p>
-<hr>
-<p>There&rsquo;s a link at the end where you can download Gather Task Sequence content from GitHub. Here are some pretty pictures and scripts</p>
-<p><div class=image>
-<figure>
-<a href=image-6.png target=_blank>
-<img src=image-6.png alt="Main Folder for Gather to make it &amp;lsquo;portable&amp;rsquo;. Just copy the folder where you want or put in a child TS.">
-</a>
-<figcaption>Main Folder for Gather to make it 'portable'. Just copy the folder where you want or put in a child TS.</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-7.png target=_blank>
-<img src=image-7.png alt="Setup the variables with default values just to keep things clean.">
-</a>
-<figcaption>Setup the variables with default values just to keep things clean.</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-8.png target=_blank>
-<img src=image-8.png alt="Run a script using the %_SMSTSMake% variable as a parameter to get the serial number">
-</a>
-<figcaption>Run a script using the %_SMSTSMake% variable as a parameter to get the serial number</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-12.png target=_blank>
-<img src=image-12.png alt="Get the serial number">
-</a>
-<figcaption>Get the serial number</figcaption>
-</figure>
-</div></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=14><a style=outline:none;text-decoration:none;color:inherit href=#14>14</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=15><a style=outline:none;text-decoration:none;color:inherit href=#15>15</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=16><a style=outline:none;text-decoration:none;color:inherit href=#16>16</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#000;font-weight:700>Param</span> (
-    <span style=color:teal>[String]</span><span style=color:teal>$Make</span>
-)
-<span style=color:teal>$BIOS</span> = <span style=color:#0086b3>Get-CimInstance</span> -Class Win32_BIOS
-
-<span style=color:teal>$SerialNumber</span> = <span style=color:teal>$BIOS</span>.SerialNumber.Replace(<span style=color:#d14>&#39; &#39;</span>,<span style=color:#d14>&#39;&#39;</span>)
-
-<span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Make</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
-    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
-}
-<span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
-    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
-    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
-}
-<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>.ToUpper()
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=image-9.png target=_blank>
-<img src=image-9.png alt="Script to look up chassis types from WMI and output a clean name to use.">
-</a>
-<figcaption>Script to look up chassis types from WMI and output a clean name to use.</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-13.png target=_blank>
-<img src=image-13.png alt="Default is NoChassisTypeDetected. You&amp;rsquo;ll see this for VMware and likely other VMs.">
-</a>
-<figcaption>Default is NoChassisTypeDetected. You'll see this for VMware and likely other VMs.</figcaption>
-</figure>
-</div></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1> 1</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=2><a style=outline:none;text-decoration:none;color:inherit href=#2> 2</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=3><a style=outline:none;text-decoration:none;color:inherit href=#3> 3</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=4><a style=outline:none;text-decoration:none;color:inherit href=#4> 4</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=5><a style=outline:none;text-decoration:none;color:inherit href=#5> 5</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=6><a style=outline:none;text-decoration:none;color:inherit href=#6> 6</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=7><a style=outline:none;text-decoration:none;color:inherit href=#7> 7</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=8><a style=outline:none;text-decoration:none;color:inherit href=#8> 8</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=9><a style=outline:none;text-decoration:none;color:inherit href=#9> 9</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=10><a style=outline:none;text-decoration:none;color:inherit href=#10>10</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=11><a style=outline:none;text-decoration:none;color:inherit href=#11>11</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=12><a style=outline:none;text-decoration:none;color:inherit href=#12>12</a>
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=13><a style=outline:none;text-decoration:none;color:inherit href=#13>13</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:teal>$Laptop</span> = @(8, 9, 10, 11, 12, 14, 18, 21, 30, 31, 32)
-<span style=color:teal>$Desktop</span> = @(3, 4, 5, 6, 7, 13, 15, 16, 35, 36)
-<span style=color:teal>$Server</span> = @(23, 28)
-<span style=color:teal>$CIMChassisType</span> = (<span style=color:#0086b3>Get-CIMInstance</span> Win32_SystemEnclosure).ChassisTypes
-
-<span style=color:teal>$ChassisType</span> = <span style=color:#000;font-weight:700>Switch</span>(<span style=color:teal>$CIMChassisType</span>) {
-    {<span style=color:teal>$Laptop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Laptop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-    {<span style=color:teal>$Desktop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Desktop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-    {<span style=color:teal>$Server</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Server&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-    <span style=color:#000;font-weight:700>default</span> {<span style=color:#d14>&#34;NoChassisTypeDetected&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
-}
-
-<span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$ChassisType</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=image-10.png target=_blank>
-<img src=image-10.png alt="Setting the Gather variables based on the values we found.">
-</a>
-<figcaption>Setting the Gather variables based on the values we found.</figcaption>
-</figure>
-</div></p>
-<hr>
-<p><strong>UPDATE 02/24/2021 - If you use Surface Pro 7+, you will need to update your Gather step to look for Surface Pro 7+ and set IsLaptop = True. This is due to the ChassisType being set to 1 instead of 9 on these devices. This is expected to be fixed at some point, but if you have an immediate need, here&rsquo;s the fix.</strong></p>
-<hr>
-<p><div class=image>
-<figure>
-<a href=image.png target=_blank>
-<img src=image.png alt="Fix for Surface Pro 7+">
-</a>
-<figcaption>Fix for Surface Pro 7+</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-11.png target=_blank>
-<img src=image-11.png alt="Echo out the values to the command line so that they show up in smsts.log.">
-</a>
-<figcaption>Echo out the values to the command line so that they show up in smsts.log.</figcaption>
-</figure>
-</div></p>
-<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=1><a style=outline:none;text-decoration:none;color:inherit href=#1>1</a>
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>cmd /c <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;ChassisType: %ChassisType%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsVM: %IsVM%&#34;</span> &amp;&amp;  <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsLaptop: %IsLaptop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsDesktop: %IsDesktop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsServer: %IsServer%&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><div class=image>
-<figure>
-<a href=2020-02-21_15-56-38.gif target=_blank>
-<img src=2020-02-21_15-56-38.gif alt="A gif using Task Sequence Debugger to show how the variables get set!">
-</a>
-<figcaption>A gif using Task Sequence Debugger to show how the variables get set!</figcaption>
-</figure>
-</div></p>
-<p><div class=image>
-<figure>
-<a href=image-5.png target=_blank>
-<img src=image-5.png alt="SMSTS.log output showing the variables that got set by Gather">
-</a>
-<figcaption>SMSTS.log output showing the variables that got set by Gather</figcaption>
-</figure>
-</div></p>
-<p>As you can see, it takes a few steps, but it&rsquo;s not that hard to add other variables to this and use it as a master variable setting Task Sequence that you reference in other Task Sequences. Is this the most efficient? Not likely? Does it reduce the need for custom code? Maybe? Does it require any extra contents/scripts? Nope. Anyway, I feel like this completes the picture just a bit more.</p>
-<p>Click <a href=https://github.com/AdamGrossTX/BlogFiles/raw/master/GatherTS.zip>HERE</a> to download the complete Gather Task Sequence from my GitHub repo. Or Download it directly from the console in the Community Hub <a href=https://communityhub.microsoft.com/item/7812>https://communityhub.microsoft.com/item/7812</a>.</p>
-<h2 id=thats-all-folks>That&rsquo;s all Folks</h2>
-<p>As you can see, the built-in dynamic variable can be a decent replacement for Gather if you don&rsquo;t have hugely complex steps in your Task Sequence. It just takes a bit of planning. If you are starting fresh, this should be easy. Just build your Task Sequence with the dynamic variables and if you get stuck or need more variables, go grab one of the community tools and go to town.</p>
-<p>Ultimately, I&rsquo;m not saying you SHOULD use any way over another, I just want to highlight that you COULD reduce your content overhead just a little bit by using the built-in variables.</p>
-<hr>
-<p>This post is dedicated to <a href=https://twitter.com/AriSaastamoinen>Ari Saastamoinen</a> who <a href="https://twitter.com/AriSaastamoinen/status/1230646619340771328?s=20">constantly badgers</a> me to write things for him and I finally gave in.</p>
-<hr>
-</div>
-<comments id=comments>
-<script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script>
-</comments>
-</article>
-</div>
-</div>
-</div>
-<footer id=footer>
-<div class=container>
-<div id=footer-copyright>
-<p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p>
-</div>
-</div>
-</footer>
-</div>
-</body>
-</html>
+<button type=submit value=Search></form></div></div><div class=menu id=menu-mobile></div></div></div><header id=header class=noslider><div class=container><div id=logo><h1><a href=https://www.asquaredozen.com><img src=/img/A-Square-Dozen-Logo-BlogHeader-1.png alt="A Square Dozen"></a></h1></div></div></header><div class=container><div id=content><div id=main class=fullwidth><article class="post type-post status-publish format-standard has-post-thumbnail hentry"><div class=post-header><h1>Gather No More – Using Dynamic Task Sequence Variables in ConfigMgr</h1><span class=post-date>February 21, 2020</span></div><div class=post-entry><hr><p>Update 09/14/2020 - You can download the Gather Light Task Sequence from the Community Hub now! <strong><a href=https://communityhub.microsoft.com/item/7812>https://communityhub.microsoft.com/item/7812</a></strong></p><hr><hr><p>Update 02/21/2020 - I added a new section with a Gather Task Sequence. Check out the DIY Gather in the Task Sequence section below. It even has a GIF (unlike Software Center!)</p><hr><p>If you&rsquo;ve used the Microsoft Deployment ToolKit (MDT) or ConfigMgr or have ever heard of &lsquo;Johan and Mikael&rsquo;, you&rsquo;ve likely used or at least heard/read about using MDT and the Gather script that&rsquo;s included with it as part of your Task Sequences. We have always included some form of MDT in our Task Sequences but I&rsquo;m in spring cleaning mode and it&rsquo;s time to start some re-work on our main OSD Task Sequence now that we have completed our Windows 7 upgrade project. Now&rsquo;s the time to see if I can replace Gather with native ConfigMgr Dynamic Task Sequence Variables.</p><h2 id=gather-alternatives>Gather Alternatives</h2><p>If you actually still think you need Gather after you finish reading, here are some community tools that can at least help you move away from using the MDT scripts.</p><ul><li><strong>MDT Lite</strong> - Most recently we&rsquo;ve been using <a href=https://twitter.com/gwblok>Gary Blok</a>‘s MDT Lite - which is just the essential files required to run Gather <a href=https://garytown.com/replace-mdt-with-mdt-lite>https://garytown.com/replace-mdt-with-mdt-lite</a>.</li><li><strong>PowerShell Gather Script</strong> - There are also several other community Gather solutions available. <a href=https://twitter.com/josch62>Johan Schrewelius</a> created a PowerShell alternative <a href=https://gallery.technet.microsoft.com/PowerShell-script-that-a8a7bdd8>https://gallery.technet.microsoft.com/PowerShell-script-that-a8a7bdd8</a></li><li><strong>OSD</strong> module - <a href=https://twitter.com/SeguraOSD>David Segura</a> along with several other community contributors created a PowerShell module simply called <strong>OSD</strong> <a href=https://github.com/OSDeploy/OSD>https://github.com/OSDeploy/OSD</a>.</li><li><strong>Friends of MDT/PSD</strong> - <a href=https://github.com/FriendsOfMDT/PSD/graphs/contributors>Several folks</a> from the community have actually rebuilt MDT as a PowerShell framework if you&rsquo;re into that sort of thing <a href=https://github.com/FriendsOfMDT/PSD>https://github.com/FriendsOfMDT/PSD</a> & <a href=https://www.scconfigmgr.com/2019/05/21/powershell-deployment-getting-started-with-the-psd-hydration-kit/>https://www.scconfigmgr.com/2019/05/21/powershell-deployment-getting-started-with-the-psd-hydration-kit/</a></li></ul><p>All of these work and it&rsquo;s really just a question of what you need to Gather.</p><h2 id=dynamic-variables>Dynamic Variables</h2><p>I believe <a href=https://twitter.com/miketerrill>Mike Terrill</a> once told me about these variables (He also drives a fancy Tesla) and while they are missing a few key items, they can get the job done. In order to create these variables, you need to add a Set Dynamic Variables step to your Task Sequence. When this step runs, it will populate a set of commonly used variables. Here&rsquo;s a link to the doc <a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-steps#BKMK_SetDynamicVariables>https://docs.microsoft.com/configmgr/osd/understand/task-sequence-steps#BKMK_SetDynamicVariables</a>. This link also contains instructions for using the Set Dynamic Variables step. It is a very powerful step with lots of functionality.</p><ul><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSMake>_SMSTSMake</a></li><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSModel>_SMSTSModel</a></li><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSMacAddresses>_SMSTSMacAddresses</a></li><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSIPAddresses>_SMSTSIPAddresses</a></li><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSSerialNumber>_SMSTSSerialNumber</a></li><li><a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSAssetTag>_SMSTSAssetTag</a></li><li>[_SMSTSUUID](<a href=https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSUUID>https://docs.microsoft.com/configmgr/osd/understand/task-sequence-variables#SMSTSUUID</a></li></ul><p>As you can see from the list, it&rsquo;s not nearly as many variables as you&rsquo;d get with MDT Gather, however, I have found that I generally only need 5 - Make, Model, SerialNumber, IsVM & IsLaptop. I know others will need more, but that&rsquo;s it for me and I&rsquo;ll explain how I use next.</p><p>On and in case you&rsquo;re into scripting things, there are 4 PowerShell cmdlets to manage the Dynamic Variables steps.</p><ul><li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/get-cmtsstepsetdynamicvariable?view=sccm-ps">Get-CMTSStepSetDynamicVariable</a></li><li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/new-cmtsstepsetdynamicvariable?view=sccm-ps">New-CMTSStepSetDynamicVariable</a></li><li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/remove-cmtsstepsetdynamicvariable?view=sccm-ps">Remove-CMTSStepSetDynamicVariable</a></li><li><a href="https://docs.microsoft.com/powershell/module/configurationmanager/set-cmtsstepsetdynamicvariable?view=sccm-ps">Set-CMTSStepSetDynamicVariable</a></li></ul><h2 id=use-cases>Use Cases</h2><p>To use these Variables, you can simply refer to them like any other variable like: <code>%_SMSTSMake%</code>. Here are some of the places I use these variables:</p><ul><li>Computer Naming<ul><li>We have a wizard that sets the site code based on the device&rsquo;s gateway then I append the site code to the serial number like <code>%SiteCode%-%_SMSTSSerialNumber%</code>. * There&rsquo;s a challenge with the serial number here that I&rsquo;ll cover in a moment.</li></ul></li><li>IsLaptop & IsVM<ul><li>We target specific software (VPN) to Laptops VMware Tools to VMs.</li><li>All of our laptops are either Lenovo Thinkpads or Microsoft Surfaces. I will replace IsLaptop with <code>_SMSTSModel like *Thinkpad*</code> and <code>_SMSTSModel like *Surface*</code> and it should be a pretty simple swap. I believe we only use IsLaptop on a single step in Task Sequence.</li><li>All of our VMs are VMware, so I can simply swap IsVM for <code>_SMSTSMake -like *VMware*</code> for the 2 steps where I was using it.</li></ul></li><li>Drivers & Bios<ul><li>We use legacy driver packages and dism to inject drivers into the image during the Task Sequence. It&rsquo;s a variation of this: <a href=https://deploymentresearch.com/configmgr-driver-management-in-just-four-steps-by-matthew-teegarden/>https://deploymentresearch.com/configmgr-driver-management-in-just-four-steps-by-matthew-teegarden/</a>. You can read more about my struggles with it here: &lt;/2018/01/16/modern-driver-management-barely-got-working-lessons-learned/></li><li>Using <code>_SMSTSMake</code> and <code>_SMSTSModel</code> we can set the Options on various groups and steps to target the right devices.</li></ul></li></ul><p><div class=image><figure><a href=image.png target=_blank><img src=image.png alt="A Square Dozen Image"></a></figure></div></p><p><div class=image><figure><a href=image-3.png target=_blank><img src=image-3.png alt="A Square Dozen Image"></a></figure></div></p><p><div class=image><figure><a href=image-2.png target=_blank><img src=image-2.png alt="A Square Dozen Image"></a></figure></div></p><h2 id=serial-number-gotchas>Serial Number Gotcha&rsquo;s</h2><p>The only downside that I&rsquo;ve found so far with this approach is that hardware manufacturers don&rsquo;t care about how we use serial numbers.<br>Dell, Lenovo and HP seem to have reasonable formats, but VMWare and Microsoft make you work for it.</p><p>VMWare uses this craziness:<br><code>VMware-42 15 8d a3 7c b6 f6 ba-d9 90 40 60 11 ed f3 13</code></p><p>Microsoft uses 12 digits, the last 4 of which are common across devices in the same model. Not to mention that all of ours so far start with `` or <code>00</code> which makes dropping a list of them into Excel more difficult than it should be.</p><p>To handle these, I can&rsquo;t just append my 2-5 digit site code plus <code>-</code> to the serial number or it blows things up. VMWare is pretty obvious, Microsoft&rsquo;s is more subtle. Active Directory only supports 15-character computer names, and (someone on the internet told me this) doesn&rsquo;t really like all numeric numbers. While Windows doesn&rsquo;t seem to care if you go over 15 characters, Active directory will hate you, and you will hate whoever at Microsoft came up with their serial number system after having your Task Sequence repeatedly blow up on the domain join step over and over and over again! (I&rsquo;m not bitter).</p><p>All that said to say, for VMWare, you&rsquo;ll want to drop the VMWare part and remove the spaces to create a clean serial number that you can work with. go from<br><code>VMware-42 15 8d a3 7c b6 f6 ba-d9 90 40 60 11 ed f3 13</code><br>to<br><code>42158da37cb6f6bad990406011edf313</code></p><p>So now you&rsquo;ll have a really long serial number for VMware and an almost-too-long-in-some-instances serial number for Microsoft.</p><p>The next step is to truncate them. For VMware, I have had good luck just taking the last 8 characters. For Microsoft, I use the first 8 (since the last 4 aren&rsquo;t unique anyway, it doesn&rsquo;t matter).</p><p>So, here&rsquo;s a simple script that I&rsquo;ve been using to take care of all of this:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-0-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-0-15>15</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$WMIBIOS</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class win32_BIOS
+</span></span><span style=display:flex><span><span style=color:teal>$WMIComputerSystem</span> = <span style=color:#0086b3>Get-CIMInstance</span> -Class Win32_ComputerSystem
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>$Manufacturer</span> = <span style=color:teal>$WMIComputerSystem</span>.Manufacturer
+</span></span><span style=display:flex><span><span style=color:teal>$SerialNumber</span> = <span style=color:teal>$WMIBIOS</span>.SerialNumber
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Manufacturer</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+</span></span><span style=display:flex><span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
+</span></span><span style=display:flex><span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+</span></span><span style=display:flex><span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>
+</span></span></code></pre></td></tr></table></div></div><p>Simply drop the script into a Run PowerShell Script step in your task Sequence and set the output to a new variable name. Now, you could remove all of the lookups and just pass <code>_SMSTSMake</code> and <code>_SMSTSModel</code> to the script or use them as Options on the steps, but keeping it all in one simple script makes it easy to re-use later.</p><p><div class=image><figure><a href=image-4.png target=_blank><img src=image-4.png alt="A Square Dozen Image"></a></figure></div>]</p><h2 id=diy-gather-in-the-task-sequence>DIY Gather in the Task Sequence</h2><hr><p>Update 02/21/2020 - Ok, so I thought about this some more and decided that I would see if I could just make a Task Sequence as a module to perform all of the gather steps directly in the Task Sequence instead of using external scripts. At this point, we&rsquo;ve moved from one custom solution to another and kind of missing the point of &lsquo;going native&rsquo; but in any case, conceptually, you could make a stand-alone child task sequence that performs all of your Gather steps then just call it from any other Task Sequence as needed.</p><hr><p>There&rsquo;s a link at the end where you can download Gather Task Sequence content from GitHub. Here are some pretty pictures and scripts</p><p><div class=image><figure><a href=image-6.png target=_blank><img src=image-6.png alt="Main Folder for Gather to make it &amp;lsquo;portable&amp;rsquo;. Just copy the folder where you want or put in a child TS."></a><figcaption>Main Folder for Gather to make it 'portable'. Just copy the folder where you want or put in a child TS.</figcaption></figure></div></p><p><div class=image><figure><a href=image-7.png target=_blank><img src=image-7.png alt="Setup the variables with default values just to keep things clean."></a><figcaption>Setup the variables with default values just to keep things clean.</figcaption></figure></div></p><p><div class=image><figure><a href=image-8.png target=_blank><img src=image-8.png alt="Run a script using the %_SMSTSMake% variable as a parameter to get the serial number"></a><figcaption>Run a script using the %_SMSTSMake% variable as a parameter to get the serial number</figcaption></figure></div></p><p><div class=image><figure><a href=image-12.png target=_blank><img src=image-12.png alt="Get the serial number"></a><figcaption>Get the serial number</figcaption></figure></div></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-13>13</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-14><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-14>14</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-15><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-15>15</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-1-16><a style=outline:none;text-decoration:none;color:inherit href=#hl-1-16>16</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:#000;font-weight:700>Param</span> (
+</span></span><span style=display:flex><span>    <span style=color:teal>[String]</span><span style=color:teal>$Make</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span><span style=color:teal>$BIOS</span> = <span style=color:#0086b3>Get-CimInstance</span> -Class Win32_BIOS
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>$SerialNumber</span> = <span style=color:teal>$BIOS</span>.SerialNumber.Replace(<span style=color:#d14>&#39; &#39;</span>,<span style=color:#d14>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>If</span> (<span style=color:teal>$Make</span> <span style=color:#000;font-weight:700>-like</span> <span style=color:#d14>&#34;*Microsoft*&#34;</span>) { <span style=color:#998;font-style:italic>#trim the trailing 4 chars since they are the same across most models. Per Microsoft...</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+</span></span><span style=display:flex><span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.Substring(0,<span style=color:teal>$SerialNumber</span>.Length - <span style=color:teal>$CharsToTrim</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>ElseIf</span> (<span style=color:teal>$SerialNumber</span>.Length <span style=color:#000;font-weight:700>-gt</span> 8) {
+</span></span><span style=display:flex><span>    <span style=color:teal>$CharsToTrim</span> = <span style=color:teal>$SerialNumber</span>.Length - 8
+</span></span><span style=display:flex><span>    <span style=color:teal>$SerialNumber</span> = <span style=color:teal>$SerialNumber</span>.remove(0,<span style=color:teal>$CharsToTrim</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$SerialNumber</span>.ToUpper()
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=image-9.png target=_blank><img src=image-9.png alt="Script to look up chassis types from WMI and output a clean name to use."></a><figcaption>Script to look up chassis types from WMI and output a clean name to use.</figcaption></figure></div></p><p><div class=image><figure><a href=image-13.png target=_blank><img src=image-13.png alt="Default is NoChassisTypeDetected. You&amp;rsquo;ll see this for VMware and likely other VMs."></a><figcaption>Default is NoChassisTypeDetected. You'll see this for VMware and likely other VMs.</figcaption></figure></div></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-1> 1</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-2><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-2> 2</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-3><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-3> 3</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-4><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-4> 4</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-5><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-5> 5</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-6><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-6> 6</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-7><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-7> 7</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-8><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-8> 8</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-9><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-9> 9</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-10><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-10>10</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-11><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-11>11</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-12><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-12>12</a>
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-2-13><a style=outline:none;text-decoration:none;color:inherit href=#hl-2-13>13</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span><span style=color:teal>$Laptop</span> = @(8, 9, 10, 11, 12, 14, 18, 21, 30, 31, 32)
+</span></span><span style=display:flex><span><span style=color:teal>$Desktop</span> = @(3, 4, 5, 6, 7, 13, 15, 16, 35, 36)
+</span></span><span style=display:flex><span><span style=color:teal>$Server</span> = @(23, 28)
+</span></span><span style=display:flex><span><span style=color:teal>$CIMChassisType</span> = (<span style=color:#0086b3>Get-CIMInstance</span> Win32_SystemEnclosure).ChassisTypes
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:teal>$ChassisType</span> = <span style=color:#000;font-weight:700>Switch</span>(<span style=color:teal>$CIMChassisType</span>) {
+</span></span><span style=display:flex><span>    {<span style=color:teal>$Laptop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Laptop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+</span></span><span style=display:flex><span>    {<span style=color:teal>$Desktop</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Desktop&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+</span></span><span style=display:flex><span>    {<span style=color:teal>$Server</span> <span style=color:#000;font-weight:700>-eq</span> <span style=color:teal>$_</span>} {<span style=color:#d14>&#34;Server&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>default</span> {<span style=color:#d14>&#34;NoChassisTypeDetected&#34;</span>; <span style=color:#000;font-weight:700>break</span>;}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>Return</span> <span style=color:teal>$ChassisType</span>
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=image-10.png target=_blank><img src=image-10.png alt="Setting the Gather variables based on the values we found."></a><figcaption>Setting the Gather variables based on the values we found.</figcaption></figure></div></p><hr><p><strong>UPDATE 02/24/2021 - If you use Surface Pro 7+, you will need to update your Gather step to look for Surface Pro 7+ and set IsLaptop = True. This is due to the ChassisType being set to 1 instead of 9 on these devices. This is expected to be fixed at some point, but if you have an immediate need, here&rsquo;s the fix.</strong></p><hr><p><div class=image><figure><a href=image.png target=_blank><img src=image.png alt="Fix for Surface Pro 7+"></a><figcaption>Fix for Surface Pro 7+</figcaption></figure></div></p><p><div class=image><figure><a href=image-11.png target=_blank><img src=image-11.png alt="Echo out the values to the command line so that they show up in smsts.log."></a><figcaption>Echo out the values to the command line so that they show up in smsts.log.</figcaption></figure></div></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f" id=hl-3-1><a style=outline:none;text-decoration:none;color:inherit href=#hl-3-1>1</a>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=display:flex><span>cmd /c <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;ChassisType: %ChassisType%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsVM: %IsVM%&#34;</span> &amp;&amp;  <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsLaptop: %IsLaptop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsDesktop: %IsDesktop%&#34;</span> &amp;&amp; <span style=color:#0086b3>echo </span><span style=color:#d14>&#34;IsServer: %IsServer%&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p><div class=image><figure><a href=2020-02-21_15-56-38.gif target=_blank><img src=2020-02-21_15-56-38.gif alt="A gif using Task Sequence Debugger to show how the variables get set!"></a><figcaption>A gif using Task Sequence Debugger to show how the variables get set!</figcaption></figure></div></p><p><div class=image><figure><a href=image-5.png target=_blank><img src=image-5.png alt="SMSTS.log output showing the variables that got set by Gather"></a><figcaption>SMSTS.log output showing the variables that got set by Gather</figcaption></figure></div></p><p>As you can see, it takes a few steps, but it&rsquo;s not that hard to add other variables to this and use it as a master variable setting Task Sequence that you reference in other Task Sequences. Is this the most efficient? Not likely? Does it reduce the need for custom code? Maybe? Does it require any extra contents/scripts? Nope. Anyway, I feel like this completes the picture just a bit more.</p><p>Click <a href=https://github.com/AdamGrossTX/BlogFiles/raw/master/GatherTS.zip>HERE</a> to download the complete Gather Task Sequence from my GitHub repo. Or Download it directly from the console in the Community Hub <a href=https://communityhub.microsoft.com/item/7812>https://communityhub.microsoft.com/item/7812</a>.</p><h2 id=thats-all-folks>That&rsquo;s all Folks</h2><p>As you can see, the built-in dynamic variable can be a decent replacement for Gather if you don&rsquo;t have hugely complex steps in your Task Sequence. It just takes a bit of planning. If you are starting fresh, this should be easy. Just build your Task Sequence with the dynamic variables and if you get stuck or need more variables, go grab one of the community tools and go to town.</p><p>Ultimately, I&rsquo;m not saying you SHOULD use any way over another, I just want to highlight that you COULD reduce your content overhead just a little bit by using the built-in variables.</p><hr><p>This post is dedicated to <a href=https://twitter.com/AriSaastamoinen>Ari Saastamoinen</a> who <a href="https://twitter.com/AriSaastamoinen/status/1230646619340771328?s=20">constantly badgers</a> me to write things for him and I finally gave in.</p><hr></div><comments id=comments><script src=https://utteranc.es/client.js repo=AdamGrossTX/asquaredozen issue-term=title label="blog comment" theme=github-light crossorigin=anonymous async></script></comments></article></div></div></div><footer id=footer><div class=container><div id=footer-copyright><p class=copyright>&copy; 2022 Adam Gross - https://www.asquaredozen.com - A Square Dozen</a></p></div></div></footer></div></body></html>
